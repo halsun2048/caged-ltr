@@ -1,11 +1,17 @@
 """Lightweight student and recommendation models."""
 
-from caged_ltr.models.sasrec import FrozenSemanticLateFusion, SASRec, SASRecConfig
+from caged_ltr.models.sasrec import (
+    FrozenSemanticLateFusion,
+    FrozenSemanticOnly,
+    SASRec,
+    SASRecConfig,
+)
 from caged_ltr.models.students import DCNv2Student, LambdaMARTRanker, MLPStudent
 
 __all__ = [
     "DCNv2Student",
     "FrozenSemanticLateFusion",
+    "FrozenSemanticOnly",
     "LambdaMARTRanker",
     "MLPStudent",
     "SASRec",

@@ -239,3 +239,39 @@ class FrozenSemanticLateFusion(SASRec):
         semantic_candidates = self.semantic_items[candidate_items]
         semantic = torch.einsum("bd,bcd->bc", semantic_user, semantic_candidates)
         return collaborative + self.config.semantic_weight * semantic
+
+
+class FrozenSemanticOnly(nn.Module):
+    """Parameter-free semantic baseline using the same prefix-mean scoring rule."""
+
+    def __init__(self, config: SASRecConfig, semantic_items: np.ndarray) -> None:
+        super().__init__()
+        self.config = config
+        array = np.asarray(semantic_items, dtype=np.float32)
+        if array.ndim != 2 or array.shape[0] != config.num_items:
+            raise ValueError("semantic_items must have one row per catalog item")
+        if not np.isfinite(array).all():
+            raise ValueError("semantic_items must contain finite values")
+        normalized = torch.nn.functional.normalize(torch.from_numpy(array), dim=-1)
+        self.register_buffer(
+            "semantic_items",
+            torch.cat((torch.zeros(1, normalized.shape[1]), normalized), dim=0),
+            persistent=True,
+        )
+
+    def score_candidates(
+        self,
+        sequences: torch.Tensor,
+        candidate_items: torch.Tensor,
+    ) -> torch.Tensor:
+        if candidate_items.ndim != 2 or candidate_items.shape[0] != sequences.shape[0]:
+            raise ValueError("candidate_items must have shape [batch, candidates]")
+        mask = sequences.ne(0).unsqueeze(-1)
+        semantic_sequence = self.semantic_items[sequences] * mask
+        semantic_user = semantic_sequence.sum(dim=1) / mask.sum(dim=1).clamp_min(1)
+        semantic_user = torch.nn.functional.normalize(semantic_user, dim=-1)
+        return torch.einsum(
+            "bd,bcd->bc",
+            semantic_user,
+            self.semantic_items[candidate_items],
+        )

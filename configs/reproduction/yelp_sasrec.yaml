@@ -4,6 +4,7 @@ output_dir: runs/yelp_sasrec
 model: sasrec
 semantic_path: data/processed/yelp_llmesr_author/pca64_item_embeddings.npy
 seed: 42
+evaluation_seed: 20240722
 max_users: null
 max_eval_users: null
 max_length: 200
@@ -21,3 +22,4 @@ patience: 20
 evaluation_negatives: 100
 top_k: 10
 device: auto
+test_after_selection: true

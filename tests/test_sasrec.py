@@ -13,8 +13,17 @@ from caged_ltr.data.sequential import (
     SASRecTrainingDataset,
     load_yelp_author_sequences,
 )
-from caged_ltr.models import FrozenSemanticLateFusion, SASRec, SASRecConfig
-from caged_ltr.sequential import YelpSASRecRunConfig, run_yelp_sasrec
+from caged_ltr.models import (
+    FrozenSemanticLateFusion,
+    FrozenSemanticOnly,
+    SASRec,
+    SASRecConfig,
+)
+from caged_ltr.sequential import (
+    YelpSASRecRunConfig,
+    evaluate_yelp_test_checkpoint,
+    run_yelp_sasrec,
+)
 
 
 def _write_sequence_fixture(root: Path) -> tuple[Path, Path]:
@@ -105,6 +114,11 @@ def test_sasrec_is_causal_and_semantic_table_stays_frozen() -> None:
     assert "semantic_items" not in dict(late_fusion.named_parameters())
     torch.testing.assert_close(before, late_fusion.semantic_items)
 
+    semantic_only = FrozenSemanticOnly(config, semantic)
+    scores = semantic_only.score_candidates(first, torch.tensor([[4, 5, 6]]))
+    assert scores.shape == (1, 3)
+    assert sum(parameter.numel() for parameter in semantic_only.parameters()) == 0
+
 
 def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> None:
     processed, report = _write_sequence_fixture(tmp_path)
@@ -129,13 +143,42 @@ def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> 
             patience=1,
             evaluation_negatives=2,
             top_k=2,
+            test_after_selection=False,
         )
     )
 
     assert summary["data_fingerprint"] == "fixture-fingerprint"
     assert summary["semantic_sha256"] is not None
     assert summary["parameters"]["frozen_semantic_values"] == 27
-    assert summary["protocol"]["test_usage"] == "once after checkpoint selection"
+    assert summary["protocol"]["test_usage"] == "not evaluated; validation-only run"
+    assert summary["test"] is None
     assert (output / "best_model.pt").is_file()
     assert (output / "predictions.parquet").is_file()
-    assert summary["test"]["item_frequency"]["overall"]["count"] == 6
+    assert set(parquet.read_table(output / "predictions.parquet")["split"].to_pylist()) == {
+        "valid"
+    }
+
+    test_metrics = evaluate_yelp_test_checkpoint(
+        YelpSASRecRunConfig(
+            processed_dir=processed,
+            report_path=report,
+            output_dir=output,
+            model="late_fusion",
+            semantic_path=semantic_path,
+            max_length=4,
+            hidden_dim=4,
+            num_blocks=1,
+            num_heads=1,
+            dropout=0.0,
+            batch_size=3,
+            evaluation_batch_size=3,
+            max_epochs=1,
+            patience=1,
+            evaluation_negatives=2,
+            top_k=2,
+            test_after_selection=False,
+        )
+    )
+    assert test_metrics["item_frequency"]["overall"]["count"] == 6
+    persisted = json.loads((output / "summary.json").read_text(encoding="utf-8"))
+    assert persisted["protocol"]["test_usage"].startswith("once after external")

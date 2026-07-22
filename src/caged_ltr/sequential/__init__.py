@@ -1,5 +1,9 @@
 """Sequential-recommendation training and evaluation."""
 
-from caged_ltr.sequential.yelp_runner import YelpSASRecRunConfig, run_yelp_sasrec
+from caged_ltr.sequential.yelp_runner import (
+    YelpSASRecRunConfig,
+    evaluate_yelp_test_checkpoint,
+    run_yelp_sasrec,
+)
 
-__all__ = ["YelpSASRecRunConfig", "run_yelp_sasrec"]
+__all__ = ["YelpSASRecRunConfig", "evaluate_yelp_test_checkpoint", "run_yelp_sasrec"]

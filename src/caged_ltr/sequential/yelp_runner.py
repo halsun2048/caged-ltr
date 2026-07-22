@@ -21,7 +21,12 @@ from caged_ltr.data.sequential import (
     YelpSequenceData,
     load_yelp_author_sequences,
 )
-from caged_ltr.models import FrozenSemanticLateFusion, SASRec, SASRecConfig
+from caged_ltr.models import (
+    FrozenSemanticLateFusion,
+    FrozenSemanticOnly,
+    SASRec,
+    SASRecConfig,
+)
 from caged_ltr.reproducibility import seed_everything, sha256_file, write_environment
 
 
@@ -33,6 +38,7 @@ class YelpSASRecRunConfig:
     model: str = "sasrec"
     semantic_path: Path | None = None
     seed: int = 42
+    evaluation_seed: int = 20240722
     max_users: int | None = None
     max_eval_users: int | None = None
     max_length: int = 200
@@ -50,10 +56,13 @@ class YelpSASRecRunConfig:
     evaluation_negatives: int = 100
     top_k: int = 10
     device: str = "cpu"
+    test_after_selection: bool = True
 
     def __post_init__(self) -> None:
-        if self.model not in {"sasrec", "llm_init", "late_fusion"}:
-            raise ValueError("model must be sasrec, llm_init, or late_fusion")
+        if self.model not in {"sasrec", "llm_init", "semantic_only", "late_fusion"}:
+            raise ValueError(
+                "model must be sasrec, llm_init, semantic_only, or late_fusion"
+            )
         if self.model != "sasrec" and self.semantic_path is None:
             raise ValueError("semantic_path is required by semantic model variants")
         positive = (
@@ -70,7 +79,9 @@ class YelpSASRecRunConfig:
         )
         if any(value <= 0 for value in positive):
             raise ValueError("model, training, and evaluation sizes must be positive")
-        if self.seed < 0 or self.learning_rate <= 0 or self.weight_decay < 0:
+        if min(self.seed, self.evaluation_seed) < 0:
+            raise ValueError("training and evaluation seeds must be non-negative")
+        if self.learning_rate <= 0 or self.weight_decay < 0:
             raise ValueError("seed and optimizer settings are invalid")
         if self.max_users is not None and self.max_users <= 0:
             raise ValueError("max_users must be positive")
@@ -115,7 +126,7 @@ def _build_model(
     config: YelpSASRecRunConfig,
     data: YelpSequenceData,
     semantic_items: np.ndarray | None,
-) -> SASRec:
+) -> SASRec | FrozenSemanticOnly:
     model_config = SASRecConfig(
         num_items=data.num_items,
         max_length=config.max_length,
@@ -131,6 +142,8 @@ def _build_model(
         raise ValueError("semantic item array was not loaded")
     if config.model == "llm_init":
         return SASRec(model_config, item_initialization=semantic_items)
+    if config.model == "semantic_only":
+        return FrozenSemanticOnly(model_config, semantic_items)
     return FrozenSemanticLateFusion(model_config, semantic_items)
 
 
@@ -162,7 +175,7 @@ def _bucket_metrics(
 
 
 def _evaluate(
-    model: SASRec,
+    model: SASRec | FrozenSemanticOnly,
     data: YelpSequenceData,
     config: YelpSASRecRunConfig,
     *,
@@ -174,7 +187,7 @@ def _evaluate(
         split=split,
         max_length=config.max_length,
         num_negatives=config.evaluation_negatives,
-        seed=config.seed,
+        seed=config.evaluation_seed,
         max_users=config.max_eval_users,
     )
     loader = DataLoader(
@@ -232,9 +245,10 @@ def _serialized_config(config: YelpSASRecRunConfig) -> dict[str, Any]:
 
 
 def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
-    """Train with validation-only early stopping and evaluate test once at the end."""
+    """Train with validation-only early stopping and optionally evaluate test once."""
     seed_everything(config.seed)
     device = _device(config.device)
+    config.output_dir.mkdir(parents=True, exist_ok=True)
     data = load_yelp_author_sequences(
         config.processed_dir,
         report_path=config.report_path,
@@ -242,68 +256,106 @@ def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
     )
     semantic_items = _load_semantics(config, data.num_items)
     model = _build_model(config, data, semantic_items).to(device)
-    training_data = SASRecTrainingDataset(data, max_length=config.max_length, seed=config.seed)
-    shuffle_generator = torch.Generator().manual_seed(config.seed)
-    loader = DataLoader(
-        training_data,
-        batch_size=config.batch_size,
-        shuffle=True,
-        generator=shuffle_generator,
-        num_workers=0,
-    )
-    optimizer = torch.optim.Adam(
-        (parameter for parameter in model.parameters() if parameter.requires_grad),
-        lr=config.learning_rate,
-        weight_decay=config.weight_decay,
-    )
-    best_score = -1.0
-    best_epoch = 0
-    best_state: dict[str, torch.Tensor] | None = None
-    stale_epochs = 0
     history: list[dict[str, Any]] = []
     started = time.perf_counter()
-    for epoch in range(1, config.max_epochs + 1):
-        training_data.set_epoch(epoch)
-        model.train()
-        losses: list[float] = []
-        for sequences, positives, negatives in loader:
-            optimizer.zero_grad(set_to_none=True)
-            loss = model.loss(
-                sequences.to(device),
-                positives.to(device),
-                negatives.to(device),
-            )
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
-            optimizer.step()
-            losses.append(float(loss.detach().cpu()))
+    if isinstance(model, FrozenSemanticOnly):
         valid_metrics, _ = _evaluate(model, data, config, split="valid", device=device)
-        valid_score = float(valid_metrics["item_frequency"]["overall"][f"NDCG@{config.top_k}"])
-        history.append(
-            {
+        best_epoch = 0
+        best_state = copy.deepcopy(model.state_dict())
+        training_users = 0
+        print(
+            json.dumps(
+                {
+                    "model": config.model,
+                    "validation_NDCG": valid_metrics["item_frequency"]["overall"][
+                        f"NDCG@{config.top_k}"
+                    ],
+                }
+            ),
+            flush=True,
+        )
+    else:
+        training_data = SASRecTrainingDataset(
+            data, max_length=config.max_length, seed=config.seed
+        )
+        training_users = len(training_data)
+        shuffle_generator = torch.Generator().manual_seed(config.seed)
+        loader = DataLoader(
+            training_data,
+            batch_size=config.batch_size,
+            shuffle=True,
+            generator=shuffle_generator,
+            num_workers=0,
+        )
+        optimizer = torch.optim.Adam(
+            (parameter for parameter in model.parameters() if parameter.requires_grad),
+            lr=config.learning_rate,
+            weight_decay=config.weight_decay,
+        )
+        best_score = -1.0
+        best_epoch = 0
+        best_state: dict[str, torch.Tensor] | None = None
+        stale_epochs = 0
+        for epoch in range(1, config.max_epochs + 1):
+            training_data.set_epoch(epoch)
+            model.train()
+            losses: list[float] = []
+            for sequences, positives, negatives in loader:
+                optimizer.zero_grad(set_to_none=True)
+                loss = model.loss(
+                    sequences.to(device),
+                    positives.to(device),
+                    negatives.to(device),
+                )
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
+                optimizer.step()
+                losses.append(float(loss.detach().cpu()))
+            valid_metrics, _ = _evaluate(model, data, config, split="valid", device=device)
+            valid_score = float(
+                valid_metrics["item_frequency"]["overall"][f"NDCG@{config.top_k}"]
+            )
+            epoch_record = {
                 "epoch": epoch,
                 "train_bpr": float(np.mean(losses)),
                 f"valid_NDCG@{config.top_k}": valid_score,
             }
-        )
-        if valid_score > best_score:
-            best_score = valid_score
-            best_epoch = epoch
-            best_state = copy.deepcopy(model.state_dict())
-            stale_epochs = 0
-        else:
-            stale_epochs += 1
-        if stale_epochs >= config.patience:
-            break
-    if best_state is None:
-        raise RuntimeError("training did not produce a checkpoint")
+            history.append(epoch_record)
+            if valid_score > best_score:
+                best_score = valid_score
+                best_epoch = epoch
+                best_state = copy.deepcopy(model.state_dict())
+                torch.save(
+                    {"state_dict": best_state},
+                    config.output_dir / "best_model.pt",
+                )
+                stale_epochs = 0
+            else:
+                stale_epochs += 1
+            print(
+                json.dumps(
+                    {
+                        **epoch_record,
+                        "best_epoch": best_epoch,
+                        "stale_epochs": stale_epochs,
+                    }
+                ),
+                flush=True,
+            )
+            if stale_epochs >= config.patience:
+                break
+        if best_state is None:
+            raise RuntimeError("training did not produce a checkpoint")
     model.load_state_dict(best_state)
     validation_metrics, validation_records = _evaluate(
         model, data, config, split="valid", device=device
     )
-    test_metrics, test_records = _evaluate(model, data, config, split="test", device=device)
-
-    config.output_dir.mkdir(parents=True, exist_ok=True)
+    if config.test_after_selection:
+        test_metrics, test_records = _evaluate(
+            model, data, config, split="test", device=device
+        )
+    else:
+        test_metrics, test_records = None, []
     torch.save({"state_dict": best_state}, config.output_dir / "best_model.pt")
     pd.DataFrame([*validation_records, *test_records]).to_parquet(
         config.output_dir / "predictions.parquet", index=False
@@ -319,7 +371,7 @@ def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
             else None
         ),
         "selected_users": len(data.train_histories),
-        "training_users": len(training_data),
+        "training_users": training_users,
         "num_items": data.num_items,
         "best_epoch": best_epoch,
         "epochs_ran": len(history),
@@ -329,22 +381,33 @@ def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
             "trainable": sum(
                 parameter.numel() for parameter in model.parameters() if parameter.requires_grad
             ),
-            "frozen_semantic_values": (
-                int(model.semantic_items.numel())
-                if isinstance(model, FrozenSemanticLateFusion)
-                else 0
-            ),
+            "frozen_semantic_values": int(model.semantic_items.numel())
+            if isinstance(model, FrozenSemanticLateFusion | FrozenSemanticOnly)
+            else 0,
         },
         "validation": validation_metrics,
         "test": test_metrics,
         "history": history,
         "protocol": {
-            "train_objective": "BPR over next-item positions",
+            "train_objective": (
+                "none; parameter-free semantic baseline"
+                if isinstance(model, FrozenSemanticOnly)
+                else "BPR over next-item positions"
+            ),
             "validation_history": "train only",
             "test_history": "train plus validation target",
             "evaluation": f"target plus {config.evaluation_negatives} fixed unseen negatives",
-            "checkpoint_selection": f"validation NDCG@{config.top_k}",
-            "test_usage": "once after checkpoint selection",
+            "evaluation_seed": config.evaluation_seed,
+            "checkpoint_selection": (
+                "not applicable"
+                if isinstance(model, FrozenSemanticOnly)
+                else f"validation NDCG@{config.top_k}"
+            ),
+            "test_usage": (
+                "once after checkpoint selection"
+                if config.test_after_selection
+                else "not evaluated; validation-only run"
+            ),
         },
     }
     (config.output_dir / "resolved_config.yaml").write_text(
@@ -355,3 +418,44 @@ def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
     )
     write_environment(config.output_dir / "environment.json", Path.cwd())
     return summary
+
+
+def evaluate_yelp_test_checkpoint(
+    config: YelpSASRecRunConfig,
+    *,
+    checkpoint_path: Path | None = None,
+) -> dict[str, Any]:
+    """Evaluate test once for a checkpoint selected strictly from validation results."""
+    seed_everything(config.seed)
+    device = _device(config.device)
+    data = load_yelp_author_sequences(
+        config.processed_dir,
+        report_path=config.report_path,
+        max_users=config.max_users,
+    )
+    semantic_items = _load_semantics(config, data.num_items)
+    model = _build_model(config, data, semantic_items).to(device)
+    checkpoint = checkpoint_path or config.output_dir / "best_model.pt"
+    state = torch.load(checkpoint, map_location=device, weights_only=True)
+    model.load_state_dict(state["state_dict"])
+    test_metrics, test_records = _evaluate(
+        model, data, config, split="test", device=device
+    )
+    prediction_path = config.output_dir / "predictions.parquet"
+    validation_frame = pd.read_parquet(prediction_path)
+    validation_frame = validation_frame[validation_frame["split"] != "test"]
+    pd.concat((validation_frame, pd.DataFrame(test_records)), ignore_index=True).to_parquet(
+        prediction_path,
+        index=False,
+    )
+    summary_path = config.output_dir / "summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("test") is not None:
+        raise ValueError("test metrics already exist for this run")
+    summary["test"] = test_metrics
+    summary["protocol"]["test_usage"] = "once after external validation-only selection"
+    summary_path.write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return test_metrics
