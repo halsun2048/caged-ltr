@@ -5,7 +5,18 @@ import math
 import pytest
 import torch
 
-from caged_ltr.losses import listwise_kl_loss, pointwise_bce_loss, ranknet_loss
+from caged_ltr.losses import bpr_loss, listwise_kl_loss, pointwise_bce_loss, ranknet_loss
+
+
+def test_bpr_rewards_a_larger_positive_margin_and_honors_mask() -> None:
+    good = bpr_loss(
+        torch.tensor([2.0, -100.0]),
+        torch.tensor([0.0, 100.0]),
+        mask=torch.tensor([True, False]),
+    )
+    bad = bpr_loss(torch.tensor([0.0]), torch.tensor([2.0]))
+
+    assert good < bad
 
 
 def test_pointwise_bce_has_known_value_and_gradient() -> None:

@@ -70,3 +70,18 @@ uv run python scripts/prepare_yelp.py
 当前官方版得到 4,300,562 条过滤后交互、440,996 用户和 139,914 物品。
 下载方式、版本边界、切分规则、安全限制和产物说明见
 [`docs/data/yelp.md`](docs/data/yelp.md)。
+
+## Yelp SASRec
+
+作者版 Yelp 已接入因果 SASRec、BPR 训练和 frozen semantic late fusion。先安全转换
+作者的 legacy NumPy pickle，再运行缩小版验收：
+
+```bash
+uv run python scripts/convert_yelp_author_semantics.py
+uv run python scripts/train_yelp_sasrec.py --model sasrec
+uv run python scripts/train_yelp_sasrec.py \
+  --model late_fusion --output-dir runs/yelp_late_fusion_smoke
+```
+
+正式配置为 `configs/reproduction/yelp_sasrec.yaml`。实现边界、评测协议和当前全量
+1-epoch 规模验收结果见 [`docs/experiments/yelp_sasrec.md`](docs/experiments/yelp_sasrec.md)。

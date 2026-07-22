@@ -1,0 +1,42 @@
+{
+  "scope": "fullscale_one_epoch_pipeline_acceptance_not_a_converged_benchmark",
+  "seed": 42,
+  "device": "cpu",
+  "data_fingerprint": "97aa4d3005216e5a963436a7715d4cb62d09cd8c0e7cb706dcbdf6b8c2a2edc2",
+  "users": 15720,
+  "training_users_with_at_least_two_train_items": 11907,
+  "items": 11383,
+  "evaluation": "sampled-100 Hit@10 and NDCG@10",
+  "models": {
+    "sasrec": {
+      "trainable_parameters": 792000,
+      "frozen_semantic_values": 0,
+      "elapsed_seconds": 66.46042364300229,
+      "validation": {"Hit@10": 0.5210559796437659, "NDCG@10": 0.3019741852971777},
+      "test": {"Hit@10": 0.5111959287531807, "NDCG@10": 0.29459790919471335},
+      "test_tail_item": {
+        "count": 1313,
+        "Hit@10": 0.0015232292460015233,
+        "NDCG@10": 0.000751817928925727
+      }
+    },
+    "frozen_semantic_late_fusion": {
+      "semantic_npy_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "trainable_parameters": 792000,
+      "frozen_semantic_values": 728576,
+      "elapsed_seconds": 69.5318559970001,
+      "validation": {"Hit@10": 0.5611959287531807, "NDCG@10": 0.3318022713305271},
+      "test": {"Hit@10": 0.5461832061068702, "NDCG@10": 0.32193800411911494},
+      "test_tail_item": {
+        "count": 1313,
+        "Hit@10": 0.002284843869002285,
+        "NDCG@10": 0.0015701495138193836
+      }
+    }
+  },
+  "limitations": [
+    "Only one training epoch and one seed; results are not converged.",
+    "Fixed semantic_weight=1.0 has not been selected on validation data.",
+    "Author item-embedding event-time provenance is not established."
+  ]
+}

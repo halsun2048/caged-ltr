@@ -6,6 +6,26 @@ import torch
 import torch.nn.functional as functional
 
 
+def bpr_loss(
+    positive_scores: torch.Tensor,
+    negative_scores: torch.Tensor,
+    *,
+    mask: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """Bayesian Personalized Ranking loss over aligned positive/negative scores."""
+    if positive_scores.shape != negative_scores.shape or positive_scores.ndim == 0:
+        raise ValueError("positive_scores and negative_scores must have equal non-scalar shapes")
+    if mask is None:
+        selected = torch.ones_like(positive_scores, dtype=torch.bool)
+    else:
+        if mask.shape != positive_scores.shape or mask.dtype != torch.bool:
+            raise ValueError("mask must be boolean and match score shape")
+        selected = mask
+    if not selected.any():
+        return (positive_scores.sum() + negative_scores.sum()) * 0.0
+    return functional.softplus(-(positive_scores[selected] - negative_scores[selected])).mean()
+
+
 def _validate_flat_scores(scores: torch.Tensor, group_sizes: torch.Tensor) -> list[int]:
     if scores.ndim != 1:
         raise ValueError("scores must be one-dimensional")
