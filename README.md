@@ -51,3 +51,22 @@ uv run caged-r0-smoke --output-dir runs/r0_smoke --seed 42
 
 该命令会保存解析后的配置和数据指纹、运行环境、逐样本 Parquet、
 Overall/Head/Torso/Tail 指标表，以及 P50/P95/P99、QPS 和参数量报告。
+
+## Yelp 数据
+
+Yelp 已提供两条明确分离的数据路线：
+
+- `yelp_llmesr_author`：LLM-ESR 作者发布的论文一致版，作为复现实验主数据；
+- `yelp_current`：当前 Yelp 官方快照按作者规则重处理，只作为新版扩展实验。
+
+原始数据和 Parquet 产物均被 Git 忽略。准备好对应压缩包后运行：
+
+```bash
+uv run python scripts/prepare_yelp_author.py
+uv run python scripts/prepare_yelp.py
+```
+
+作者版得到 192,214 条交互、15,720 用户和 11,383 物品，与论文统计一致。
+当前官方版得到 4,300,562 条过滤后交互、440,996 用户和 139,914 物品。
+下载方式、版本边界、切分规则、安全限制和产物说明见
+[`docs/data/yelp.md`](docs/data/yelp.md)。

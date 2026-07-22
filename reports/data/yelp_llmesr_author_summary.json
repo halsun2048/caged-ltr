@@ -1,0 +1,100 @@
+{
+  "author_assets": {
+    "inter.txt": {
+      "bytes": 1816829,
+      "path": "data/processed/yelp_llmesr_author/author_assets/inter.txt",
+      "sha256": "5b093f6d03f2675f9b574b9e92a53b0153e2ef2fb5f6bfebba4955daea10512f",
+      "unpickled_during_preparation": false
+    },
+    "itm_emb_np.pkl": {
+      "bytes": 139874467,
+      "path": "data/processed/yelp_llmesr_author/author_assets/itm_emb_np.pkl",
+      "sha256": "ea1ca9e8d2574d6f79dfc406e39f5ebf66079a7a881859b9a9d78446dca79335",
+      "unpickled_during_preparation": false
+    },
+    "pca64_itm_emb_np.pkl": {
+      "bytes": 5828258,
+      "path": "data/processed/yelp_llmesr_author/author_assets/pca64_itm_emb_np.pkl",
+      "sha256": "a293092dca2d8fb0b6a0effb9fdcc3efdc23e9ea1cd06a36ad427fc782001cf5",
+      "unpickled_during_preparation": false
+    },
+    "sim_user_100.pkl": {
+      "bytes": 12576162,
+      "path": "data/processed/yelp_llmesr_author/author_assets/sim_user_100.pkl",
+      "sha256": "f8ad21264b9ea002425addaa81e11b8a02e491e08bb0249f4d29b7d39255b17b",
+      "unpickled_during_preparation": false
+    },
+    "usr_emb_np.pkl": {
+      "bytes": 193167523,
+      "path": "data/processed/yelp_llmesr_author/author_assets/usr_emb_np.pkl",
+      "sha256": "c1accecdb354e712149d0772521510245462b6b19c73a8f9cb55b48f4e7c8749",
+      "unpickled_during_preparation": false
+    }
+  },
+  "config": {
+    "archive": "data/raw/yelp/LLMESR_author_processed.zip",
+    "head_quantile": 0.8,
+    "memory_limit": "8GB",
+    "paper_head_fraction": 0.2,
+    "processed_dir": "data/processed/yelp_llmesr_author",
+    "report_path": "reports/data/yelp_llmesr_author_summary.json",
+    "tail_quantile": 0.2,
+    "threads": 1
+  },
+  "created_at_utc": "2026-07-22T13:10:45.650651+00:00",
+  "dataset_variant": "faithful_author_processed",
+  "limitations": {
+    "event_timestamps": "not included; author sequence order is preserved",
+    "pickle_security": "external pickle assets were hashed but not deserialized",
+    "raw_id_mapping": "not included in the author bundle",
+    "user_embedding_leakage": "provenance cutoff is not established; do not use until separately audited"
+  },
+  "outputs": {
+    "interactions": {
+      "bytes": 1582566,
+      "path": "data/processed/yelp_llmesr_author/interactions.parquet",
+      "sha256": "3c418c231161a6d28e9a81590ccf936b78da121593ba6c4350205158796c78de"
+    },
+    "items": {
+      "bytes": 65752,
+      "path": "data/processed/yelp_llmesr_author/items.parquet",
+      "sha256": "20cfe3c05f81af8a09a088cd1817edf8aca44ae168280fbb1def1ac39b6f0e65"
+    },
+    "sequences": {
+      "bytes": 528821,
+      "path": "data/processed/yelp_llmesr_author/sequences.parquet",
+      "sha256": "c3fc0dfcb9e18ba197423d819c95522dc19cb9b889f3379a03d6eb1dd011ef42"
+    },
+    "users": {
+      "bytes": 86439,
+      "path": "data/processed/yelp_llmesr_author/users.parquet",
+      "sha256": "868cc7e5910a1a91ddf3131cbfe7f789da2ee89cf7a092454bd79504d2a1f6f5"
+    }
+  },
+  "paper_reference": {
+    "average_sequence_length": 12.23,
+    "items": 11383,
+    "users": 15720
+  },
+  "pipeline_version": "yelp-llmesr-author-v1",
+  "processed_fingerprint": "97aa4d3005216e5a963436a7715d4cb62d09cd8c0e7cb706dcbdf6b8c2a2edc2",
+  "source": {
+    "archive_bytes": 1472885036,
+    "archive_sha256": "0fe2cca3cc825d304f842352c327a7dcd6e330761416a6f3b10ac1ef4ffcf22d",
+    "archive_url": "https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view",
+    "repository": "https://github.com/liuqidong07/LLM-ESR"
+  },
+  "statistics": {
+    "average_sequence_length": 12.22735368956743,
+    "cold_start_items": 318,
+    "interactions": 192214,
+    "items": 11383,
+    "max_author_item_id": 11383,
+    "max_author_user_id": 15720,
+    "split_invariant_violations": 0,
+    "test_interactions": 15720,
+    "train_interactions": 160774,
+    "users": 15720,
+    "valid_interactions": 15720
+  }
+}

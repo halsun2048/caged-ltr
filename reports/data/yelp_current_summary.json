@@ -1,0 +1,95 @@
+{
+  "config": {
+    "archive": "data/raw/yelp/Yelp-JSON.zip",
+    "event_time_max": "2019-12-31 00:00:00",
+    "event_time_min": "2000-01-01 00:00:00",
+    "head_quantile": 0.8,
+    "interim_dir": "data/interim/yelp",
+    "memory_limit": "24GB",
+    "min_item_interactions": 3,
+    "min_user_interactions": 3,
+    "paper_head_fraction": 0.2,
+    "processed_dir": "data/processed/yelp_current",
+    "rating_min_exclusive": 0.0,
+    "report_path": "reports/data/yelp_current_summary.json",
+    "tail_quantile": 0.2,
+    "threads": 8
+  },
+  "created_at_utc": "2026-07-22T13:10:08.510750+00:00",
+  "dataset_variant": "current_official_extension_not_faithful_paper_snapshot",
+  "leakage_controls": {
+    "business_metadata_limitation": "current archive snapshot has no historical versions and must not be claimed as event-time-frozen text",
+    "cross_user_time_limitation": "per-user leave-two-out is not a single global wall-clock cutoff",
+    "frequency_buckets": "fit from train interaction counts only",
+    "profiles": "profile_reviews_train.parquet contains train rows only",
+    "split_order": [
+      "event_time",
+      "review_id"
+    ],
+    "test": "per-user last interaction",
+    "valid": "per-user second-to-last interaction"
+  },
+  "outputs": {
+    "interactions": {
+      "bytes": 174919353,
+      "path": "data/processed/yelp_current/interactions.parquet",
+      "sha256": "a7b6ff33392c8b267a7b6add867935f72d8703a559b374d7d4af3d80d787b099"
+    },
+    "items": {
+      "bytes": 17757086,
+      "path": "data/processed/yelp_current/items.parquet",
+      "sha256": "edb404e15e2df3fcb9a2be06f34e1992c908225b0860e31db4de21a9d536a329"
+    },
+    "profile_reviews_train": {
+      "bytes": 918039993,
+      "path": "data/processed/yelp_current/profile_reviews_train.parquet",
+      "sha256": "1895e11f5d9936af5923adcd5044a17f8eae183b53fe3f6892f473270ea630dc"
+    },
+    "sequences": {
+      "bytes": 37031561,
+      "path": "data/processed/yelp_current/sequences.parquet",
+      "sha256": "cdd0b828513bb8dd1dc5cecf18b664477d3fa4483dfac6cfd226f2f071a4e89b"
+    },
+    "users": {
+      "bytes": 14348271,
+      "path": "data/processed/yelp_current/users.parquet",
+      "sha256": "440b73d3885f0e47341be44afc12c9f96ce0993afa77c9f21d312b1ae363fc11"
+    }
+  },
+  "pipeline_version": "yelp-current-v1",
+  "processed_fingerprint": "d3c90a1ccc2015f7a0bc1d1bac9a90230d19a46514000b5085e7b8a55ce9b201",
+  "reproducibility": {
+    "output_write_threads": 1,
+    "reason": "single-threaded final Parquet writes stabilize physical artifact hashes",
+    "staging_threads": 8
+  },
+  "source": {
+    "archive_bytes": 4345335132,
+    "archive_sha256": "47dd6e4d279ac9d8734ddc30bfb3d78e571b9df4bb95923d7acf9a6ef3d8a4ab",
+    "archive_url": "https://business.yelp.com/external-assets/files/Yelp-JSON.zip",
+    "author_rule_blob_sha": "eb1f1df65274b29be958c9739c6c19d5773093c4",
+    "author_rule_source": "https://github.com/liuqidong07/LLM-ESR/blob/master/data/data_process.py",
+    "license": "Educational use; see the Yelp agreement included in the archive",
+    "official_page": "https://business.yelp.com/data/resources/open-dataset/"
+  },
+  "statistics": {
+    "cold_start_items": 2957,
+    "cold_start_test_interactions": 3719,
+    "cold_start_valid_interactions": 2225,
+    "duplicate_user_item_pairs": 156165,
+    "eligible_interactions": 4300562,
+    "event_time_max": "2019-12-30 23:59:35",
+    "event_time_min": "2005-02-16 03:23:22",
+    "items": 139914,
+    "missing_business_snapshots": 0,
+    "profile_train_rows": 3418570,
+    "raw_reviews": 6990280,
+    "sequence_rows": 440996,
+    "source_window_interactions": 5783269,
+    "split_invariant_violations": 0,
+    "test_interactions": 440996,
+    "train_interactions": 3418570,
+    "users": 440996,
+    "valid_interactions": 440996
+  }
+}

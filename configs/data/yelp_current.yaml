@@ -1,0 +1,47 @@
+dataset:
+  name: Yelp Open Dataset
+  variant: current_official_extension
+  faithful_paper_version: false
+  accessed_on: 2026-07-22
+  official_page: https://business.yelp.com/data/resources/open-dataset/
+  archive_url: https://business.yelp.com/external-assets/files/Yelp-JSON.zip
+  archive_http_last_modified: "Wed, 15 Jan 2025 22:16:07 GMT"
+  archive_expected_bytes: 4345335132
+  license: Educational use under the Yelp Open Dataset agreement included in the archive
+  redistribution: Raw and processed records must not be committed to Git
+
+paths:
+  archive: data/raw/yelp/Yelp-JSON.zip
+  interim: data/interim/yelp
+  processed: data/processed/yelp_current
+  report: reports/data/yelp_current_summary.json
+
+filtering:
+  min_user_interactions: 3
+  min_item_interactions: 3
+  event_time_min: "2000-01-01 00:00:00"
+  event_time_max: "2019-12-31 00:00:00"
+  rating_min_exclusive: 0.0
+  rule_source: https://github.com/liuqidong07/LLM-ESR/blob/master/data/data_process.py
+  rule_source_blob_sha: eb1f1df65274b29be958c9739c6c19d5773093c4
+  interaction: one Yelp review is one implicit user-business interaction
+  order_by: [event_time, review_id]
+
+split:
+  strategy: per_user_leave_two_out
+  train: all interactions before the final two
+  valid: second-to-last interaction
+  test: final interaction
+
+leakage_control:
+  profile_source_splits: [train]
+  text_statistics_source_splits: [train]
+  embedding_source_splits: [train]
+  business_metadata: current archive snapshot; not a historical snapshot
+
+buckets:
+  frequency_source: train interactions only
+  quantile_tail: 0.2
+  quantile_head: 0.8
+  paper_head_entity_fraction: 0.2
+  cold_start_definition: zero train interactions

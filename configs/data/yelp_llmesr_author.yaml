@@ -1,0 +1,31 @@
+dataset:
+  name: Yelp preprocessed by LLM-ESR authors
+  variant: faithful_author_processed
+  paper: LLM-ESR (NeurIPS 2024)
+  source_repository: https://github.com/liuqidong07/LLM-ESR
+  source_archive: https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view
+  archive_expected_bytes: 1472885036
+  downloaded_on: 2026-07-22
+
+paths:
+  archive: data/raw/yelp/LLMESR_author_processed.zip
+  processed: data/processed/yelp_llmesr_author
+  report: reports/data/yelp_llmesr_author_summary.json
+
+split:
+  strategy: preserve_author_sequence_then_leave_two_out
+  train: all interactions before the final two
+  valid: second-to-last interaction
+  test: final interaction
+
+reproducibility:
+  output_write_threads: 1
+  reason: Stable physical Parquet hashes
+
+security:
+  pickle_policy: Do not unpickle external assets during data preparation
+
+limitations:
+  - The archive does not include raw Yelp user/item ID mappings or event timestamps.
+  - The provenance cutoff of precomputed user embeddings must be audited before use.
+  - Use current-official processing only as an extension experiment, not a paper-faithful substitute.
