@@ -11,10 +11,13 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
   "datasets==4.0.0",
   "duckdb==1.3.2",
+  "lightgbm==4.6.0",
+  "matplotlib==3.10.3",
   "numpy==2.3.1",
   "pandas==2.3.1",
   "polars==1.31.0",
   "pyarrow==20.0.0",
+  "pyparsing==3.2.3",
   "pyyaml==6.0.2",
   "scikit-learn==1.7.0",
   "scipy==1.16.0",
@@ -24,6 +27,7 @@ dependencies = [
 
 [project.scripts]
 caged-env = "caged_ltr.reproducibility:main"
+caged-r0-smoke = "caged_ltr.r0_smoke:main"
 
 [dependency-groups]
 dev = [
@@ -44,7 +48,8 @@ torch = { index = "pytorch-cpu" }
 packages = ["src/caged_ltr"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-config --strict-markers"
+addopts = "-ra --strict-config --strict-markers --cov=caged_ltr --cov-report=term-missing --cov-fail-under=85"
+filterwarnings = ["error"]
 testpaths = ["tests"]
 
 [tool.ruff]

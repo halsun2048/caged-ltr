@@ -1,0 +1,32 @@
+run:
+  name: r0_smoke
+  seed: 42
+
+data:
+  source: deterministic_synthetic
+  requests: 30
+  train_requests: 24
+  test_requests: 6
+  split: frequency-stratified holdout for R0 bucket coverage
+  candidates_per_request: 6
+  feature_dim: 8
+
+models:
+  mlp:
+    hidden_dims: [32, 16]
+    dropout: 0.0
+    training_steps: 100
+  dcn_v2:
+    num_cross_layers: 2
+    deep_dims: [32, 16]
+    dropout: 0.0
+    training_steps: 100
+  lambda_mart:
+    n_estimators: 40
+    learning_rate: 0.08
+    num_leaves: 15
+    min_child_samples: 2
+
+evaluation:
+  cutoffs: [1, 3, 5]
+  calibration_bins: 5

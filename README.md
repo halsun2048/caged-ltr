@@ -38,3 +38,16 @@ reports/         脚本生成的表格、图片、失败记录与环境快照
 - 数据、语义画像和 embedding 必须按训练时点截断，禁止未来信息泄漏。
 - 每次正式运行保存解析后的配置、Git commit、数据指纹、模型版本和 prompt 版本。
 - 原始数据、密钥和大型模型权重不得提交到仓库。
+
+## R0 公共管线
+
+R0 已提供统一的 request/candidate-list 数据格式、AUC/GAUC/MRR/Recall/NDCG、
+LogLoss/Brier/ECE、频次分桶、BCE/RankNet/Listwise KL，以及 MLP、DCN-v2、
+LightGBM LambdaMART 三个学生基线。可用合成数据执行完整验收：
+
+```bash
+uv run caged-r0-smoke --output-dir runs/r0_smoke --seed 42
+```
+
+该命令会保存解析后的配置和数据指纹、运行环境、逐样本 Parquet、
+Overall/Head/Torso/Tail 指标表，以及 P50/P95/P99、QPS 和参数量报告。

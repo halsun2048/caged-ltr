@@ -8,6 +8,7 @@ import importlib.metadata
 import json
 import os
 import platform
+import random
 import shutil
 import subprocess
 import sys
@@ -15,10 +16,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+import torch
+
 TRACKED_PACKAGES = (
     "caged-ltr",
     "datasets",
     "duckdb",
+    "lightgbm",
+    "matplotlib",
     "numpy",
     "pandas",
     "polars",
@@ -29,6 +35,16 @@ TRACKED_PACKAGES = (
     "torch",
     "transformers",
 )
+
+
+def seed_everything(seed: int, *, deterministic_algorithms: bool = True) -> None:
+    """Seed Python, NumPy, and PyTorch for a repeatable local run."""
+    if seed < 0:
+        raise ValueError("seed must be non-negative")
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.use_deterministic_algorithms(deterministic_algorithms)
 
 
 def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
