@@ -1,0 +1,39 @@
+# Python and uv
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Generated experiment artifacts
+runs/*
+!runs/.gitkeep
+reports/tables/*
+!reports/tables/.gitkeep
+reports/figures/*
+!reports/figures/.gitkeep
+reports/failures/*
+!reports/failures/.gitkeep
+
+# Data are never committed directly.
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/teacher_labels/*
+!data/teacher_labels/.gitkeep

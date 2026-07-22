@@ -1,0 +1,26 @@
+experiment:
+  name: r0_smoke
+  output_root: runs
+
+reproducibility:
+  seeds: [42, 2024, 3407]
+  core_seeds: [42, 2024, 3407, 7, 1009]
+  deterministic_algorithms: true
+
+data:
+  root: data
+  split_strategy: temporal
+  train_end: null
+  valid_end: null
+
+evaluation:
+  cutoffs: [5, 10, 20]
+  frequency_buckets: [head, torso, tail]
+  save_per_sample_predictions: true
+
+metadata:
+  data_fingerprint: null
+  model_name: null
+  model_version: null
+  prompt_name: null
+  prompt_version: null
