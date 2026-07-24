@@ -1,0 +1,43 @@
+{
+  "created_at_utc": "2026-07-24T16:21:58.926842+00:00",
+  "dataset": "fashion",
+  "control_seed": 20240725,
+  "source": {
+    "path": "data/processed/fashion_llmesr_author/pca64_item_embeddings.npy",
+    "sha256": "3c3cec2a3972b1245fc0bb22c49fe0f47efe30df8877994264ef0ce0700cf6c2",
+    "shape": [
+      4722,
+      64
+    ]
+  },
+  "controls": {
+    "shuffled": {
+      "path": "data/processed/fashion_llmesr_author/semantic_controls/shuffled_seed20240725.npy",
+      "sha256": "dfd0eb0b24dc013349718211a12df6e79c4363ac5744ec86f29317e21fb73c1c",
+      "shape": [
+        4722,
+        64
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "per_dimension_mean_max_abs_error": 1.08766720074982e-08,
+      "per_dimension_std_max_abs_error": 8.195638656616211e-08
+    },
+    "matched_random": {
+      "path": "data/processed/fashion_llmesr_author/semantic_controls/matched_random_seed20240725.npy",
+      "sha256": "e2a2ace30d52cbe78bafe9d0777872902e646d2b1423605d524c946af74b2921",
+      "shape": [
+        4722,
+        64
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "per_dimension_mean_max_abs_error": 4.290158450714898e-09,
+      "per_dimension_std_max_abs_error": 5.960464477539063e-08
+    }
+  },
+  "definitions": {
+    "shuffled": "row permutation preserving all source vectors exactly",
+    "matched_random": "Gaussian matrix standardized to each source dimension's mean and std"
+  }
+}

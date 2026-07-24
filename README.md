@@ -103,3 +103,18 @@ uv --cache-dir .uv-cache run --frozen \
 作者包的 Fashion 用户数为 9,094，论文表格为 9,049；工程保留全部作者包记录并
 显式报告差异。完整锁定协议见
 [`docs/experiments/fashion_r1_3.md`](docs/experiments/fashion_r1_3.md)。
+
+R1.3b 进一步提供 shuffled/matched-random 语义对照、完整 4,722 物品目录评测和
+LLMInit embedding 漂移分析：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/prepare_fashion_semantic_controls.py
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_fashion_r1_3b_semantic_audit.py
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_fashion_r1_3b_retrain_controls.py
+```
+
+审计协议与已知来源边界见
+[`docs/experiments/fashion_r1_3b.md`](docs/experiments/fashion_r1_3b.md)。
