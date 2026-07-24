@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
+import time
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -17,6 +19,109 @@ SEEDS = (42, 2024, 3407)
 MODELS = ("sasrec", "llm_init", "late_fusion")
 FIXED_SEMANTIC_WEIGHT = 2.0
 PAPER_REFERENCE = {"Hit@10": 0.5940, "NDCG@10": 0.3597}
+
+
+def _duration(seconds: float) -> str:
+    total = max(0, round(seconds))
+    hours, remainder = divmod(total, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours:
+        return f"{hours:d}h{minutes:02d}m"
+    return f"{minutes:02d}m{secs:02d}s"
+
+
+class _TerminalProgress:
+    def __init__(self, total_runs: int, *, width: int = 24) -> None:
+        self.total_runs = total_runs
+        self.width = width
+        self.run_index = 0
+        self.model = ""
+        self.seed = 0
+        self.max_epochs = 0
+        self.patience = 0
+        self.started = 0.0
+
+    @staticmethod
+    def _clear() -> None:
+        sys.stderr.write("\r\033[2K")
+        sys.stderr.flush()
+
+    def skip(self, index: int, model: str, seed: int, summary: dict[str, Any]) -> None:
+        overall = summary["test"]["item_frequency"]["overall"]
+        self._clear()
+        print(
+            f"[{index}/{self.total_runs}] cached {model:<11} seed={seed:<4} "
+            f"test NDCG@10={overall['NDCG@10']:.6f}",
+            file=sys.stderr,
+            flush=True,
+        )
+
+    def start(self, index: int, config: YelpSASRecRunConfig) -> None:
+        self.run_index = index
+        self.model = config.model
+        self.seed = config.seed
+        self.max_epochs = config.max_epochs
+        self.patience = config.patience
+        self.started = time.monotonic()
+        self._render(epoch=0, best=0.0, stale=0, loss=None)
+
+    def epoch(self, record: dict[str, Any]) -> None:
+        top_k = next(
+            key.removeprefix("best_NDCG@")
+            for key in record
+            if key.startswith("best_NDCG@")
+        )
+        self._render(
+            epoch=int(record["epoch"]),
+            best=float(record[f"best_NDCG@{top_k}"]),
+            stale=int(record["stale_epochs"]),
+            loss=float(record["train_bpr"]),
+        )
+
+    def _render(
+        self,
+        *,
+        epoch: int,
+        best: float,
+        stale: int,
+        loss: float | None,
+    ) -> None:
+        fraction = min(epoch / self.max_epochs, 1.0)
+        filled = round(self.width * fraction)
+        bar = "#" * filled + "-" * (self.width - filled)
+        elapsed = time.monotonic() - self.started
+        if epoch:
+            average_epoch = elapsed / epoch
+            remaining_patience = max(self.patience - stale, 0)
+            eta = f" stop-ETA~{_duration(average_epoch * remaining_patience)}"
+            loss_text = f" loss={loss:.4f}"
+        else:
+            eta = ""
+            loss_text = ""
+        line = (
+            f"[{self.run_index}/{self.total_runs}] {self.model:<11} seed={self.seed:<4} "
+            f"[{bar}] epoch {epoch:>3}/{self.max_epochs} best={best:.6f} "
+            f"stale={stale:>2}/{self.patience}{loss_text} "
+            f"elapsed={_duration(elapsed)}{eta}"
+        )
+        self._clear()
+        sys.stderr.write(line)
+        sys.stderr.flush()
+
+    def finish(self, summary: dict[str, Any]) -> None:
+        overall = summary["test"]["item_frequency"]["overall"]
+        elapsed = time.monotonic() - self.started
+        self._clear()
+        print(
+            f"[{self.run_index}/{self.total_runs}] done   {self.model:<11} "
+            f"seed={self.seed:<4} best_epoch={summary['best_epoch']:<3} "
+            f"test NDCG@10={overall['NDCG@10']:.6f} time={_duration(elapsed)}",
+            file=sys.stderr,
+            flush=True,
+        )
+
+    def abort(self) -> None:
+        self._clear()
 
 
 def _output_dir(root: Path, model: str, seed: int) -> Path:
@@ -147,12 +252,22 @@ def main() -> None:
         type=Path,
         default=Path("reports/experiments/yelp_r1_1_multiseed.md"),
     )
+    parser.add_argument(
+        "--progress",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Show a live terminal progress bar (use --no-progress for JSON epoch logs)",
+    )
     args = parser.parse_args()
 
     base = YelpSASRecRunConfig.from_yaml(args.config)
     summaries: dict[str, list[dict[str, Any]]] = {model: [] for model in MODELS}
+    total_runs = len(SEEDS) * len(MODELS)
+    progress = _TerminalProgress(total_runs) if args.progress else None
+    run_index = 0
     for seed in SEEDS:
         for model in MODELS:
+            run_index += 1
             output_dir = _output_dir(args.run_root, model, seed)
             config = replace(
                 base,
@@ -166,30 +281,46 @@ def main() -> None:
             if summary_path.is_file():
                 summary = json.loads(summary_path.read_text(encoding="utf-8"))
                 _validate_existing(summary, config=config, summary_path=summary_path)
-                print(
-                    json.dumps(
-                        {
-                            "stage": "skip_completed",
-                            "model": model,
-                            "seed": seed,
-                            "output_dir": str(output_dir),
-                        }
-                    ),
-                    flush=True,
-                )
+                if progress is not None:
+                    progress.skip(run_index, model, seed, summary)
+                else:
+                    print(
+                        json.dumps(
+                            {
+                                "stage": "skip_completed",
+                                "model": model,
+                                "seed": seed,
+                                "output_dir": str(output_dir),
+                            }
+                        ),
+                        flush=True,
+                    )
             else:
-                print(
-                    json.dumps(
-                        {
-                            "stage": "train",
-                            "model": model,
-                            "seed": seed,
-                            "output_dir": str(output_dir),
-                        }
-                    ),
-                    flush=True,
-                )
-                summary = run_yelp_sasrec(config)
+                if progress is not None:
+                    progress.start(run_index, config)
+                else:
+                    print(
+                        json.dumps(
+                            {
+                                "stage": "train",
+                                "model": model,
+                                "seed": seed,
+                                "output_dir": str(output_dir),
+                            }
+                        ),
+                        flush=True,
+                    )
+                try:
+                    summary = run_yelp_sasrec(
+                        config,
+                        epoch_callback=progress.epoch if progress is not None else None,
+                    )
+                except BaseException:
+                    if progress is not None:
+                        progress.abort()
+                    raise
+                if progress is not None:
+                    progress.finish(summary)
             summaries[model].append(summary)
 
     semantic_only = json.loads(args.semantic_only_summary.read_text(encoding="utf-8"))

@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -244,7 +245,11 @@ def _serialized_config(config: YelpSASRecRunConfig) -> dict[str, Any]:
     return {key: str(value) if isinstance(value, Path) else value for key, value in values.items()}
 
 
-def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
+def run_yelp_sasrec(
+    config: YelpSASRecRunConfig,
+    *,
+    epoch_callback: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
     """Train with validation-only early stopping and optionally evaluate test once."""
     seed_everything(config.seed)
     device = _device(config.device)
@@ -332,16 +337,16 @@ def run_yelp_sasrec(config: YelpSASRecRunConfig) -> dict[str, Any]:
                 stale_epochs = 0
             else:
                 stale_epochs += 1
-            print(
-                json.dumps(
-                    {
-                        **epoch_record,
-                        "best_epoch": best_epoch,
-                        "stale_epochs": stale_epochs,
-                    }
-                ),
-                flush=True,
-            )
+            progress_record = {
+                **epoch_record,
+                f"best_NDCG@{config.top_k}": best_score,
+                "best_epoch": best_epoch,
+                "stale_epochs": stale_epochs,
+            }
+            if epoch_callback is None:
+                print(json.dumps(progress_record), flush=True)
+            else:
+                epoch_callback(progress_record)
             if stale_epochs >= config.patience:
                 break
         if best_state is None:

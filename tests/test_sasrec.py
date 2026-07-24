@@ -125,6 +125,7 @@ def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> 
     semantic_path = tmp_path / "semantic.npy"
     np.save(semantic_path, np.arange(24, dtype=np.float32).reshape(8, 3) + 1.0)
     output = tmp_path / "run"
+    epoch_records: list[dict[str, object]] = []
     summary = run_yelp_sasrec(
         YelpSASRecRunConfig(
             processed_dir=processed,
@@ -144,9 +145,21 @@ def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> 
             evaluation_negatives=2,
             top_k=2,
             test_after_selection=False,
-        )
+        ),
+        epoch_callback=epoch_records.append,
     )
 
+    assert len(epoch_records) == 1
+    assert set(epoch_records[0]) == {
+        "epoch",
+        "train_bpr",
+        "valid_NDCG@2",
+        "best_NDCG@2",
+        "best_epoch",
+        "stale_epochs",
+    }
+    assert epoch_records[0]["epoch"] == epoch_records[0]["best_epoch"] == 1
+    assert epoch_records[0]["stale_epochs"] == 0
     assert summary["data_fingerprint"] == "fixture-fingerprint"
     assert summary["semantic_sha256"] is not None
     assert summary["parameters"]["frozen_semantic_values"] == 27
