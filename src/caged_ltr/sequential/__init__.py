@@ -3,6 +3,7 @@
 from caged_ltr.sequential.calibrated_fusion import (
     ValidationScoreBundle,
     calibrated_scores,
+    export_locked_test_scores,
     export_validation_scores,
     load_validation_scores,
     normalize_branch_scores,
@@ -21,6 +22,7 @@ __all__ = [
     "YelpSASRecRunConfig",
     "calibrated_scores",
     "evaluate_yelp_test_checkpoint",
+    "export_locked_test_scores",
     "export_validation_scores",
     "load_validation_scores",
     "normalize_branch_scores",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,7 @@ from caged_ltr.models import SASRec, SASRecConfig
 from caged_ltr.sequential import (
     YelpSASRecRunConfig,
     calibrated_scores,
+    export_locked_test_scores,
     export_validation_scores,
     load_validation_scores,
     normalize_branch_scores,
@@ -117,7 +119,13 @@ def test_validation_score_export_cache_diagnostics_and_metrics(tmp_path: Path) -
 
     zscores = normalize_branch_scores(bundle.collaborative, "zscore")
     np.testing.assert_allclose(zscores.mean(axis=1), 0.0, atol=1e-9)
-    np.testing.assert_allclose(zscores.std(axis=1), 1.0, atol=1e-12)
+    source_stds = bundle.collaborative.std(axis=1)
+    normalized_stds = zscores.std(axis=1)
+    np.testing.assert_allclose(normalized_stds[source_stds > 1e-12], 1.0, atol=1e-12)
+    np.testing.assert_array_equal(
+        zscores[source_stds <= 1e-12],
+        np.zeros_like(zscores[source_stds <= 1e-12]),
+    )
     rank_scores = normalize_branch_scores(bundle.semantic, "rank")
     assert set(np.unique(rank_scores)) == {0.0, 0.5, 1.0}
 
@@ -139,6 +147,11 @@ def test_validation_score_export_cache_diagnostics_and_metrics(tmp_path: Path) -
     assert sum(diagnostics["top_2_item_frequency_exposure"]["semantic"].values()) == pytest.approx(
         1.0
     )
+
+    test_bundle = export_locked_test_scores(config, num_negatives=2)
+    data_targets = np.asarray([(user + 3) % 8 + 1 for user in range(6)])
+    np.testing.assert_array_equal(test_bundle.targets, data_targets)
+    assert test_bundle.collaborative.shape == (6, 3)
 
 
 def test_calibrated_fusion_rejects_invalid_inputs(tmp_path: Path) -> None:
@@ -169,3 +182,8 @@ def test_calibrated_fusion_rejects_invalid_inputs(tmp_path: Path) -> None:
         calibrated_scores(scores, scores, method="rank", semantic_weight=-1.0)
     with pytest.raises(ValueError, match="align"):
         calibrated_scores(scores, scores[:, :2], method="rank", semantic_weight=1.0)
+    with pytest.raises(ValueError, match="test_after_selection=false"):
+        export_locked_test_scores(
+            replace(config, test_after_selection=True),
+            num_negatives=2,
+        )

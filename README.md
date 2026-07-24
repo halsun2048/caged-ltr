@@ -85,3 +85,21 @@ uv run python scripts/train_yelp_sasrec.py \
 
 正式配置为 `configs/reproduction/yelp_sasrec.yaml`。实现边界、评测协议和当前全量
 1-epoch 规模验收结果见 [`docs/experiments/yelp_sasrec.md`](docs/experiments/yelp_sasrec.md)。
+
+## Fashion R1.3
+
+第二数据集确认固定使用 Yelp 验证集选出的 per-query z-score 与语义权重 `0.25`，
+Fashion 不重新调融合参数。数据准备、两模型三种子训练和 sampled-1000 最终测试：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/prepare_llmesr_author.py --dataset fashion
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/convert_llmesr_author_semantics.py --dataset fashion
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_fashion_r1_3.py --progress
+```
+
+作者包的 Fashion 用户数为 9,094，论文表格为 9,049；工程保留全部作者包记录并
+显式报告差异。完整锁定协议见
+[`docs/experiments/fashion_r1_3.md`](docs/experiments/fashion_r1_3.md)。

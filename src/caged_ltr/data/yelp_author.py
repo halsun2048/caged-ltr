@@ -1,8 +1,9 @@
-"""Convert the LLM-ESR authors' Yelp bundle into the common project schema."""
+"""Convert an LLM-ESR author bundle dataset into the common project schema."""
 
 from __future__ import annotations
 
 import json
+import math
 import zipfile
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
@@ -28,6 +29,11 @@ AUTHOR_ASSET_NAMES = (
     "sim_user_100.pkl",
     "usr_emb_np.pkl",
 )
+PAPER_REFERENCES: dict[str, dict[str, float | int]] = {
+    "yelp": {"users": 15720, "items": 11383, "average_sequence_length": 12.23},
+    "fashion": {"users": 9049, "items": 4722},
+    "beauty": {"users": 52204, "items": 57289},
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,6 +41,7 @@ class YelpAuthorPreparationConfig:
     archive: Path
     processed_dir: Path
     report_path: Path
+    dataset_name: str = "yelp"
     tail_quantile: float = 0.2
     head_quantile: float = 0.8
     paper_head_fraction: float = 0.2
@@ -42,6 +49,10 @@ class YelpAuthorPreparationConfig:
     threads: int = 1
 
     def __post_init__(self) -> None:
+        if self.dataset_name not in PAPER_REFERENCES:
+            raise ValueError(
+                f"dataset_name must be one of {sorted(PAPER_REFERENCES)}"
+            )
         if not 0.0 < self.tail_quantile < self.head_quantile < 1.0:
             raise ValueError("bucket quantiles must satisfy 0 < tail < head < 1")
         if not 0.0 < self.paper_head_fraction < 1.0:
@@ -50,12 +61,17 @@ class YelpAuthorPreparationConfig:
             raise ValueError("threads must be positive")
 
 
-def _extract_author_assets(archive_path: Path, destination: Path) -> dict[str, Path]:
+def _extract_author_assets(
+    archive_path: Path,
+    destination: Path,
+    *,
+    dataset_name: str,
+) -> dict[str, Path]:
     if not archive_path.is_file():
         raise FileNotFoundError(archive_path)
     with zipfile.ZipFile(archive_path) as archive:
         return {
-            name: _extract_member(archive, f"yelp/{name}", destination)
+            name: _extract_member(archive, f"{dataset_name}/{name}", destination)
             for name in AUTHOR_ASSET_NAMES
         }
 
@@ -239,9 +255,13 @@ def _author_statistics(
 
 
 def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
-    """Extract and convert the authors' ordered Yelp interactions without unpickling assets."""
+    """Extract and convert ordered author interactions without unpickling assets."""
     config.processed_dir.mkdir(parents=True, exist_ok=True)
-    assets = _extract_author_assets(config.archive, config.processed_dir / "author_assets")
+    assets = _extract_author_assets(
+        config.archive,
+        config.processed_dir / "author_assets",
+        dataset_name=config.dataset_name,
+    )
     connection = duckdb.connect()
     connection.execute("SET preserve_insertion_order = true")
     connection.execute(f"SET memory_limit = '{config.memory_limit}'")
@@ -259,10 +279,28 @@ def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
 
     output_hashes = {name: sha256_file(path) for name, path in outputs.items()}
     asset_hashes = {name: sha256_file(path) for name, path in assets.items()}
+    paper_reference = PAPER_REFERENCES[config.dataset_name]
+    paper_reference_match = {
+        key: (
+            statistics[key] == value
+            if isinstance(value, int)
+            else math.isclose(statistics[key], value, abs_tol=0.005)
+        )
+        for key, value in paper_reference.items()
+    }
     manifest: dict[str, Any] = {
-        "pipeline_version": "yelp-llmesr-author-v1",
+        "pipeline_version": (
+            "yelp-llmesr-author-v1"
+            if config.dataset_name == "yelp"
+            else "llmesr-author-v1"
+        ),
         "created_at_utc": datetime.now(UTC).isoformat(),
-        "dataset_variant": "faithful_author_processed",
+        "dataset_name": config.dataset_name,
+        "dataset_variant": (
+            "faithful_author_processed"
+            if config.dataset_name == "yelp"
+            else f"{config.dataset_name}_faithful_author_processed"
+        ),
         "source": {
             "repository": "https://github.com/liuqidong07/LLM-ESR",
             "archive_url": (
@@ -278,11 +316,8 @@ def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
             "report_path": str(config.report_path),
         },
         "statistics": statistics,
-        "paper_reference": {
-            "users": 15720,
-            "items": 11383,
-            "average_sequence_length": 12.23,
-        },
+        "paper_reference": paper_reference,
+        "paper_reference_match": paper_reference_match,
         "outputs": {
             name: {"path": str(path), "bytes": path.stat().st_size, "sha256": output_hashes[name]}
             for name, path in outputs.items()
@@ -301,6 +336,11 @@ def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
             "raw_id_mapping": "not included in the author bundle",
             "event_timestamps": "not included; author sequence order is preserved",
             "pickle_security": "external pickle assets were hashed but not deserialized",
+            "paper_statistic_mismatch": (
+                "none"
+                if all(paper_reference_match.values())
+                else "author-bundle statistics differ from the published dataset table"
+            ),
             "user_embedding_leakage": (
                 "provenance cutoff is not established; do not use until separately audited"
             ),
@@ -311,3 +351,7 @@ def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
     config.report_path.write_text(serialized, encoding="utf-8")
     (config.processed_dir / "manifest.json").write_text(serialized, encoding="utf-8")
     return manifest
+
+
+LLMESRAuthorPreparationConfig = YelpAuthorPreparationConfig
+prepare_llmesr_author = prepare_yelp_author

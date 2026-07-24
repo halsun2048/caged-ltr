@@ -1,0 +1,36 @@
+dataset:
+  name: Amazon Fashion preprocessed by LLM-ESR authors
+  variant: fashion_faithful_author_processed
+  paper: LLM-ESR (NeurIPS 2024)
+  source_repository: https://github.com/liuqidong07/LLM-ESR
+  source_archive: https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view
+  archive_expected_bytes: 1472885036
+  prepared_on: 2026-07-24
+
+paths:
+  archive: data/raw/yelp/LLMESR_author_processed.zip
+  processed: data/processed/fashion_llmesr_author
+  report: reports/data/fashion_llmesr_author_summary.json
+
+split:
+  strategy: preserve_author_sequence_then_leave_two_out
+  train: all interactions before the final two
+  valid: second-to-last interaction
+  test: final interaction
+
+reproducibility:
+  output_write_threads: 1
+  reason: Stable physical Parquet hashes
+
+security:
+  pickle_policy: Validate opcodes and decode ndarray bytes without executing pickle
+
+known_discrepancy:
+  author_bundle_users: 9094
+  paper_table_users: 9049
+  action: Preserve all author-bundle rows and report the mismatch
+
+limitations:
+  - The archive does not include raw Amazon user/item ID mappings or event timestamps.
+  - The provenance cutoff of precomputed user embeddings is not established; they are unused.
+  - The author bundle contains 45 more Fashion users than the published table reports.

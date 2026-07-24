@@ -5,7 +5,12 @@ from pathlib import Path
 
 import duckdb
 
-from caged_ltr.data.yelp_author import YelpAuthorPreparationConfig, prepare_yelp_author
+from caged_ltr.data.yelp_author import (
+    LLMESRAuthorPreparationConfig,
+    YelpAuthorPreparationConfig,
+    prepare_llmesr_author,
+    prepare_yelp_author,
+)
 
 
 def test_prepare_yelp_author_preserves_sequence_and_does_not_unpickle(tmp_path: Path) -> None:
@@ -59,3 +64,38 @@ def test_prepare_yelp_author_preserves_sequence_and_does_not_unpickle(tmp_path: 
         (1, 3, 3, "valid"),
         (1, 4, 4, "test"),
     ]
+
+
+def test_prepare_llmesr_author_selects_requested_dataset(tmp_path: Path) -> None:
+    archive_path = tmp_path / "author.zip"
+    fashion_interactions = "4 10\n4 11\n4 12\n5 11\n5 12\n5 13\n"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("LLMESR/yelp/inter.txt", "99 99\n")
+        archive.writestr("LLMESR/fashion/inter.txt", fashion_interactions)
+        for name in (
+            "itm_emb_np.pkl",
+            "pca64_itm_emb_np.pkl",
+            "sim_user_100.pkl",
+            "usr_emb_np.pkl",
+        ):
+            archive.writestr(f"LLMESR/yelp/{name}", b"decoy")
+            archive.writestr(f"LLMESR/fashion/{name}", b"fashion-asset")
+
+    manifest = prepare_llmesr_author(
+        LLMESRAuthorPreparationConfig(
+            archive=archive_path,
+            processed_dir=tmp_path / "processed",
+            report_path=tmp_path / "report.json",
+            dataset_name="fashion",
+            memory_limit="1GB",
+            threads=1,
+        )
+    )
+
+    assert manifest["dataset_name"] == "fashion"
+    assert manifest["dataset_variant"] == "fashion_faithful_author_processed"
+    assert manifest["paper_reference"] == {"users": 9049, "items": 4722}
+    assert manifest["paper_reference_match"] == {"users": False, "items": False}
+    assert manifest["statistics"]["users"] == 2
+    assert manifest["statistics"]["items"] == 4
+    assert manifest["statistics"]["split_invariant_violations"] == 0

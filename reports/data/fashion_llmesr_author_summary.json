@@ -1,0 +1,106 @@
+{
+  "author_assets": {
+    "inter.txt": {
+      "bytes": 318906,
+      "path": "data/processed/fashion_llmesr_author/author_assets/inter.txt",
+      "sha256": "6719df22096b0dec432314a92ab87fd43012b08b1a7d3b11a354572bb0006226",
+      "unpickled_during_preparation": false
+    },
+    "itm_emb_np.pkl": {
+      "bytes": 58024099,
+      "path": "data/processed/fashion_llmesr_author/author_assets/itm_emb_np.pkl",
+      "sha256": "b2cdd1fe13617396229e7b2efd8cda1d39fe13a1bf76eee8d28903ca9bfb11c3",
+      "unpickled_during_preparation": false
+    },
+    "pca64_itm_emb_np.pkl": {
+      "bytes": 2417826,
+      "path": "data/processed/fashion_llmesr_author/author_assets/pca64_itm_emb_np.pkl",
+      "sha256": "eb6078c3749c09b53a09e53c3fbc41edd91a88d247ddf6a82b0d68849b3a516b",
+      "unpickled_during_preparation": false
+    },
+    "sim_user_100.pkl": {
+      "bytes": 7275362,
+      "path": "data/processed/fashion_llmesr_author/author_assets/sim_user_100.pkl",
+      "sha256": "b08c48f1dd514eeb73402c5c7378f0dded5529a16c3cbacf8496fa741108893d",
+      "unpickled_during_preparation": false
+    },
+    "usr_emb_np.pkl": {
+      "bytes": 111747235,
+      "path": "data/processed/fashion_llmesr_author/author_assets/usr_emb_np.pkl",
+      "sha256": "1e02ea2d7a4b3733b0bdbc84270bf16b75aef74ed03fcb3126fe077cbcae5f55",
+      "unpickled_during_preparation": false
+    }
+  },
+  "config": {
+    "archive": "data/raw/yelp/LLMESR_author_processed.zip",
+    "dataset_name": "fashion",
+    "head_quantile": 0.8,
+    "memory_limit": "8GB",
+    "paper_head_fraction": 0.2,
+    "processed_dir": "data/processed/fashion_llmesr_author",
+    "report_path": "reports/data/fashion_llmesr_author_summary.json",
+    "tail_quantile": 0.2,
+    "threads": 1
+  },
+  "created_at_utc": "2026-07-24T13:10:12.271614+00:00",
+  "dataset_name": "fashion",
+  "dataset_variant": "fashion_faithful_author_processed",
+  "limitations": {
+    "event_timestamps": "not included; author sequence order is preserved",
+    "paper_statistic_mismatch": "author-bundle statistics differ from the published dataset table",
+    "pickle_security": "external pickle assets were hashed but not deserialized",
+    "raw_id_mapping": "not included in the author bundle",
+    "user_embedding_leakage": "provenance cutoff is not established; do not use until separately audited"
+  },
+  "outputs": {
+    "interactions": {
+      "bytes": 294053,
+      "path": "data/processed/fashion_llmesr_author/interactions.parquet",
+      "sha256": "e6677b7a14deeff2375b5e475f95f38b009a97ea635123febee992364032ee09"
+    },
+    "items": {
+      "bytes": 59154,
+      "path": "data/processed/fashion_llmesr_author/items.parquet",
+      "sha256": "ca7a0f65d243fb8ced6c2b94e8bfa6240864b24bb4a5c92240d6497064ac7638"
+    },
+    "sequences": {
+      "bytes": 112707,
+      "path": "data/processed/fashion_llmesr_author/sequences.parquet",
+      "sha256": "7e32ddd84e97acac512db1041143b415e79c74e13dfe786c2dc44eee0aaf3e53"
+    },
+    "users": {
+      "bytes": 43228,
+      "path": "data/processed/fashion_llmesr_author/users.parquet",
+      "sha256": "b1d35816f7649c3cee81388cb01d94a4bf504e1618eaf34274a4c4e1134113a0"
+    }
+  },
+  "paper_reference": {
+    "items": 4722,
+    "users": 9049
+  },
+  "paper_reference_match": {
+    "items": true,
+    "users": false
+  },
+  "pipeline_version": "llmesr-author-v1",
+  "processed_fingerprint": "595bcd53a50ad0e7c171c6d32746867e2c72cd76861996a864741037138593c7",
+  "source": {
+    "archive_bytes": 1472885036,
+    "archive_sha256": "0fe2cca3cc825d304f842352c327a7dcd6e330761416a6f3b10ac1ef4ffcf22d",
+    "archive_url": "https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view",
+    "repository": "https://github.com/liuqidong07/LLM-ESR"
+  },
+  "statistics": {
+    "average_sequence_length": 3.8221904552452166,
+    "cold_start_items": 1248,
+    "interactions": 34759,
+    "items": 4722,
+    "max_author_item_id": 4722,
+    "max_author_user_id": 9094,
+    "split_invariant_violations": 0,
+    "test_interactions": 9094,
+    "train_interactions": 16571,
+    "users": 9094,
+    "valid_interactions": 9094
+  }
+}

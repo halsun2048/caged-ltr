@@ -21,7 +21,7 @@ from caged_ltr.sequential.yelp_runner import YelpSASRecRunConfig
 
 @dataclass(frozen=True, slots=True)
 class ValidationScoreBundle:
-    """Fixed validation candidates and scores from collaborative and semantic branches."""
+    """Fixed candidates and scores from collaborative and semantic branches."""
 
     collaborative: np.ndarray
     semantic: np.ndarray
@@ -57,7 +57,7 @@ class ValidationScoreBundle:
         if any(values.shape != (rows,) for values in one_dimensional):
             raise ValueError("row metadata must align with score matrices")
         if not np.array_equal(self.candidates[:, 0], self.targets):
-            raise ValueError("the validation target must be candidate zero")
+            raise ValueError("the target must be candidate zero")
         if not np.isfinite(self.collaborative).all() or not np.isfinite(self.semantic).all():
             raise ValueError("branch scores must be finite")
         if self.seed < 0 or self.evaluation_seed < 0:
@@ -72,12 +72,13 @@ def _device(requested: str) -> torch.device:
     return torch.device(requested)
 
 
-def export_validation_scores(
+def _export_scores(
     config: YelpSASRecRunConfig,
     *,
+    split: str,
+    num_negatives: int,
     checkpoint_path: Path | None = None,
 ) -> ValidationScoreBundle:
-    """Export fixed validation scores; this API intentionally has no test-split option."""
     if config.model != "llm_init":
         raise ValueError("calibrated fusion requires a trained llm_init checkpoint")
     if config.semantic_path is None:
@@ -112,9 +113,9 @@ def export_validation_scores(
     semantic_model = FrozenSemanticOnly(model_config, semantic_items).to(device).eval()
     dataset = SASRecEvaluationDataset(
         data,
-        split="valid",
+        split=split,
         max_length=config.max_length,
-        num_negatives=config.evaluation_negatives,
+        num_negatives=num_negatives,
         seed=config.evaluation_seed,
         max_users=config.max_eval_users,
     )
@@ -172,6 +173,37 @@ def export_validation_scores(
         semantic_sha256=sha256_file(config.semantic_path),
         seed=config.seed,
         evaluation_seed=config.evaluation_seed,
+    )
+
+
+def export_validation_scores(
+    config: YelpSASRecRunConfig,
+    *,
+    checkpoint_path: Path | None = None,
+) -> ValidationScoreBundle:
+    """Export validation scores; this API intentionally has no test-split option."""
+    return _export_scores(
+        config,
+        split="valid",
+        num_negatives=config.evaluation_negatives,
+        checkpoint_path=checkpoint_path,
+    )
+
+
+def export_locked_test_scores(
+    config: YelpSASRecRunConfig,
+    *,
+    num_negatives: int,
+    checkpoint_path: Path | None = None,
+) -> ValidationScoreBundle:
+    """Score a locked LLMInit checkpoint and semantic branch on test once."""
+    if config.test_after_selection:
+        raise ValueError("set test_after_selection=false before locked test scoring")
+    return _export_scores(
+        config,
+        split="test",
+        num_negatives=num_negatives,
+        checkpoint_path=checkpoint_path,
     )
 
 
@@ -289,7 +321,7 @@ def validation_metrics(
     *,
     top_k: int,
 ) -> dict[str, dict[str, dict[str, float | int]]]:
-    """Evaluate ranks on the cached validation target at candidate position zero."""
+    """Evaluate ranks for a cached target at candidate position zero."""
     values = np.asarray(scores)
     if values.shape != bundle.collaborative.shape or not np.isfinite(values).all():
         raise ValueError("scores must be finite and align with the cached validation bundle")
