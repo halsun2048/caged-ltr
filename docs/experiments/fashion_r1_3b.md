@@ -31,6 +31,17 @@
 full-catalog 下 SASRec NDCG@10 为 `0.329204`，高于 LLMInit 的 `0.323864`。
 因此 sampled-1000 下“LLMInit 优于 SASRec”的结论不能推广到完整目录。
 
+重训控制进一步显示：
+
+- shuffled LLMInit：`0.347501`；
+- matched-random LLMInit：`0.333709`；
+- 真实 LLMInit：`0.323864`。
+
+因此真实语义初始化没有优于控制，LLMInit 不能作为真实语义有效性的证据。
+真实融合 `0.337715` 高于 shuffled fusion `0.336702` 和 matched-random fusion
+`0.320860`，但仍低于 shuffled LLMInit。真实融合相对 shuffled LLMInit 的优势主要
+出现在 Tail、Torso 和 cold-start，而不是 Overall。
+
 ## 来源边界
 
 作者包没有原始 Amazon 元数据快照、抓取时间和 raw ID map，无法独立确认每个字段

@@ -153,6 +153,10 @@ def _overall_ndcg(aggregate: dict[str, Any]) -> float:
     return float(aggregate["item_frequency"]["overall"]["NDCG@10"]["mean"])
 
 
+def _bucket_ndcg(aggregate: dict[str, Any], bucket: str) -> float:
+    return float(aggregate["item_frequency"][bucket]["NDCG@10"]["mean"])
+
+
 def _load_training_summary(
     path: Path,
     *,
@@ -235,6 +239,16 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
         )
     lines.extend(
         [
+            "",
+            "## Interpretation",
+            "",
+            "- The best Overall NDCG system is shuffled LLMInit, not real fusion.",
+            "- Real semantic initialization does not beat shuffled or matched-random "
+            "initialization.",
+            "- Real fusion beats both control fusions, but its Overall margin over "
+            "shuffled fusion is small.",
+            "- Relative to shuffled LLMInit, real fusion trades Overall performance "
+            "for better Tail, Torso, and cold-start NDCG.",
             "",
             "## Acceptance",
             "",
@@ -367,8 +381,13 @@ def main() -> None:
         for kind in VARIANTS
     }
     real_audit = json.loads(args.real_audit_report.read_text(encoding="utf-8"))
-    real_llm = _overall_ndcg(real_audit["aggregate_full_catalog"]["llm_init"])
-    real_fusion = _overall_ndcg(real_audit["aggregate_full_catalog"]["fusion_real"])
+    real_aggregate = real_audit["aggregate_full_catalog"]
+    real_llm = _overall_ndcg(real_aggregate["llm_init"])
+    real_fusion = _overall_ndcg(real_aggregate["fusion_real"])
+    shuffled_llm = _overall_ndcg(aggregate["shuffled"]["llm_init"])
+    random_llm = _overall_ndcg(aggregate["matched_random"]["llm_init"])
+    shuffled_fusion = _overall_ndcg(aggregate["shuffled"]["fusion"])
+    random_fusion = _overall_ndcg(aggregate["matched_random"]["fusion"])
     report = {
         "experiment": "R1.3b-retrained-controls",
         "dataset": "fashion",
@@ -384,22 +403,53 @@ def main() -> None:
         "protocols": protocols,
         "real_reference": {
             "source": str(args.real_audit_report),
+            "sasrec_overall_ndcg": _overall_ndcg(real_aggregate["sasrec"]),
             "llm_init_overall_ndcg": real_llm,
+            "semantic_only_overall_ndcg": _overall_ndcg(
+                real_aggregate["semantic_only_real"]
+            ),
             "fusion_overall_ndcg": real_fusion,
+        },
+        "comparisons": {
+            "real_llm_minus_shuffled_llm_overall_ndcg": real_llm - shuffled_llm,
+            "real_llm_minus_matched_random_llm_overall_ndcg": real_llm - random_llm,
+            "real_fusion_minus_shuffled_fusion_overall_ndcg": (
+                real_fusion - shuffled_fusion
+            ),
+            "real_fusion_minus_matched_random_fusion_overall_ndcg": (
+                real_fusion - random_fusion
+            ),
+            "real_fusion_minus_shuffled_llm_overall_ndcg": (
+                real_fusion - shuffled_llm
+            ),
+            "real_fusion_minus_shuffled_llm_tail_ndcg": (
+                _bucket_ndcg(real_aggregate["fusion_real"], "tail")
+                - _bucket_ndcg(aggregate["shuffled"]["llm_init"], "tail")
+            ),
+            "real_fusion_minus_shuffled_llm_torso_ndcg": (
+                _bucket_ndcg(real_aggregate["fusion_real"], "torso")
+                - _bucket_ndcg(aggregate["shuffled"]["llm_init"], "torso")
+            ),
+            "real_fusion_minus_shuffled_llm_cold_start_ndcg": (
+                _bucket_ndcg(real_aggregate["fusion_real"], "cold_start")
+                - _bucket_ndcg(aggregate["shuffled"]["llm_init"], "cold_start")
+            ),
+            "best_overall_system": "shuffled_llm_init",
         },
         "acceptance": {
             "real_initialization_beats_shuffled_llm_init": (
-                real_llm > _overall_ndcg(aggregate["shuffled"]["llm_init"])
+                real_llm > shuffled_llm
             ),
             "real_initialization_beats_matched_random_llm_init": (
-                real_llm > _overall_ndcg(aggregate["matched_random"]["llm_init"])
+                real_llm > random_llm
             ),
             "real_fusion_beats_shuffled_retrained_fusion": (
-                real_fusion > _overall_ndcg(aggregate["shuffled"]["fusion"])
+                real_fusion > shuffled_fusion
             ),
             "real_fusion_beats_matched_random_retrained_fusion": (
-                real_fusion > _overall_ndcg(aggregate["matched_random"]["fusion"])
+                real_fusion > random_fusion
             ),
+            "real_fusion_beats_best_control_overall": real_fusion > shuffled_llm,
         },
     }
     args.report_json.parent.mkdir(parents=True, exist_ok=True)
