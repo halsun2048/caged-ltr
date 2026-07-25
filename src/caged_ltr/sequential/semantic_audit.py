@@ -239,10 +239,11 @@ def evaluate_full_catalog(
         report_path=config.report_path,
         max_users=config.max_users,
     )
-    selected_users = min(
-        len(data.train_histories),
-        config.max_eval_users or len(data.train_histories),
-    )
+    eligible_users = np.flatnonzero(data.test_targets > 0)
+    selected_user_offsets = eligible_users[
+        : config.max_eval_users or len(eligible_users)
+    ]
+    selected_users = len(selected_user_offsets)
     semantics = None
     if config.model == "llm_init":
         if config.semantic_path is None:
@@ -279,13 +280,14 @@ def evaluate_full_catalog(
         for start in range(0, selected_users, batch_size):
             stop = min(start + batch_size, selected_users)
             histories: list[np.ndarray] = []
-            targets = data.test_targets[start:stop]
+            batch_user_offsets = selected_user_offsets[start:stop]
+            targets = data.test_targets[batch_user_offsets]
             excluded = torch.zeros(
                 (stop - start, data.num_items),
                 dtype=torch.bool,
                 device=device,
             )
-            for row, user_offset in enumerate(range(start, stop)):
+            for row, user_offset in enumerate(batch_user_offsets):
                 history = np.append(
                     data.train_histories[user_offset],
                     data.valid_targets[user_offset],
@@ -324,10 +326,15 @@ def evaluate_full_catalog(
                 progress_callback(stop, selected_users)
 
     ranks = {name: np.concatenate(parts) for name, parts in rank_batches.items()}
-    user_offsets = np.arange(selected_users)
-    targets = data.test_targets[:selected_users]
+    targets = data.test_targets[selected_user_offsets]
     metrics = {
-        name: _metrics(values, data, user_offsets, targets, top_k=config.top_k)
+        name: _metrics(
+            values,
+            data,
+            selected_user_offsets,
+            targets,
+            top_k=config.top_k,
+        )
         for name, values in ranks.items()
     }
     return FullCatalogEvaluation(

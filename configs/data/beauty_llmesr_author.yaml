@@ -1,0 +1,38 @@
+dataset:
+  name: Amazon Beauty preprocessed by LLM-ESR authors
+  variant: beauty_faithful_author_processed
+  paper: LLM-ESR (NeurIPS 2024)
+  source_repository: https://github.com/liuqidong07/LLM-ESR
+  source_archive: https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view
+  archive_expected_bytes: 1472885036
+  prepared_on: 2026-07-25
+
+paths:
+  archive: data/raw/yelp/LLMESR_author_processed.zip
+  processed: data/processed/beauty_llmesr_author
+  report: reports/data/beauty_llmesr_author_summary.json
+
+split:
+  strategy: preserve_author_sequence_then_leave_two_out
+  train: all interactions before the final two
+  valid: second-to-last interaction
+  test: final interaction
+  short_sequences: users with fewer than three interactions remain train-only
+
+reproducibility:
+  output_write_threads: 1
+  reason: Stable physical Parquet hashes
+
+security:
+  pickle_policy: Validate opcodes and decode ndarray bytes without executing pickle
+
+statistics:
+  users: 52204
+  evaluable_users: 50498
+  short_sequence_users: 1706
+  items: 57289
+  interactions: 394908
+
+limitations:
+  - The archive does not include raw Amazon user/item ID mappings or event timestamps.
+  - The provenance cutoff of precomputed user embeddings is not established; they are unused.

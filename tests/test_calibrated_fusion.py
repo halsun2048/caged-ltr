@@ -14,6 +14,7 @@ from caged_ltr.models import SASRec, SASRecConfig
 from caged_ltr.sequential import (
     YelpSASRecRunConfig,
     calibrated_scores,
+    confidence_aware_scores,
     export_locked_test_scores,
     export_validation_scores,
     load_validation_scores,
@@ -186,4 +187,43 @@ def test_calibrated_fusion_rejects_invalid_inputs(tmp_path: Path) -> None:
         export_locked_test_scores(
             replace(config, test_after_selection=True),
             num_negatives=2,
+        )
+
+
+def test_confidence_aware_gate_uses_uncertainty_and_rarity() -> None:
+    collaborative = np.asarray([[3.0, 2.9, 1.0], [5.0, 0.0, -1.0]])
+    semantic = np.asarray([[0.0, 2.0, 1.0], [0.0, 2.0, 1.0]])
+    buckets = np.asarray(
+        [["head", "tail", "torso"], ["head", "tail", "torso"]]
+    )
+    baseline = confidence_aware_scores(
+        collaborative,
+        semantic,
+        buckets,
+        semantic_weight=0.0,
+    )
+    fused = confidence_aware_scores(
+        collaborative,
+        semantic,
+        buckets,
+        semantic_weight=1.0,
+    )
+
+    np.testing.assert_allclose(
+        baseline,
+        calibrated_scores(
+            collaborative,
+            semantic,
+            method="zscore",
+            semantic_weight=0.25,
+        ),
+    )
+    assert fused[0, 1] - baseline[0, 1] > fused[1, 1] - baseline[1, 1]
+    np.testing.assert_allclose(fused[:, 0] - baseline[:, 0], 0.0)
+    with pytest.raises(ValueError, match="candidate_buckets"):
+        confidence_aware_scores(
+            collaborative,
+            semantic,
+            buckets[:, :2],
+            semantic_weight=1.0,
         )

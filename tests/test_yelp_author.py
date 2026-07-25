@@ -68,7 +68,7 @@ def test_prepare_yelp_author_preserves_sequence_and_does_not_unpickle(tmp_path: 
 
 def test_prepare_llmesr_author_selects_requested_dataset(tmp_path: Path) -> None:
     archive_path = tmp_path / "author.zip"
-    fashion_interactions = "4 10\n4 11\n4 12\n5 11\n5 12\n5 13\n"
+    fashion_interactions = "4 10\n4 11\n4 12\n5 11\n5 12\n5 13\n6 10\n6 13\n"
     with zipfile.ZipFile(archive_path, "w") as archive:
         archive.writestr("LLMESR/yelp/inter.txt", "99 99\n")
         archive.writestr("LLMESR/fashion/inter.txt", fashion_interactions)
@@ -96,6 +96,20 @@ def test_prepare_llmesr_author_selects_requested_dataset(tmp_path: Path) -> None
     assert manifest["dataset_variant"] == "fashion_faithful_author_processed"
     assert manifest["paper_reference"] == {"users": 9049, "items": 4722}
     assert manifest["paper_reference_match"] == {"users": False, "items": False}
-    assert manifest["statistics"]["users"] == 2
+    assert manifest["statistics"]["users"] == 3
     assert manifest["statistics"]["items"] == 4
+    assert manifest["statistics"]["train_interactions"] == 4
+    assert manifest["statistics"]["valid_interactions"] == 2
+    assert manifest["statistics"]["test_interactions"] == 2
+    assert manifest["statistics"]["evaluable_users"] == 2
+    assert manifest["statistics"]["short_sequence_users"] == 1
     assert manifest["statistics"]["split_invariant_violations"] == 0
+
+    connection = duckdb.connect()
+    short = connection.execute(
+        "SELECT train_item_ids, valid_item_id, test_item_id "
+        "FROM read_parquet(?) WHERE author_user_id = 6",
+        [str(tmp_path / "processed/sequences.parquet")],
+    ).fetchone()
+    connection.close()
+    assert short == ([0, 3], None, None)

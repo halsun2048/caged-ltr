@@ -41,6 +41,16 @@ def _write_sequence_fixture(root: Path) -> tuple[Path, Path]:
                 "test_item_id": (user + 3) % 8,
             }
         )
+    sequence_rows.append(
+        {
+            "user_idx": 6,
+            "user_frequency_bucket": "tail",
+            "user_paper_bucket": "tail",
+            "train_item_ids": [0, 1],
+            "valid_item_id": None,
+            "test_item_id": None,
+        }
+    )
     item_rows = [
         {
             "item_idx": item,
@@ -79,6 +89,8 @@ def test_sequence_datasets_keep_holdouts_out_of_history_and_negatives(tmp_path: 
     )
     valid_sequence, valid_candidates, _, _ = valid[0]
     test_sequence, test_candidates, _, _ = test[0]
+    assert len(valid) == len(test) == 6
+    assert len(data.train_histories) == 7
     assert valid_sequence.tolist() == [0, 0, 1, 2]
     assert test_sequence.tolist() == [0, 1, 2, int(data.valid_targets[0])]
     assert int(valid_candidates[0]) == int(data.valid_targets[0])
@@ -195,3 +207,4 @@ def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> 
     assert test_metrics["item_frequency"]["overall"]["count"] == 6
     persisted = json.loads((output / "summary.json").read_text(encoding="utf-8"))
     assert persisted["protocol"]["test_usage"].startswith("once after external")
+    assert persisted["protocol"]["final_test_evaluation_negatives"] == 2

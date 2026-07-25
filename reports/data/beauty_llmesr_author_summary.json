@@ -1,0 +1,109 @@
+{
+  "author_assets": {
+    "inter.txt": {
+      "bytes": 4396325,
+      "path": "data/processed/beauty_llmesr_author/author_assets/inter.txt",
+      "sha256": "5ed1cd3e190b9f6e32b3dda08fa3c6935f9937c62b80e2bd3988b5ed75ebc003",
+      "unpickled_during_preparation": false
+    },
+    "itm_emb_np.pkl": {
+      "bytes": 703967395,
+      "path": "data/processed/beauty_llmesr_author/author_assets/itm_emb_np.pkl",
+      "sha256": "1eee1f09dfda393915ff8d1ea0778a216f3e2db7cee8f752732b4c23fc6b099b",
+      "unpickled_during_preparation": false
+    },
+    "pca64_itm_emb_np.pkl": {
+      "bytes": 29332130,
+      "path": "data/processed/beauty_llmesr_author/author_assets/pca64_itm_emb_np.pkl",
+      "sha256": "3bda4bc3c5930ab1046dbeb8f8104c7bd498c90a7656d35866e72ae49da66203",
+      "unpickled_during_preparation": false
+    },
+    "sim_user_100.pkl": {
+      "bytes": 41763362,
+      "path": "data/processed/beauty_llmesr_author/author_assets/sim_user_100.pkl",
+      "sha256": "b311b8b0d0e6dac1245dff3ab2e7fbf5dc378ab6e1ab36c03cb4f7baeca1e45b",
+      "unpickled_during_preparation": false
+    },
+    "usr_emb_np.pkl": {
+      "bytes": 641482915,
+      "path": "data/processed/beauty_llmesr_author/author_assets/usr_emb_np.pkl",
+      "sha256": "025946ca77eb525ac66730e855de3706f7b59106e2b04c59c1b5be414ca75bc9",
+      "unpickled_during_preparation": false
+    }
+  },
+  "config": {
+    "archive": "data/raw/yelp/LLMESR_author_processed.zip",
+    "dataset_name": "beauty",
+    "head_quantile": 0.8,
+    "memory_limit": "8GB",
+    "paper_head_fraction": 0.2,
+    "processed_dir": "data/processed/beauty_llmesr_author",
+    "report_path": "reports/data/beauty_llmesr_author_summary.json",
+    "tail_quantile": 0.2,
+    "threads": 1
+  },
+  "created_at_utc": "2026-07-25T04:09:43.278776+00:00",
+  "dataset_name": "beauty",
+  "dataset_variant": "beauty_faithful_author_processed",
+  "limitations": {
+    "event_timestamps": "not included; author sequence order is preserved",
+    "paper_statistic_mismatch": "none",
+    "pickle_security": "external pickle assets were hashed but not deserialized",
+    "raw_id_mapping": "not included in the author bundle",
+    "short_sequence_split": "users with fewer than three interactions remain train-only, matching the author loader",
+    "user_embedding_leakage": "provenance cutoff is not established; do not use until separately audited"
+  },
+  "outputs": {
+    "interactions": {
+      "bytes": 3344437,
+      "path": "data/processed/beauty_llmesr_author/interactions.parquet",
+      "sha256": "5719890606493afa7b4b62dbdee6c7cc00478112a69e069271f038ef10db929b"
+    },
+    "items": {
+      "bytes": 267894,
+      "path": "data/processed/beauty_llmesr_author/items.parquet",
+      "sha256": "08b45e0cefc2e6fc2fb9bbf400b9bee4dc153f2fec45bb93c0e45ec921448d6c"
+    },
+    "sequences": {
+      "bytes": 1216846,
+      "path": "data/processed/beauty_llmesr_author/sequences.parquet",
+      "sha256": "649a5bc297c44c2af898cecd340e90c54eadade8a48a8435271ed4976a9d9803"
+    },
+    "users": {
+      "bytes": 245654,
+      "path": "data/processed/beauty_llmesr_author/users.parquet",
+      "sha256": "7a6ed00789c26a75f6b0cce06408ed93963d7191edbc6439198c2eb6937ad6c6"
+    }
+  },
+  "paper_reference": {
+    "items": 57289,
+    "users": 52204
+  },
+  "paper_reference_match": {
+    "items": true,
+    "users": true
+  },
+  "pipeline_version": "llmesr-author-v1",
+  "processed_fingerprint": "07a51f5337decf8c636d7a5119da892aa2b4da8c22baaac388ce9801dfa09d29",
+  "source": {
+    "archive_bytes": 1472885036,
+    "archive_sha256": "0fe2cca3cc825d304f842352c327a7dcd6e330761416a6f3b10ac1ef4ffcf22d",
+    "archive_url": "https://drive.google.com/file/d/1MpBUjCDLiFIEODTnopSCzDAnS8RzO9aV/view",
+    "repository": "https://github.com/liuqidong07/LLM-ESR"
+  },
+  "statistics": {
+    "average_sequence_length": 7.564707685234848,
+    "cold_start_items": 5804,
+    "evaluable_users": 50498,
+    "interactions": 394908,
+    "items": 57289,
+    "max_author_item_id": 57289,
+    "max_author_user_id": 52204,
+    "short_sequence_users": 1706,
+    "split_invariant_violations": 0,
+    "test_interactions": 50498,
+    "train_interactions": 293912,
+    "users": 52204,
+    "valid_interactions": 50498
+  }
+}

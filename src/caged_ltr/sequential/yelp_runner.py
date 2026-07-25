@@ -182,6 +182,7 @@ def _evaluate(
     *,
     split: str,
     device: torch.device,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     dataset = SASRecEvaluationDataset(
         data,
@@ -201,6 +202,7 @@ def _evaluate(
     all_ranks: list[np.ndarray] = []
     all_users: list[np.ndarray] = []
     all_targets: list[np.ndarray] = []
+    processed = 0
     with torch.no_grad():
         for sequences, candidates, user_offsets, targets in loader:
             scores = model.score_candidates(sequences.to(device), candidates.to(device))
@@ -209,6 +211,9 @@ def _evaluate(
             all_ranks.append(ranks.cpu().numpy())
             all_users.append(user_offsets.numpy())
             all_targets.append(targets.numpy())
+            processed += int(sequences.shape[0])
+            if progress_callback is not None:
+                progress_callback(processed, len(dataset))
     rank_array = np.concatenate(all_ranks)
     user_offsets = np.concatenate(all_users)
     target_ids = np.concatenate(all_targets)
@@ -429,6 +434,7 @@ def evaluate_yelp_test_checkpoint(
     config: YelpSASRecRunConfig,
     *,
     checkpoint_path: Path | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict[str, Any]:
     """Evaluate test once for a checkpoint selected strictly from validation results."""
     seed_everything(config.seed)
@@ -444,7 +450,12 @@ def evaluate_yelp_test_checkpoint(
     state = torch.load(checkpoint, map_location=device, weights_only=True)
     model.load_state_dict(state["state_dict"])
     test_metrics, test_records = _evaluate(
-        model, data, config, split="test", device=device
+        model,
+        data,
+        config,
+        split="test",
+        device=device,
+        progress_callback=progress_callback,
     )
     prediction_path = config.output_dir / "predictions.parquet"
     validation_frame = pd.read_parquet(prediction_path)
@@ -459,6 +470,12 @@ def evaluate_yelp_test_checkpoint(
         raise ValueError("test metrics already exist for this run")
     summary["test"] = test_metrics
     summary["protocol"]["test_usage"] = "once after external validation-only selection"
+    summary["protocol"]["final_test_evaluation_negatives"] = (
+        config.evaluation_negatives
+    )
+    summary["protocol"]["final_test_evaluation"] = (
+        f"target plus {config.evaluation_negatives} fixed unseen negatives"
+    )
     summary_path.write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

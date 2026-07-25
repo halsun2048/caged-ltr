@@ -41,9 +41,18 @@ class YelpSequenceData:
             raise ValueError("item frequency buckets must cover the catalog")
         if len(self.item_paper_buckets) != self.num_items:
             raise ValueError("item paper buckets must cover the catalog")
-        all_ids = [*self.train_histories, self.valid_targets, self.test_targets]
-        if any((values < 1).any() or (values > self.num_items).any() for values in all_ids):
-            raise ValueError("model item IDs must lie in [1, num_items]")
+        if any(
+            (values < 1).any() or (values > self.num_items).any()
+            for values in self.train_histories
+        ):
+            raise ValueError("training item IDs must lie in [1, num_items]")
+        if any(
+            (values < 0).any() or (values > self.num_items).any()
+            for values in (self.valid_targets, self.test_targets)
+        ):
+            raise ValueError("holdout item IDs must lie in [0, num_items]")
+        if np.any((self.valid_targets == 0) != (self.test_targets == 0)):
+            raise ValueError("validation and test targets must both exist or both be absent")
 
 
 def load_yelp_author_sequences(
@@ -90,10 +99,22 @@ def load_yelp_author_sequences(
             np.asarray(row["train_item_ids"], dtype=np.int64) + 1 for row in sequence_rows
         ),
         valid_targets=np.asarray(
-            [int(row["valid_item_id"]) + 1 for row in sequence_rows], dtype=np.int64
+            [
+                int(row["valid_item_id"]) + 1
+                if row["valid_item_id"] is not None
+                else 0
+                for row in sequence_rows
+            ],
+            dtype=np.int64,
         ),
         test_targets=np.asarray(
-            [int(row["test_item_id"]) + 1 for row in sequence_rows], dtype=np.int64
+            [
+                int(row["test_item_id"]) + 1
+                if row["test_item_id"] is not None
+                else 0
+                for row in sequence_rows
+            ],
+            dtype=np.int64,
         ),
         user_indices=user_indices,
         user_frequency_buckets=tuple(
@@ -208,28 +229,31 @@ class SASRecEvaluationDataset(
         self.max_length = max_length
         self.num_negatives = num_negatives
         self.seed = seed
-        self.size = min(len(data.train_histories), max_users or len(data.train_histories))
+        targets = data.valid_targets if split == "valid" else data.test_targets
+        eligible = np.flatnonzero(targets > 0)
+        self.indices = eligible[: max_users or len(eligible)]
 
     def __len__(self) -> int:
-        return self.size
+        return len(self.indices)
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, ...]:
-        train = self.data.train_histories[index]
+        user_index = int(self.indices[index])
+        train = self.data.train_histories[user_index]
         if self.split == "valid":
             history = train
-            target = int(self.data.valid_targets[index])
+            target = int(self.data.valid_targets[user_index])
             split_offset = 0
         else:
-            history = np.append(train, self.data.valid_targets[index])
-            target = int(self.data.test_targets[index])
+            history = np.append(train, self.data.valid_targets[user_index])
+            target = int(self.data.test_targets[user_index])
             split_offset = 1
         known = {
             *train.tolist(),
-            int(self.data.valid_targets[index]),
-            int(self.data.test_targets[index]),
+            int(self.data.valid_targets[user_index]),
+            int(self.data.test_targets[user_index]),
         }
         generator = np.random.default_rng(
-            np.random.SeedSequence([self.seed, 10_000 + split_offset, index])
+            np.random.SeedSequence([self.seed, 10_000 + split_offset, user_index])
         )
         negatives: list[int] = []
         used: set[int] = set()
@@ -241,6 +265,6 @@ class SASRecEvaluationDataset(
         return (
             torch.from_numpy(_left_pad(history, self.max_length)),
             torch.from_numpy(candidates),
-            torch.tensor(index, dtype=torch.int64),
+            torch.tensor(user_index, dtype=torch.int64),
             torch.tensor(target, dtype=torch.int64),
         )

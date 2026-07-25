@@ -121,6 +121,7 @@ def _build_author_tables(
                 history_position,
                 history_length,
                 CASE
+                    WHEN history_length < 3 THEN 'train'
                     WHEN history_position = history_length THEN 'test'
                     WHEN history_position = history_length - 1 THEN 'valid'
                     ELSE 'train'
@@ -226,6 +227,29 @@ def _author_statistics(
         "test_interactions": int(
             _scalar(connection, f"SELECT COUNT(*) FROM {interactions} WHERE split='test'")
         ),
+        "evaluable_users": int(
+            _scalar(
+                connection,
+                f"""SELECT COUNT(*) FROM (
+                    SELECT author_user_id
+                    FROM {interactions}
+                    GROUP BY author_user_id
+                    HAVING COUNT(*) FILTER (WHERE split='valid') = 1
+                        AND COUNT(*) FILTER (WHERE split='test') = 1
+                )""",
+            )
+        ),
+        "short_sequence_users": int(
+            _scalar(
+                connection,
+                f"""SELECT COUNT(*) FROM (
+                    SELECT author_user_id
+                    FROM {interactions}
+                    GROUP BY author_user_id
+                    HAVING COUNT(*) < 3
+                )""",
+            )
+        ),
         "average_sequence_length": float(
             _scalar(connection, f"SELECT AVG(total_interactions) FROM {users}")
         ),
@@ -245,9 +269,22 @@ def _author_statistics(
                     SELECT author_user_id
                     FROM {interactions}
                     GROUP BY author_user_id
-                    HAVING COUNT(*) FILTER (WHERE split='valid') <> 1
-                        OR COUNT(*) FILTER (WHERE split='test') <> 1
-                        OR COUNT(*) FILTER (WHERE split='train') < 1
+                    HAVING (
+                        COUNT(*) < 3
+                        AND (
+                            COUNT(*) FILTER (WHERE split='train') <> COUNT(*)
+                            OR COUNT(*) FILTER (WHERE split='valid') <> 0
+                            OR COUNT(*) FILTER (WHERE split='test') <> 0
+                        )
+                    )
+                    OR (
+                        COUNT(*) >= 3
+                        AND (
+                            COUNT(*) FILTER (WHERE split='valid') <> 1
+                            OR COUNT(*) FILTER (WHERE split='test') <> 1
+                            OR COUNT(*) FILTER (WHERE split='train') < 1
+                        )
+                    )
                 )""",
             )
         ),
@@ -335,6 +372,10 @@ def prepare_yelp_author(config: YelpAuthorPreparationConfig) -> dict[str, Any]:
         "limitations": {
             "raw_id_mapping": "not included in the author bundle",
             "event_timestamps": "not included; author sequence order is preserved",
+            "short_sequence_split": (
+                "users with fewer than three interactions remain train-only, "
+                "matching the author loader"
+            ),
             "pickle_security": "external pickle assets were hashed but not deserialized",
             "paper_statistic_mismatch": (
                 "none"

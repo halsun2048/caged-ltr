@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -78,6 +79,7 @@ def _export_scores(
     split: str,
     num_negatives: int,
     checkpoint_path: Path | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> ValidationScoreBundle:
     if config.model != "llm_init":
         raise ValueError("calibrated fusion requires a trained llm_init checkpoint")
@@ -130,6 +132,7 @@ def _export_scores(
     candidate_batches: list[np.ndarray] = []
     user_batches: list[np.ndarray] = []
     target_batches: list[np.ndarray] = []
+    processed = 0
     with torch.no_grad():
         for sequences, candidates, user_offsets, targets in loader:
             device_sequences = sequences.to(device)
@@ -151,6 +154,9 @@ def _export_scores(
             candidate_batches.append(candidates.numpy())
             user_batches.append(user_offsets.numpy())
             target_batches.append(targets.numpy())
+            processed += int(sequences.shape[0])
+            if progress_callback is not None:
+                progress_callback(processed, len(dataset))
     candidates = np.concatenate(candidate_batches)
     users = np.concatenate(user_batches)
     targets = np.concatenate(target_batches)
@@ -180,6 +186,7 @@ def export_validation_scores(
     config: YelpSASRecRunConfig,
     *,
     checkpoint_path: Path | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> ValidationScoreBundle:
     """Export validation scores; this API intentionally has no test-split option."""
     return _export_scores(
@@ -187,6 +194,7 @@ def export_validation_scores(
         split="valid",
         num_negatives=config.evaluation_negatives,
         checkpoint_path=checkpoint_path,
+        progress_callback=progress_callback,
     )
 
 
@@ -195,6 +203,7 @@ def export_locked_test_scores(
     *,
     num_negatives: int,
     checkpoint_path: Path | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> ValidationScoreBundle:
     """Score a locked LLMInit checkpoint and semantic branch on test once."""
     if config.test_after_selection:
@@ -204,6 +213,7 @@ def export_locked_test_scores(
         split="test",
         num_negatives=num_negatives,
         checkpoint_path=checkpoint_path,
+        progress_callback=progress_callback,
     )
 
 
@@ -290,6 +300,42 @@ def calibrated_scores(
     return normalize_branch_scores(
         collaborative, method
     ) + semantic_weight * normalize_branch_scores(semantic, method)
+
+
+def confidence_aware_scores(
+    collaborative: np.ndarray,
+    semantic: np.ndarray,
+    candidate_buckets: np.ndarray,
+    *,
+    semantic_weight: float,
+    base_semantic_weight: float = 0.25,
+) -> np.ndarray:
+    """Add an uncertainty-and-rarity semantic residual to fixed late fusion."""
+    if semantic_weight < 0.0 or base_semantic_weight < 0.0:
+        raise ValueError("semantic weights must be non-negative")
+    if collaborative.shape != semantic.shape:
+        raise ValueError("branch score matrices must align")
+    buckets = np.asarray(candidate_buckets)
+    if buckets.shape != collaborative.shape:
+        raise ValueError("candidate_buckets must align with branch scores")
+    allowed = {"head", "torso", "tail", "cold_start"}
+    observed = set(buckets.ravel().tolist())
+    if not observed <= allowed:
+        raise ValueError(f"candidate_buckets contains unknown values: {observed - allowed}")
+    collaborative_z = normalize_branch_scores(collaborative, "zscore")
+    semantic_z = normalize_branch_scores(semantic, "zscore")
+    top_two = np.partition(collaborative_z, -2, axis=1)[:, -2:]
+    margin = top_two.max(axis=1) - top_two.min(axis=1)
+    uncertainty = 1.0 / (1.0 + np.maximum(margin, 0.0))
+    rarity = np.zeros(buckets.shape, dtype=np.float64)
+    rarity[buckets == "torso"] = 0.5
+    rarity[(buckets == "tail") | (buckets == "cold_start")] = 1.0
+    gate = uncertainty[:, None] * rarity
+    return (
+        collaborative_z
+        + base_semantic_weight * semantic_z
+        + semantic_weight * gate * semantic_z
+    )
 
 
 def _bucket_metrics(

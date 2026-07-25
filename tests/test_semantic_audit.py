@@ -21,20 +21,29 @@ from caged_ltr.sequential import (
 def _fixture(root: Path) -> tuple[YelpSASRecRunConfig, np.ndarray, Path]:
     processed = root / "processed"
     processed.mkdir()
+    sequence_rows = [
+        {
+            "user_idx": user,
+            "user_frequency_bucket": "head" if user < 2 else "tail",
+            "user_paper_bucket": "head" if user < 2 else "tail",
+            "train_item_ids": [user % 3, (user + 1) % 4],
+            "valid_item_id": (user + 2) % 5,
+            "test_item_id": user % 3 if user == 0 else (user + 3) % 6,
+        }
+        for user in range(4)
+    ]
+    sequence_rows.append(
+        {
+            "user_idx": 4,
+            "user_frequency_bucket": "tail",
+            "user_paper_bucket": "tail",
+            "train_item_ids": [0, 1],
+            "valid_item_id": None,
+            "test_item_id": None,
+        }
+    )
     parquet.write_table(
-        pa.Table.from_pylist(
-            [
-                {
-                    "user_idx": user,
-                    "user_frequency_bucket": "head" if user < 2 else "tail",
-                    "user_paper_bucket": "head" if user < 2 else "tail",
-                    "train_item_ids": [user % 3, (user + 1) % 4],
-                    "valid_item_id": (user + 2) % 5,
-                    "test_item_id": user % 3 if user == 0 else (user + 3) % 6,
-                }
-                for user in range(4)
-            ]
-        ),
+        pa.Table.from_pylist(sequence_rows),
         processed / "sequences.parquet",
     )
     parquet.write_table(

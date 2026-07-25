@@ -118,3 +118,19 @@ uv --cache-dir .uv-cache run --frozen \
 
 审计协议与已知来源边界见
 [`docs/experiments/fashion_r1_3b.md`](docs/experiments/fashion_r1_3b.md)。
+
+## Beauty R1.4
+
+R1.4 在 Yelp 验证集锁定置信感知门控：固定融合权重 `0.25`，再以 `0.1`
+追加由协同不确定性和物品稀有度控制的语义残差。Beauty 不调参，正式运行同时
+训练 SASRec、真实 LLMInit 和 shuffled LLMInit 三种协同对照：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_beauty_r1_4.py --progress
+```
+
+脚本按模型和种子复用已完成 checkpoint，并在训练与最终 sampled-1000 测试阶段
+显示进度条。作者版 Beauty 的 52,204 用户和 57,289 物品与论文一致；其中
+1,706 个不足三次交互的用户依作者代码保留为仅训练用户。协议和运行状态见
+[`docs/experiments/beauty_r1_4.md`](docs/experiments/beauty_r1_4.md)。

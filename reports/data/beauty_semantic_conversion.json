@@ -1,0 +1,20 @@
+{
+  "created_at_utc": "2026-07-25T04:08:07.652746+00:00",
+  "dataset": "beauty",
+  "decoder": "non-executing pickletools opcode validation plus numpy.frombuffer",
+  "output": {
+    "dtype": "float32",
+    "finite": true,
+    "path": "data/processed/beauty_llmesr_author/pca64_item_embeddings.npy",
+    "sha256": "83b2468c142cb7d6e2918567cf680c2f4e64c25dacbfc54c47852899343314da",
+    "shape": [
+      57289,
+      64
+    ]
+  },
+  "pickle_load_called": false,
+  "source": {
+    "path": "data/processed/beauty_llmesr_author/author_assets/pca64_itm_emb_np.pkl",
+    "sha256": "3bda4bc3c5930ab1046dbeb8f8104c7bd498c90a7656d35866e72ae49da66203"
+  }
+}
