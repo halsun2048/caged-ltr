@@ -226,6 +226,7 @@ def evaluate_full_catalog(
     checkpoint_path: Path,
     semantic_variants: Mapping[str, np.ndarray] | None = None,
     semantic_weight: float = 0.25,
+    gated_residual_weight: float | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> FullCatalogEvaluation:
     """Evaluate test against every item, excluding only the user's observed history."""
@@ -233,6 +234,8 @@ def evaluate_full_catalog(
         raise ValueError("full-catalog audit supports sasrec or llm_init checkpoints")
     if semantic_weight < 0:
         raise ValueError("semantic_weight must be non-negative")
+    if gated_residual_weight is not None and gated_residual_weight < 0:
+        raise ValueError("gated_residual_weight must be non-negative")
     device = _device(config.device)
     data = load_yelp_author_sequences(
         config.processed_dir,
@@ -273,8 +276,16 @@ def evaluate_full_catalog(
     for name in semantic_models:
         rank_batches[f"semantic_only_{name}"] = []
         rank_batches[f"fusion_{name}"] = []
+        if gated_residual_weight is not None:
+            rank_batches[f"confidence_gate_{name}"] = []
     repeated_target_count = 0
-    catalog = torch.arange(1, data.num_items + 1, device=device)
+    rarity = torch.zeros(data.num_items, dtype=torch.float32, device=device)
+    item_buckets = np.asarray(data.item_frequency_buckets)
+    rarity[torch.from_numpy(np.flatnonzero(item_buckets == "torso")).to(device)] = 0.5
+    rare_offsets = np.flatnonzero(
+        (item_buckets == "tail") | (item_buckets == "cold_start")
+    )
+    rarity[torch.from_numpy(rare_offsets).to(device)] = 1.0
     batch_size = config.evaluation_batch_size
     with torch.no_grad():
         for start in range(0, selected_users, batch_size):
@@ -301,8 +312,7 @@ def evaluate_full_catalog(
                     excluded[row, torch.from_numpy(known - 1).to(device)] = True
             sequences = torch.from_numpy(np.stack(histories)).to(device)
             target_tensor = torch.from_numpy(targets).to(device)
-            candidates = catalog.unsqueeze(0).expand(stop - start, -1)
-            collaborative_scores = collaborative.score_candidates(sequences, candidates)
+            collaborative_scores = collaborative.score_catalog(sequences)
             rank_batches[config.model].append(
                 _stable_ranks(collaborative_scores, target_tensor, excluded).cpu().numpy()
             )
@@ -310,18 +320,42 @@ def evaluate_full_catalog(
                 collaborative_scores,
                 excluded,
             )
+            eligible_collaborative = normalized_collaborative.masked_fill(
+                excluded,
+                -torch.inf,
+            )
+            top_two = torch.topk(
+                eligible_collaborative,
+                k=2,
+                dim=1,
+            ).values
+            uncertainty = 1.0 / (
+                1.0 + torch.clamp_min(top_two[:, 0] - top_two[:, 1], 0.0)
+            )
             for name, semantic_model in semantic_models.items():
-                semantic_scores = semantic_model.score_candidates(sequences, candidates)
+                semantic_scores = semantic_model.score_catalog(sequences)
                 rank_batches[f"semantic_only_{name}"].append(
                     _stable_ranks(semantic_scores, target_tensor, excluded).cpu().numpy()
                 )
-                fused = normalized_collaborative + semantic_weight * _masked_zscore(
+                normalized_semantic = _masked_zscore(
                     semantic_scores,
                     excluded,
                 )
+                fused = normalized_collaborative + semantic_weight * normalized_semantic
                 rank_batches[f"fusion_{name}"].append(
                     _stable_ranks(fused, target_tensor, excluded).cpu().numpy()
                 )
+                if gated_residual_weight is not None:
+                    gated = (
+                        fused
+                        + gated_residual_weight
+                        * uncertainty[:, None]
+                        * rarity[None, :]
+                        * normalized_semantic
+                    )
+                    rank_batches[f"confidence_gate_{name}"].append(
+                        _stable_ranks(gated, target_tensor, excluded).cpu().numpy()
+                    )
             if progress_callback is not None:
                 progress_callback(stop, selected_users)
 
@@ -350,6 +384,17 @@ def evaluate_full_catalog(
             "tie_break": "stable ascending item ID",
             "fusion_normalization": "per-query z-score over eligible full catalog",
             "fusion_semantic_weight": semantic_weight,
+            "gated_residual_weight": gated_residual_weight,
+            "gate_query_uncertainty": (
+                "1 / (1 + top1_minus_top2_collaborative_zscore)"
+                if gated_residual_weight is not None
+                else None
+            ),
+            "gate_item_rarity": (
+                {"head": 0.0, "torso": 0.5, "tail": 1.0, "cold_start": 1.0}
+                if gated_residual_weight is not None
+                else None
+            ),
             "data_fingerprint": data.fingerprint,
         },
     )

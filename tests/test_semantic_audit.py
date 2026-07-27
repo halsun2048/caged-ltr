@@ -139,6 +139,7 @@ def test_full_catalog_masks_history_and_scores_semantic_controls(tmp_path: Path)
             "shuffled": semantic_control(semantics, kind="shuffled", seed=9),
         },
         semantic_weight=0.25,
+        gated_residual_weight=0.1,
         progress_callback=lambda done, total: progress.append((done, total)),
     )
 
@@ -148,10 +149,13 @@ def test_full_catalog_masks_history_and_scores_semantic_controls(tmp_path: Path)
         "semantic_only_shuffled",
         "fusion_real",
         "fusion_shuffled",
+        "confidence_gate_real",
+        "confidence_gate_shuffled",
     }
     assert progress == [(2, 4), (4, 4)]
     assert result.protocol["candidate_catalog_size"] == 6
     assert result.protocol["repeated_test_target_in_history"] >= 1
+    assert result.protocol["gated_residual_weight"] == pytest.approx(0.1)
     assert result.protocol["exclusion"].startswith("observed history only")
     for method, ranks in result.ranks.items():
         assert ranks.shape == (4,), method
@@ -194,3 +198,10 @@ def test_full_catalog_masks_history_and_scores_semantic_controls(tmp_path: Path)
         checkpoint_path=sasrec_checkpoint,
     )
     assert set(sasrec.ranks) == {"sasrec"}
+
+    with pytest.raises(ValueError, match="gated_residual_weight"):
+        evaluate_full_catalog(
+            config,
+            checkpoint_path=checkpoint,
+            gated_residual_weight=-0.1,
+        )

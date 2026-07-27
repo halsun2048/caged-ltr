@@ -130,6 +130,16 @@ def test_sasrec_is_causal_and_semantic_table_stays_frozen() -> None:
     scores = semantic_only.score_candidates(first, torch.tensor([[4, 5, 6]]))
     assert scores.shape == (1, 3)
     assert sum(parameter.numel() for parameter in semantic_only.parameters()) == 0
+    catalog = torch.arange(1, config.num_items + 1).unsqueeze(0)
+    with torch.no_grad():
+        torch.testing.assert_close(
+            model.score_catalog(first),
+            model.score_candidates(first, catalog),
+        )
+        torch.testing.assert_close(
+            semantic_only.score_catalog(first),
+            semantic_only.score_candidates(first, catalog),
+        )
 
 
 def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> None:

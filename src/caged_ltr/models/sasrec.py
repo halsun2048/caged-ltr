@@ -181,6 +181,11 @@ class SASRec(nn.Module):
         candidates = self.item_embedding(candidate_items)
         return torch.einsum("bd,bcd->bc", user_states, candidates)
 
+    def score_catalog(self, sequences: torch.Tensor) -> torch.Tensor:
+        """Score every non-padding catalog item without expanding embeddings."""
+        user_states = self.encode(sequences)[:, -1, :]
+        return user_states @ self.item_embedding.weight[1:].transpose(0, 1)
+
 
 class FrozenSemanticLateFusion(SASRec):
     """SASRec collaborative score plus a frozen semantic prefix-mean score."""
@@ -259,6 +264,12 @@ class FrozenSemanticOnly(nn.Module):
             persistent=True,
         )
 
+    def _user_states(self, sequences: torch.Tensor) -> torch.Tensor:
+        mask = sequences.ne(0).unsqueeze(-1)
+        semantic_sequence = self.semantic_items[sequences] * mask
+        semantic_user = semantic_sequence.sum(dim=1) / mask.sum(dim=1).clamp_min(1)
+        return torch.nn.functional.normalize(semantic_user, dim=-1)
+
     def score_candidates(
         self,
         sequences: torch.Tensor,
@@ -266,12 +277,14 @@ class FrozenSemanticOnly(nn.Module):
     ) -> torch.Tensor:
         if candidate_items.ndim != 2 or candidate_items.shape[0] != sequences.shape[0]:
             raise ValueError("candidate_items must have shape [batch, candidates]")
-        mask = sequences.ne(0).unsqueeze(-1)
-        semantic_sequence = self.semantic_items[sequences] * mask
-        semantic_user = semantic_sequence.sum(dim=1) / mask.sum(dim=1).clamp_min(1)
-        semantic_user = torch.nn.functional.normalize(semantic_user, dim=-1)
+        semantic_user = self._user_states(sequences)
         return torch.einsum(
             "bd,bcd->bc",
             semantic_user,
             self.semantic_items[candidate_items],
         )
+
+    def score_catalog(self, sequences: torch.Tensor) -> torch.Tensor:
+        """Score every non-padding catalog item without expanding embeddings."""
+        semantic_user = self._user_states(sequences)
+        return semantic_user @ self.semantic_items[1:].transpose(0, 1)

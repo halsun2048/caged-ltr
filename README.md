@@ -139,3 +139,15 @@ uv --cache-dir .uv-cache run --frozen \
 LLMInit 的 `0.143487 ± 0.001889` 和固定融合的 `0.159443 ± 0.001792`；
 Tail 相对固定融合获得 `+0.007048` 绝对增益。完整输出见
 `reports/experiments/beauty_r1_4.json`。
+
+R1.5 进一步复用同一组 checkpoint，对全部 57,289 个物品执行完整目录排名：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_beauty_r1_5_full_catalog.py
+```
+
+门控相对固定融合仍在三个种子上方向一致，但 Overall/Tail NDCG@10 的绝对增益
+缩小到 `+0.000164`/`+0.000644`，Tail 未达到预设 `0.005` 实际规模阈值。
+协议敏感性和配对置信区间见
+[`docs/experiments/beauty_r1_5.md`](docs/experiments/beauty_r1_5.md)。
