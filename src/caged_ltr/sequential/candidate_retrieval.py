@@ -21,6 +21,7 @@ class CandidateRetrievalEvaluation:
 
     hits: dict[str, dict[int, np.ndarray]]
     candidate_counts: dict[str, dict[int, np.ndarray]]
+    collaborative_prefix_lengths: dict[str, dict[int, np.ndarray]]
     metrics: dict[str, dict[str, Any]]
     protocol: dict[str, Any]
 
@@ -108,12 +109,68 @@ def _unique_union_counts(left: torch.Tensor, right: torch.Tensor) -> torch.Tenso
     return 1 + ordered[:, 1:].ne(ordered[:, :-1]).sum(dim=1)
 
 
+def _fixed_route_name(name: str, cutoff: int, semantic_quota: int) -> str:
+    return f"fixed_union_{name}_s{semantic_quota}_of{cutoff}"
+
+
+def _fixed_budget_hits(
+    collaborative_top: torch.Tensor,
+    semantic_top: torch.Tensor,
+    target_columns: torch.Tensor,
+    *,
+    semantic_quota: int,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Return target hits and the collaborative prefix needed for an exact budget."""
+    budget = collaborative_top.shape[1]
+    if semantic_top.shape != collaborative_top.shape:
+        raise ValueError("collaborative and semantic rankings must align")
+    if semantic_quota < 0 or semantic_quota > budget:
+        raise ValueError("semantic_quota must lie in [0, budget]")
+    batch = collaborative_top.shape[0]
+    if semantic_quota == 0:
+        hits = collaborative_top.eq(target_columns).any(dim=1)
+        return hits, torch.full(
+            (batch,),
+            budget,
+            dtype=torch.int64,
+            device=collaborative_top.device,
+        )
+    semantic_candidates = semantic_top[:, :semantic_quota]
+    semantic_hits = semantic_candidates.eq(target_columns).any(dim=1)
+    if semantic_quota == budget:
+        return semantic_hits, torch.zeros(
+            batch,
+            dtype=torch.int64,
+            device=collaborative_top.device,
+        )
+
+    ordered_semantic = torch.sort(semantic_candidates, dim=1).values.contiguous()
+    positions = torch.searchsorted(ordered_semantic, collaborative_top.contiguous())
+    bounded = positions.clamp_max(semantic_quota - 1)
+    overlaps = ordered_semantic.gather(1, bounded).eq(collaborative_top)
+    non_semantic_seen = (~overlaps).cumsum(dim=1)
+    collaborative_needed = budget - semantic_quota
+    prefix_lengths = (
+        (non_semantic_seen >= collaborative_needed).to(torch.int64).argmax(dim=1) + 1
+    )
+    collaborative_positions = torch.arange(
+        budget,
+        device=collaborative_top.device,
+    ).unsqueeze(0)
+    collaborative_hits = (
+        collaborative_top.eq(target_columns)
+        & (collaborative_positions < prefix_lengths.unsqueeze(1))
+    ).any(dim=1)
+    return semantic_hits | collaborative_hits, prefix_lengths
+
+
 def evaluate_full_catalog_retrieval(
     config: YelpSASRecRunConfig,
     *,
     checkpoint_path: Path,
     semantic_variants: Mapping[str, np.ndarray],
     cutoffs: Sequence[int] = (100, 500),
+    fixed_budget_semantic_quotas: Mapping[int, Sequence[int]] | None = None,
     split: str = "valid",
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> CandidateRetrievalEvaluation:
@@ -132,6 +189,16 @@ def evaluate_full_catalog_retrieval(
         raise ValueError("cutoffs must contain positive integers")
     if not semantic_variants:
         raise ValueError("at least one semantic variant is required")
+    fixed_quotas: dict[int, tuple[int, ...]] = {}
+    for cutoff, quotas in (fixed_budget_semantic_quotas or {}).items():
+        if cutoff not in selected_cutoffs:
+            raise ValueError("fixed-budget cutoff must be present in cutoffs")
+        selected_quotas = tuple(sorted(set(int(value) for value in quotas)))
+        if not selected_quotas or selected_quotas[0] < 0:
+            raise ValueError("fixed-budget quotas must be non-negative")
+        if selected_quotas[-1] > cutoff:
+            raise ValueError("semantic quota cannot exceed its candidate budget")
+        fixed_quotas[cutoff] = selected_quotas
 
     device = _device(config.device)
     data = load_yelp_author_sequences(
@@ -178,6 +245,14 @@ def evaluate_full_catalog_retrieval(
         f"union_{name}": {cutoff: [] for cutoff in selected_cutoffs}
         for name in semantic_models
     }
+    prefix_batches: dict[str, dict[int, list[np.ndarray]]] = {}
+    for name in semantic_models:
+        for cutoff, quotas in fixed_quotas.items():
+            for quota in quotas:
+                route = _fixed_route_name(name, cutoff, quota)
+                hit_batches[route] = {cutoff: []}
+                count_batches[route] = {cutoff: []}
+                prefix_batches[route] = {cutoff: []}
     repeated_target_count = 0
     max_cutoff = selected_cutoffs[-1]
     batch_size = config.evaluation_batch_size
@@ -257,6 +332,27 @@ def evaluate_full_catalog_retrieval(
                         .cpu()
                         .numpy()
                     )
+                    for semantic_quota in fixed_quotas.get(cutoff, ()):
+                        route = _fixed_route_name(
+                            name,
+                            cutoff,
+                            semantic_quota,
+                        )
+                        fixed_hits, prefix_lengths = _fixed_budget_hits(
+                            collaborative_candidates,
+                            semantic_candidates,
+                            target_columns,
+                            semantic_quota=semantic_quota,
+                        )
+                        hit_batches[route][cutoff].append(
+                            fixed_hits.cpu().numpy()
+                        )
+                        count_batches[route][cutoff].append(
+                            np.full(stop - start, cutoff, dtype=np.int64)
+                        )
+                        prefix_batches[route][cutoff].append(
+                            prefix_lengths.cpu().numpy()
+                        )
             if progress_callback is not None:
                 progress_callback(stop, selected_users)
 
@@ -273,6 +369,13 @@ def evaluate_full_catalog_retrieval(
             for cutoff, parts in by_cutoff.items()
         }
         for route, by_cutoff in count_batches.items()
+    }
+    collaborative_prefix_lengths = {
+        route: {
+            cutoff: np.concatenate(parts).astype(np.int64, copy=False)
+            for cutoff, parts in by_cutoff.items()
+        }
+        for route, by_cutoff in prefix_batches.items()
     }
     targets = data.valid_targets[user_offsets]
     metrics = {
@@ -291,6 +394,7 @@ def evaluate_full_catalog_retrieval(
     return CandidateRetrievalEvaluation(
         hits=hits,
         candidate_counts=candidate_counts,
+        collaborative_prefix_lengths=collaborative_prefix_lengths,
         metrics=metrics,
         protocol={
             "split": "validation",
@@ -303,6 +407,15 @@ def evaluate_full_catalog_retrieval(
             "cutoffs": list(selected_cutoffs),
             "union_definition": "collaborative Top-K set union semantic Top-K",
             "union_budget": "between K and 2K; actual counts reported per user",
+            "fixed_budget_semantic_quotas": {
+                str(cutoff): list(quotas) for cutoff, quotas in fixed_quotas.items()
+            },
+            "fixed_budget_fill": (
+                "take semantic quota, then the shortest collaborative ranking prefix "
+                "that yields exactly K unique candidates"
+                if fixed_quotas
+                else None
+            ),
             "topk_tie_behavior": "PyTorch deterministic topk for the active backend",
             "data_fingerprint": data.fingerprint,
         },

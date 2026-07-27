@@ -219,6 +219,7 @@ def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None
             "shuffled": semantic_control(semantics, kind="shuffled", seed=9),
         },
         cutoffs=(1, 2),
+        fixed_budget_semantic_quotas={2: (0, 1, 2)},
         progress_callback=lambda done, total: progress.append((done, total)),
     )
 
@@ -228,8 +229,23 @@ def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None
         "semantic_shuffled",
         "union_real",
         "union_shuffled",
+        "fixed_union_real_s0_of2",
+        "fixed_union_real_s1_of2",
+        "fixed_union_real_s2_of2",
+        "fixed_union_shuffled_s0_of2",
+        "fixed_union_shuffled_s1_of2",
+        "fixed_union_shuffled_s2_of2",
     }
-    assert set(result.candidate_counts) == {"union_real", "union_shuffled"}
+    assert set(result.candidate_counts) == {
+        "union_real",
+        "union_shuffled",
+        "fixed_union_real_s0_of2",
+        "fixed_union_real_s1_of2",
+        "fixed_union_real_s2_of2",
+        "fixed_union_shuffled_s0_of2",
+        "fixed_union_shuffled_s1_of2",
+        "fixed_union_shuffled_s2_of2",
+    }
     assert progress == [(2, 4), (4, 4)]
     assert result.protocol["split"] == "validation"
     assert result.protocol["test_accessed"] is False
@@ -250,6 +266,26 @@ def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None
         ][f"Recall@{cutoff}"]
         assert 0.0 <= metric <= 1.0
 
+    for variant in ("real", "shuffled"):
+        collaborative = result.hits["collaborative"][2]
+        semantic = result.hits[f"semantic_{variant}"][2]
+        zero = f"fixed_union_{variant}_s0_of2"
+        one = f"fixed_union_{variant}_s1_of2"
+        two = f"fixed_union_{variant}_s2_of2"
+        np.testing.assert_array_equal(result.hits[zero][2], collaborative)
+        np.testing.assert_array_equal(result.hits[two][2], semantic)
+        np.testing.assert_array_equal(result.candidate_counts[one][2], 2)
+        np.testing.assert_array_equal(
+            result.collaborative_prefix_lengths[zero][2],
+            2,
+        )
+        np.testing.assert_array_equal(
+            result.collaborative_prefix_lengths[two][2],
+            0,
+        )
+        prefixes = result.collaborative_prefix_lengths[one][2]
+        assert np.all((prefixes >= 1) & (prefixes <= 2))
+
     with pytest.raises(ValueError, match="restricted to validation"):
         evaluate_full_catalog_retrieval(
             config,
@@ -264,4 +300,12 @@ def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None
             checkpoint_path=checkpoint,
             semantic_variants={"real": semantics},
             cutoffs=(0,),
+        )
+    with pytest.raises(ValueError, match="cannot exceed"):
+        evaluate_full_catalog_retrieval(
+            config,
+            checkpoint_path=checkpoint,
+            semantic_variants={"real": semantics},
+            cutoffs=(2,),
+            fixed_budget_semantic_quotas={2: (3,)},
         )
