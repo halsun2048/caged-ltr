@@ -250,6 +250,8 @@ def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None
     assert result.protocol["split"] == "validation"
     assert result.protocol["test_accessed"] is False
     assert result.protocol["history"] == "training interactions only"
+    assert result.query_uncertainty.shape == (4,)
+    assert np.all((result.query_uncertainty > 0.0) & (result.query_uncertainty <= 1.0))
     for cutoff in (1, 2):
         collaborative = result.hits["collaborative"][cutoff]
         assert collaborative.shape == (4,)

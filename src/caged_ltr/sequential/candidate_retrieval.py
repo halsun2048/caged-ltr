@@ -22,6 +22,7 @@ class CandidateRetrievalEvaluation:
     hits: dict[str, dict[int, np.ndarray]]
     candidate_counts: dict[str, dict[int, np.ndarray]]
     collaborative_prefix_lengths: dict[str, dict[int, np.ndarray]]
+    query_uncertainty: np.ndarray
     metrics: dict[str, dict[str, Any]]
     protocol: dict[str, Any]
 
@@ -107,6 +108,26 @@ def _unique_union_counts(left: torch.Tensor, right: torch.Tensor) -> torch.Tenso
     combined = torch.cat((left, right), dim=1)
     ordered = torch.sort(combined, dim=1).values
     return 1 + ordered[:, 1:].ne(ordered[:, :-1]).sum(dim=1)
+
+
+def _collaborative_uncertainty(
+    scores: torch.Tensor,
+    excluded: torch.Tensor,
+) -> torch.Tensor:
+    eligible = ~excluded
+    counts = eligible.sum(dim=1, keepdim=True).clamp_min(1)
+    selected = scores.masked_fill(excluded, 0.0)
+    mean = selected.sum(dim=1, keepdim=True) / counts
+    centered = (scores - mean).masked_fill(excluded, 0.0)
+    scale = torch.sqrt(centered.square().sum(dim=1, keepdim=True) / counts)
+    normalized = torch.where(
+        scale > 1e-12,
+        centered / scale.clamp_min(1e-12),
+        centered,
+    ).masked_fill(excluded, -torch.inf)
+    top_two = torch.topk(normalized, k=2, dim=1).values
+    margin = torch.clamp_min(top_two[:, 0] - top_two[:, 1], 0.0)
+    return 1.0 / (1.0 + margin)
 
 
 def _fixed_route_name(name: str, cutoff: int, semantic_quota: int) -> str:
@@ -254,6 +275,7 @@ def evaluate_full_catalog_retrieval(
                 count_batches[route] = {cutoff: []}
                 prefix_batches[route] = {cutoff: []}
     repeated_target_count = 0
+    uncertainty_batches: list[np.ndarray] = []
     max_cutoff = selected_cutoffs[-1]
     batch_size = config.evaluation_batch_size
 
@@ -283,6 +305,14 @@ def evaluate_full_catalog_retrieval(
             collaborative_scores = collaborative.score_catalog(sequences).masked_fill(
                 excluded,
                 -torch.inf,
+            )
+            uncertainty_batches.append(
+                _collaborative_uncertainty(
+                    collaborative_scores,
+                    excluded,
+                )
+                .cpu()
+                .numpy()
             )
             collaborative_top = torch.topk(
                 collaborative_scores,
@@ -377,6 +407,10 @@ def evaluate_full_catalog_retrieval(
         }
         for route, by_cutoff in prefix_batches.items()
     }
+    query_uncertainty = np.concatenate(uncertainty_batches).astype(
+        np.float64,
+        copy=False,
+    )
     targets = data.valid_targets[user_offsets]
     metrics = {
         route: {
@@ -395,6 +429,7 @@ def evaluate_full_catalog_retrieval(
         hits=hits,
         candidate_counts=candidate_counts,
         collaborative_prefix_lengths=collaborative_prefix_lengths,
+        query_uncertainty=query_uncertainty,
         metrics=metrics,
         protocol={
             "split": "validation",
@@ -415,6 +450,10 @@ def evaluate_full_catalog_retrieval(
                 "that yields exactly K unique candidates"
                 if fixed_quotas
                 else None
+            ),
+            "query_uncertainty": (
+                "1 / (1 + collaborative top1-minus-top2 margin after per-query "
+                "eligible-catalog z-scoring)"
             ),
             "topk_tie_behavior": "PyTorch deterministic topk for the active backend",
             "data_fingerprint": data.fingerprint,
