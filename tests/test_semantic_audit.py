@@ -14,6 +14,7 @@ from caged_ltr.sequential import (
     YelpSASRecRunConfig,
     checkpoint_embedding_drift,
     evaluate_full_catalog,
+    evaluate_full_catalog_retrieval,
     semantic_control,
 )
 
@@ -204,4 +205,63 @@ def test_full_catalog_masks_history_and_scores_semantic_controls(tmp_path: Path)
             config,
             checkpoint_path=checkpoint,
             gated_residual_weight=-0.1,
+        )
+
+
+def test_validation_candidate_retrieval_routes_and_union(tmp_path: Path) -> None:
+    config, semantics, checkpoint = _fixture(tmp_path)
+    progress: list[tuple[int, int]] = []
+    result = evaluate_full_catalog_retrieval(
+        config,
+        checkpoint_path=checkpoint,
+        semantic_variants={
+            "real": semantics,
+            "shuffled": semantic_control(semantics, kind="shuffled", seed=9),
+        },
+        cutoffs=(1, 2),
+        progress_callback=lambda done, total: progress.append((done, total)),
+    )
+
+    assert set(result.hits) == {
+        "collaborative",
+        "semantic_real",
+        "semantic_shuffled",
+        "union_real",
+        "union_shuffled",
+    }
+    assert set(result.candidate_counts) == {"union_real", "union_shuffled"}
+    assert progress == [(2, 4), (4, 4)]
+    assert result.protocol["split"] == "validation"
+    assert result.protocol["test_accessed"] is False
+    assert result.protocol["history"] == "training interactions only"
+    for cutoff in (1, 2):
+        collaborative = result.hits["collaborative"][cutoff]
+        assert collaborative.shape == (4,)
+        for variant in ("real", "shuffled"):
+            union = result.hits[f"union_{variant}"][cutoff]
+            semantic = result.hits[f"semantic_{variant}"][cutoff]
+            assert np.all(union >= collaborative)
+            assert np.all(union >= semantic)
+            counts = result.candidate_counts[f"union_{variant}"][cutoff]
+            assert np.all(counts >= cutoff)
+            assert np.all(counts <= 2 * cutoff)
+        metric = result.metrics["union_real"][str(cutoff)]["item_frequency"][
+            "overall"
+        ][f"Recall@{cutoff}"]
+        assert 0.0 <= metric <= 1.0
+
+    with pytest.raises(ValueError, match="restricted to validation"):
+        evaluate_full_catalog_retrieval(
+            config,
+            checkpoint_path=checkpoint,
+            semantic_variants={"real": semantics},
+            cutoffs=(1,),
+            split="test",
+        )
+    with pytest.raises(ValueError, match="positive"):
+        evaluate_full_catalog_retrieval(
+            config,
+            checkpoint_path=checkpoint,
+            semantic_variants={"real": semantics},
+            cutoffs=(0,),
         )

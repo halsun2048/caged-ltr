@@ -1,0 +1,3729 @@
+{
+  "experiment": "R1.6-dual-route-candidate-recall",
+  "dataset": "yelp",
+  "status": "complete",
+  "seeds": [
+    42,
+    2024,
+    3407
+  ],
+  "protocol": {
+    "split": "validation",
+    "test_accessed": false,
+    "selection_or_training": false,
+    "source_checkpoint": "converged Yelp R1.1 LLMInit",
+    "collaborative_route": "LLMInit sequential score",
+    "semantic_route": "frozen prefix-mean cosine score",
+    "control": "row-shuffled semantic mapping, seed 20240725",
+    "cutoffs": [
+      100,
+      500
+    ],
+    "primary_cutoff": 500,
+    "union_definition": "collaborative Top-K set union semantic Top-K",
+    "union_budget": "between K and 2K; actual counts reported",
+    "evaluated_users_per_seed": 15720,
+    "catalog_items": 11383,
+    "max_eval_users": null
+  },
+  "inputs": [
+    {
+      "seed": 42,
+      "checkpoint_sha256": "6a8869fe4957452d00f6f33493a29587fc1daffa8ebf65dd92cf97dacd0b2792",
+      "real_semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "shuffled_semantic_sha256": "b45f57fb46e753e1996801d9aa41d013d83364bacef742945e00feba7183c97b",
+      "data_fingerprint": "97aa4d3005216e5a963436a7715d4cb62d09cd8c0e7cb706dcbdf6b8c2a2edc2",
+      "split": "validation",
+      "cutoffs": [
+        100,
+        500
+      ],
+      "max_eval_users": null,
+      "evaluation_batch_size": 256,
+      "elapsed_seconds": 8.295744242030196,
+      "cache": "runs/r1_6/yelp/llm_init_seed42/validation_retrieval_all.json",
+      "arrays": "runs/r1_6/yelp/llm_init_seed42/validation_retrieval_all.npz"
+    },
+    {
+      "seed": 2024,
+      "checkpoint_sha256": "6cc47bdc39ff7a07c048874e6370d3106af6712e38a616bed018a72dace60f99",
+      "real_semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "shuffled_semantic_sha256": "b45f57fb46e753e1996801d9aa41d013d83364bacef742945e00feba7183c97b",
+      "data_fingerprint": "97aa4d3005216e5a963436a7715d4cb62d09cd8c0e7cb706dcbdf6b8c2a2edc2",
+      "split": "validation",
+      "cutoffs": [
+        100,
+        500
+      ],
+      "max_eval_users": null,
+      "evaluation_batch_size": 256,
+      "elapsed_seconds": 7.660246731014922,
+      "cache": "runs/r1_6/yelp/llm_init_seed2024/validation_retrieval_all.json",
+      "arrays": "runs/r1_6/yelp/llm_init_seed2024/validation_retrieval_all.npz"
+    },
+    {
+      "seed": 3407,
+      "checkpoint_sha256": "38d190b04aedb3ae6c20377927a4ede12767e4948d7d5c1d5decf4a4970cb9fc",
+      "real_semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "shuffled_semantic_sha256": "b45f57fb46e753e1996801d9aa41d013d83364bacef742945e00feba7183c97b",
+      "data_fingerprint": "97aa4d3005216e5a963436a7715d4cb62d09cd8c0e7cb706dcbdf6b8c2a2edc2",
+      "split": "validation",
+      "cutoffs": [
+        100,
+        500
+      ],
+      "max_eval_users": null,
+      "evaluation_batch_size": 256,
+      "elapsed_seconds": 8.420706521952525,
+      "cache": "runs/r1_6/yelp/llm_init_seed3407/validation_retrieval_all.json",
+      "arrays": "runs/r1_6/yelp/llm_init_seed3407/validation_retrieval_all.npz"
+    }
+  ],
+  "candidate_count_summary": {
+    "42": {
+      "union_real": {
+        "100": {
+          "count": 15720,
+          "mean": 191.50260814249364,
+          "std": 5.657663254642879,
+          "min": 159,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 899.4634860050891,
+          "std": 41.43397138574014,
+          "min": 752,
+          "max": 1000
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "count": 15720,
+          "mean": 199.11857506361324,
+          "std": 0.9245374361422897,
+          "min": 193,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 977.9743002544529,
+          "std": 4.4449389215958295,
+          "min": 960,
+          "max": 995
+        }
+      }
+    },
+    "2024": {
+      "union_real": {
+        "100": {
+          "count": 15720,
+          "mean": 191.61323155216286,
+          "std": 5.555700187176523,
+          "min": 154,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 901.4710559796438,
+          "std": 40.22316628839706,
+          "min": 754,
+          "max": 1000
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "count": 15720,
+          "mean": 199.12614503816795,
+          "std": 0.9250835320688056,
+          "min": 193,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 977.9643129770992,
+          "std": 4.39986828668919,
+          "min": 960,
+          "max": 991
+        }
+      }
+    },
+    "3407": {
+      "union_real": {
+        "100": {
+          "count": 15720,
+          "mean": 191.4902671755725,
+          "std": 5.692963106875961,
+          "min": 158,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 900.9284351145038,
+          "std": 40.641255009498195,
+          "min": 755,
+          "max": 1000
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "count": 15720,
+          "mean": 199.1291348600509,
+          "std": 0.9231217170336083,
+          "min": 194,
+          "max": 200
+        },
+        "500": {
+          "count": 15720,
+          "mean": 977.9849236641221,
+          "std": 4.414349050392606,
+          "min": 960,
+          "max": 993
+        }
+      }
+    }
+  },
+  "per_seed_validation": {
+    "42": {
+      "collaborative": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.22868956743002544
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.2209266646210494
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.21138211382113822
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.23924606845513413
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.22868956743002544
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.21882951653944022
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.23115458015267176
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.22868956743002544
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.3106545713269299
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.0
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.032432432432432434
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.22868956743002544
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3099653917827669
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.023977433004231313
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5161577608142494
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5210187173979748
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.47390506163126145
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5329555966697502
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5161577608142494
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.522264631043257
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5146310432569975
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5161577608142494
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.6691568836712913
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.1834658187599364
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5161577608142494
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6683822876918981
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.1368124118476728
+            }
+          }
+        }
+      },
+      "semantic_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.09266646210494016
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.07500655651717808
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.09354764107308049
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.09255725190839695
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.08794529262086515
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.09249377445748844
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.05731922398589065
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.08998410174880764
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.09255479634395243
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.08110014104372355
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.2859772936483584
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.2053501180173092
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.2574005550416281
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.2856234096692112
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.24196882951653945
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.26974386339381
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.15873015873015872
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.22480127186009538
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.26950039932558345
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.2075693464974142
+            }
+          }
+        }
+      },
+      "union_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.27932569974554705
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.27247621969929425
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.25177025963808025
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.29405642923219244
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.27932569974554705
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.2700381679389313
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.281647582697201
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.27932569974554705
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.35183208822483103
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.05731922398589065
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.11478537360890302
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.27932569974554705
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.35131777442541484
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.09943582510578279
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.6001841055538508
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5431418830317335
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.6110083256244219
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5992366412213741
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5905693384223919
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.7178939879046603
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.1657848324514991
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.3275039745627981
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.7171887478924484
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.2839680300893277
+            }
+          }
+        }
+      },
+      "semantic_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.010432648051549556
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.008392341987936008
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.007631822386679001
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.010178117048346057
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.007951653944020356
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.0080042689434365
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.008267090620031796
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.008075250687727393
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.008932769158439116
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.04234427738570114
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.051403094676108055
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.04475023126734505
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.04262086513994911
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.046676208651399494
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.045980078263963005
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.05026455026455026
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.04356120826709062
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.04605555062561008
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.045133991537376586
+            }
+          }
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23498727735368957
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.2279840441853329
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.21846315237345923
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.24491211840888066
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23498727735368957
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.22582697201017812
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.23727735368956743
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23498727735368957
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.315723941657773
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.04069952305246423
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23498727735368957
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3151122548584613
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.032910202162670425
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5383587786259542
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5434182264498313
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5014424337791765
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5527289546716003
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5383587786259542
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5448473282442748
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5367366412213741
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5383587786259542
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.6847207399501957
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.06172839506172839
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.21748807631160572
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5383587786259542
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6840003549560741
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.17512929007992478
+            }
+          }
+        }
+      }
+    },
+    "2024": {
+      "collaborative": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23142493638676845
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.22154034980055232
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.21584054550222923
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.24202127659574468
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23142493638676845
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.22105597964376592
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.23401717557251908
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23142493638676845
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.314034151547492
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.0
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.034022257551669315
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23142493638676845
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3133374744875322
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.025152797367183826
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5130407124681934
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5096655415771709
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.4770521898767375
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5301803885291397
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5130407124681934
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5108142493638677
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5135973282442748
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5130407124681934
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.666577730345073
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.020282186948853614
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.1739268680445151
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5130407124681934
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6661638122282367
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.1311706629055007
+            }
+          }
+        }
+      },
+      "semantic_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.09266646210494016
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.07500655651717808
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.09354764107308049
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.09255725190839695
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.08794529262086515
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.09249377445748844
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.05731922398589065
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.08998410174880764
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.09255479634395243
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.08110014104372355
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.2859772936483584
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.2053501180173092
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.2574005550416281
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.2856234096692112
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.24196882951653945
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.26974386339381
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.15873015873015872
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.22480127186009538
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.26950039932558345
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.2075693464974142
+            }
+          }
+        }
+      },
+      "union_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2816793893129771
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.27186253451979137
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.25780225544190927
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.29590656799259946
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2816793893129771
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.27067430025445294
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.28443066157760816
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2816793893129771
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.3549448594806119
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.05731922398589065
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.11542130365659778
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2816793893129771
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3544236400745408
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.0999059708509638
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5909033078880407
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5918993556305615
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5473380540257016
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.609736355226642
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5909033078880407
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5912849872773537
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5908078880407125
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5909033078880407
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.7171824973319103
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.1710758377425044
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.32114467408585057
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5909033078880407
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.716745052799716
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.27997179125528915
+            }
+          }
+        }
+      },
+      "semantic_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.010432648051549556
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.008392341987936008
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.007631822386679001
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.010178117048346057
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.007951653944020356
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.0080042689434365
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.008267090620031796
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.008075250687727393
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.008932769158439116
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.04234427738570114
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.051403094676108055
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.04475023126734505
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.04262086513994911
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.046676208651399494
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.045980078263963005
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.05026455026455026
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.04356120826709062
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.04605555062561008
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.045133991537376586
+            }
+          }
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23797709923664123
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.2289045719545873
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.22318384474167322
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.2479185938945421
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23797709923664123
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.22805343511450382
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.24045801526717558
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23797709923664123
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.31945926716471007
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.042289348171701116
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23797709923664123
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.31883929363741237
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.034085566525622946
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.535559796437659
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5323718932187788
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5053763440860215
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5500693802035153
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.535559796437659
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5337150127226463
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5360209923664122
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.535559796437659
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.6823194592671648
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.06878306878306878
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.2095389507154213
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.535559796437659
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6818706185109593
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.17042783262811473
+            }
+          }
+        }
+      }
+    },
+    "3407": {
+      "collaborative": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23307888040712468
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.22399509051856398
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.2129556779438762
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.24537465309898243
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23307888040712468
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.22423664122137404
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.23528944020356235
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23307888040712468
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.3143009605122732
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.003527336860670194
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.04006359300476948
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23307888040712468
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3136036915431715
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.0305594734367654
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.514440203562341
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5179502915004602
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.4752163650668765
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5304116558741906
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.514440203562341
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5200381679389313
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5130407124681934
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.514440203562341
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.6647100675916044
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.02292768959435626
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.18664546899841017
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.514440203562341
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.0
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6639453367645753
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.14221908791725435
+            }
+          }
+        }
+      },
+      "semantic_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.09266646210494016
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.07500655651717808
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.09354764107308049
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.09255725190839695
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.08794529262086515
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.09249377445748844
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.05731922398589065
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.08998410174880764
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.0888676844783715
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.09255479634395243
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.08110014104372355
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.2859772936483584
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.2053501180173092
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.2574005550416281
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.2856234096692112
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.24196882951653945
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.26974386339381
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.15873015873015872
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.22480127186009538
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.2506997455470738
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.26950039932558345
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.2075693464974142
+            }
+          }
+        }
+      },
+      "union_real": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2823155216284987
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.27615833077631174
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.25413060582218727
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.29706290471785385
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2823155216284987
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.27512722646310434
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.28411259541984735
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2823155216284987
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.3547669868374244
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.059964726631393295
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.11828298887122417
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.2823155216284987
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.04568527918781726
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.35424616203744785
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.10272684532204984
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5995704203743479
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5489116181484396
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.6086956521739131
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5992366412213741
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5905693384223919
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.7152258982568481
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.1746031746031746
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.3338632750397456
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5923027989821883
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.1065989847715736
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.7146153163546011
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.2907851433944523
+            }
+          }
+        }
+      },
+      "semantic_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.010432648051549556
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.008392341987936008
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.007631822386679001
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.010178117048346057
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.007951653944020356
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.0080042689434365
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.01146384479717813
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.008267090620031796
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.008396946564885497
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.008075250687727393
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.008932769158439116
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.04234427738570114
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.051403094676108055
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.04475023126734505
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.04262086513994911
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.046676208651399494
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.045980078263963005
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.05026455026455026
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.04356120826709062
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.045865139949109415
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.04605555062561008
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.045133991537376586
+            }
+          }
+        }
+      },
+      "union_shuffled": {
+        "100": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23931297709923663
+            },
+            "head": {
+              "count": 3259,
+              "Recall@100": 0.2310524700828475
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@100": 0.22029897718332023
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@100": 0.25080943570767805
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23931297709923663
+            },
+            "head": {
+              "count": 3144,
+              "Recall@100": 0.23091603053435114
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@100": 0.24141221374045801
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23931297709923663
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11244,
+              "Recall@100": 0.31937033084311633
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@100": 0.014991181657848324
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@100": 0.048012718600953894
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@100": 0.23931297709923663
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@100": 0.015228426395939087
+            },
+            "head": {
+              "count": 11269,
+              "Recall@100": 0.3187505546188659
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@100": 0.03925716972261401
+            }
+          }
+        },
+        "500": {
+          "user_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5374681933842239
+            },
+            "head": {
+              "count": 3259,
+              "Recall@500": 0.5421908560908254
+            },
+            "tail": {
+              "count": 3813,
+              "Recall@500": 0.5027537372147916
+            },
+            "torso": {
+              "count": 8648,
+              "Recall@500": 0.5509944495837188
+            }
+          },
+          "user_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5374681933842239
+            },
+            "head": {
+              "count": 3144,
+              "Recall@500": 0.5438931297709924
+            },
+            "tail": {
+              "count": 12576,
+              "Recall@500": 0.5358619592875318
+            }
+          },
+          "item_frequency": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5374681933842239
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11244,
+              "Recall@500": 0.6810743507648523
+            },
+            "tail": {
+              "count": 1134,
+              "Recall@500": 0.07142857142857142
+            },
+            "torso": {
+              "count": 3145,
+              "Recall@500": 0.22257551669316375
+            }
+          },
+          "item_paper": {
+            "overall": {
+              "count": 15720,
+              "Recall@500": 0.5374681933842239
+            },
+            "cold_start": {
+              "count": 197,
+              "Recall@500": 0.050761421319796954
+            },
+            "head": {
+              "count": 11269,
+              "Recall@500": 0.6803620551956695
+            },
+            "tail": {
+              "count": 4254,
+              "Recall@500": 0.18147625763986835
+            }
+          }
+        }
+      }
+    }
+  },
+  "aggregate_validation": {
+    "collaborative": {
+      "100": {
+        "user_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23106446140797285,
+              "std": 0.0022167484657683225
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.22215403498005526,
+              "std": 0.0016236583682507466
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.2133927790890812,
+              "std": 0.0022611272237743796
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.2422139993832871,
+              "std": 0.0030688343045579838
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23106446140797285,
+              "std": 0.0022167484657683225
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.22137404580152675,
+              "std": 0.0027175584431671463
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.2334870653095844,
+              "std": 0.002117788841755532
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23106446140797285,
+              "std": 0.0022167484657683225
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.0,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.31299656112889834,
+              "std": 0.0020326052076866884
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.0011757789535567313,
+              "std": 0.002036508886030426
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.03550609432962374,
+              "std": 0.004026162143767374
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23106446140797285,
+              "std": 0.0022167484657683225
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.0,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.3123021859378235,
+              "std": 0.002028095922906138
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.026563234602726846,
+              "std": 0.003510386582761655
+            }
+          }
+        }
+      },
+      "500": {
+        "user_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5145462256149279,
+              "std": 0.001561226474486846
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5162115168252019,
+              "std": 0.005872916935647137
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.4753912055249585,
+              "std": 0.0015808323559773803
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.5311825470243602,
+              "std": 0.0015398538664383198
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5145462256149279,
+              "std": 0.001561226474486846
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5177056827820187,
+              "std": 0.006071093427574425
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.5137563613231553,
+              "std": 0.0008070047364100204
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5145462256149279,
+              "std": 0.001561226474486846
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.0,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.666814893869323,
+              "std": 0.0022328744287501844
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.018224573780129334,
+              "std": 0.006002521415832491
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.1813460519342872,
+              "std": 0.006618969791625222
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5145462256149279,
+              "std": 0.001561226474486846
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.0,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.6661638122282367,
+              "std": 0.0022184754636613846
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.13673405422347595,
+              "std": 0.005524629286028001
+            }
+          }
+        }
+      }
+    },
+    "semantic_real": {
+      "100": {
+        "user_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.0888676844783715,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.09266646210494016,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.07500655651717808,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.09354764107308049,
+              "std": 0.0
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.0888676844783715,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.09255725190839696,
+              "std": 1.6996749443881478e-17
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.08794529262086515,
+              "std": 0.0
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.0888676844783715,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.04568527918781726,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.09249377445748845,
+              "std": 1.6996749443881478e-17
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.05731922398589065,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.08998410174880762,
+              "std": 1.6996749443881478e-17
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.0888676844783715,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.04568527918781726,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.09255479634395243,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.08110014104372355,
+              "std": 0.0
+            }
+          }
+        }
+      },
+      "500": {
+        "user_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.2506997455470738,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.2859772936483584,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.2053501180173092,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.2574005550416281,
+              "std": 0.0
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.2506997455470738,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.2856234096692112,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.24196882951653945,
+              "std": 0.0
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.2506997455470738,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.1065989847715736,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.26974386339381,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.15873015873015872,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.22480127186009538,
+              "std": 0.0
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.2506997455470738,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.1065989847715736,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.26950039932558345,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.2075693464974142,
+              "std": 0.0
+            }
+          }
+        }
+      }
+    },
+    "semantic_shuffled": {
+      "100": {
+        "user_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.008396946564885497,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.010432648051549554,
+              "std": 2.1245936804851847e-18
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.008392341987936008,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.007631822386679001,
+              "std": 0.0
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.008396946564885497,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.010178117048346057,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.007951653944020356,
+              "std": 0.0
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.008396946564885497,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.015228426395939085,
+              "std": 2.1245936804851847e-18
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.0080042689434365,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.01146384479717813,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.008267090620031796,
+              "std": 0.0
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.008396946564885497,
+              "std": 0.0
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.015228426395939085,
+              "std": 2.1245936804851847e-18
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.008075250687727393,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.008932769158439116,
+              "std": 0.0
+            }
+          }
+        }
+      },
+      "500": {
+        "user_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.04586513994910942,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.042344277385701144,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.05140309467610806,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.04475023126734504,
+              "std": 8.498374721940739e-18
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.04586513994910942,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.04262086513994911,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.046676208651399494,
+              "std": 0.0
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.04586513994910942,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.05076142131979696,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.045980078263963005,
+              "std": 0.0
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.05026455026455026,
+              "std": 0.0
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.04356120826709062,
+              "std": 0.0
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.04586513994910942,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.05076142131979696,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.046055550625610085,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.04513399153737659,
+              "std": 8.498374721940739e-18
+            }
+          }
+        }
+      }
+    },
+    "union_real": {
+      "100": {
+        "user_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.2811068702290076,
+              "std": 0.0015749896187200998
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.2734990283317991,
+              "std": 0.002323374591715353
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.2545677069673922,
+              "std": 0.003039660573601492
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.2956753006475486,
+              "std": 0.0015165213978496678
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.2811068702290076,
+              "std": 0.0015749896187200998
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.2719465648854962,
+              "std": 0.0027728364780793048
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.2833969465648855,
+              "std": 0.0015233177529157182
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.2811068702290076,
+              "std": 0.0015749896187200998
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.04568527918781726,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.35384797818095576,
+              "std": 0.001748075772299959
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.0582010582010582,
+              "std": 0.0015273816645228193
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.116163222045575,
+              "std": 0.0018631050165603547
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.2811068702290076,
+              "std": 0.0015749896187200998
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.04568527918781726,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.35332919217913455,
+              "std": 0.0017441977090905051
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.10068954709293214,
+              "std": 0.0017799430640339413
+            }
+          }
+        }
+      },
+      "500": {
+        "user_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5918363019508057,
+              "std": 0.000807996559934606
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5972179605195868,
+              "std": 0.004616256150719738
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.5464638517352914,
+              "std": 0.0029825547878717072
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.609813444341659,
+              "std": 0.001158262349777728
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5918363019508057,
+              "std": 0.000807996559934606
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5965860899067006,
+              "std": 0.004590889545082939
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.5906488549618322,
+              "std": 0.00013772668635247728
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5918363019508057,
+              "std": 0.000807996559934606
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.1065989847715736,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.7167674611644729,
+              "std": 0.0013816174786826737
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.17048794826572602,
+              "std": 0.004438468215914608
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.3275039745627981,
+              "std": 0.006359300476947521
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5918363019508057,
+              "std": 0.000807996559934606
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.1065989847715736,
+              "std": 0.0
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.7161830390155884,
+              "std": 0.0013756933125369066
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.2849083215796897,
+              "std": 0.0054676555475378415
+            }
+          }
+        }
+      }
+    },
+    "union_shuffled": {
+      "100": {
+        "user_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23742578456318916,
+              "std": 0.002214922227535124
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.22931369540758925,
+              "std": 0.0015745938752521878
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.22064865809948422,
+              "std": 0.0023796936076258667
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.2478800493370336,
+              "std": 0.0029488475872548716
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23742578456318916,
+              "std": 0.002214922227535124
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.22826547921967769,
+              "std": 0.0025511470346725913
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.23971586089906702,
+              "std": 0.0021650315793746997
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23742578456318916,
+              "std": 0.002214922227535124
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.015228426395939085,
+              "std": 2.1245936804851847e-18
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.3181845132218665,
+              "std": 0.0021313814144454913
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.01263962375073486,
+              "std": 0.002036508886030426
+            }
+          },
+          "torso": {
+            "Recall@100": {
+              "mean": 0.04366719660837307,
+              "std": 0.0038463693294380603
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@100": {
+              "mean": 0.23742578456318916,
+              "std": 0.002214922227535124
+            }
+          },
+          "cold_start": {
+            "Recall@100": {
+              "mean": 0.015228426395939085,
+              "std": 2.1245936804851847e-18
+            }
+          },
+          "head": {
+            "Recall@100": {
+              "mean": 0.3175673677049132,
+              "std": 0.0021266529970738156
+            }
+          },
+          "tail": {
+            "Recall@100": {
+              "mean": 0.03541764613696913,
+              "std": 0.0033766590544452675
+            }
+          }
+        }
+      },
+      "500": {
+        "user_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5371289228159456,
+              "std": 0.0014300012977173059
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5393269919198119,
+              "std": 0.00605447420965482
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.5031908383599966,
+              "std": 0.0020030490842537813
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.5512642614862782,
+              "std": 0.0013501603367357927
+            }
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5371289228159456,
+              "std": 0.0014300012977173059
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.5408184902459712,
+              "std": 0.006170264854517162
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.5362065309584394,
+              "std": 0.000465924401803663
+            }
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5371289228159456,
+              "std": 0.0014300012977173059
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.05076142131979696,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.6827048499940709,
+              "std": 0.0018534921181478318
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.06731334509112287,
+              "std": 0.005014321607651963
+            }
+          },
+          "torso": {
+            "Recall@500": {
+              "mean": 0.2165341812400636,
+              "std": 0.006570422359227921
+            }
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "Recall@500": {
+              "mean": 0.5371289228159456,
+              "std": 0.0014300012977173059
+            }
+          },
+          "cold_start": {
+            "Recall@500": {
+              "mean": 0.05076142131979696,
+              "std": 8.498374721940739e-18
+            }
+          },
+          "head": {
+            "Recall@500": {
+              "mean": 0.682077676220901,
+              "std": 0.0018279663448966537
+            }
+          },
+          "tail": {
+            "Recall@500": {
+              "mean": 0.17567779344930265,
+              "std": 0.0055445978907175866
+            }
+          }
+        }
+      }
+    }
+  },
+  "gains": {
+    "100": {
+      "overall": {
+        "real_union_minus_collaborative_per_seed": [
+          0.05063613231552161,
+          0.05025445292620864,
+          0.04923664122137403
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.05004240882103476,
+          "std": 0.0007234402930123833
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.04433842239185748,
+          0.04370229007633586,
+          0.04300254452926208
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.04368108566581847,
+          "std": 0.000668191317073302
+        }
+      },
+      "head": {
+        "real_union_minus_collaborative_per_seed": [
+          0.04117751689790111,
+          0.040910707933119905,
+          0.04046602632515123
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.040851417052057415,
+          "std": 0.00035943186449014837
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.03610814656705802,
+          0.035485592315901815,
+          0.03539665599430808
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.03566346495908931,
+          "std": 0.0003876644382373593
+        }
+      },
+      "torso": {
+        "real_union_minus_collaborative_per_seed": [
+          0.08235294117647059,
+          0.08139904610492846,
+          0.07821939586645468
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.08065712771595125,
+          "std": 0.002164343175056934
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.07408585055643879,
+          0.07313195548489666,
+          0.07027027027027027
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.0724960254372019,
+          "std": 0.0019856909374875655
+        }
+      },
+      "tail": {
+        "real_union_minus_collaborative_per_seed": [
+          0.05731922398589065,
+          0.05731922398589065,
+          0.0564373897707231
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.05702527924750147,
+          "std": 0.0005091272215076065
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.04585537918871252,
+          0.04585537918871252,
+          0.04497354497354497
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.04556143445032334,
+          "std": 0.0005091272215076065
+        }
+      },
+      "cold_start": {
+        "real_union_minus_collaborative_per_seed": [
+          0.04568527918781726,
+          0.04568527918781726,
+          0.04568527918781726
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.04568527918781726,
+          "std": 0.0
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.03045685279187817,
+          0.03045685279187817,
+          0.03045685279187817
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.03045685279187817,
+          "std": 0.0
+        }
+      }
+    },
+    "500": {
+      "overall": {
+        "real_union_minus_collaborative_per_seed": [
+          0.07614503816793894,
+          0.0778625954198473,
+          0.0778625954198473
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.07729007633587785,
+          "std": 0.0009916321417378876
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.053944020356234135,
+          0.05534351145038163,
+          0.05483460559796438
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.05470737913486005,
+          "std": 0.0007083669672811322
+        }
+      },
+      "head": {
+        "real_union_minus_collaborative_per_seed": [
+          0.048737104233368966,
+          0.05060476698683736,
+          0.05051583066524368
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.04995256729515,
+          "std": 0.0010535607520405492
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.033173247954464635,
+          0.034863038064745555,
+          0.03415154749199578
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.03406261117040199,
+          "std": 0.0008483984359808641
+        }
+      },
+      "torso": {
+        "real_union_minus_collaborative_per_seed": [
+          0.14403815580286172,
+          0.14721780604133547,
+          0.14721780604133544
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.14615792262851088,
+          "std": 0.0018357719211116673
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.1100158982511924,
+          0.11160572337042926,
+          0.11128775834658186
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.1109697933227345,
+          "std": 0.0008412563787168627
+        }
+      },
+      "tail": {
+        "real_union_minus_collaborative_per_seed": [
+          0.15432098765432098,
+          0.15079365079365079,
+          0.15167548500881833
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.1522633744855967,
+          "std": 0.0018356843028801875
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.10405643738977072,
+          0.10229276895943562,
+          0.10317460317460317
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.10317460317460318,
+          "std": 0.0008818342151675485
+        }
+      },
+      "cold_start": {
+        "real_union_minus_collaborative_per_seed": [
+          0.1065989847715736,
+          0.1065989847715736,
+          0.1065989847715736
+        ],
+        "real_union_minus_collaborative": {
+          "mean": 0.1065989847715736,
+          "std": 0.0
+        },
+        "real_union_minus_shuffled_union_per_seed": [
+          0.05583756345177665,
+          0.05583756345177665,
+          0.05583756345177665
+        ],
+        "real_union_minus_shuffled_union": {
+          "mean": 0.05583756345177665,
+          "std": 0.0
+        }
+      }
+    }
+  },
+  "acceptance": {
+    "validation_only_no_test_access": true,
+    "tail_union_absolute_gain_at_500_at_least_0p01": true,
+    "tail_real_union_beats_shuffled_all_seeds_at_500": true,
+    "tail_union_direction_positive_all_seeds_at_500": true,
+    "head_union_not_below_collaborative_at_500": true
+  }
+}

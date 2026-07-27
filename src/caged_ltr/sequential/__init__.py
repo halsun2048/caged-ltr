@@ -12,6 +12,10 @@ from caged_ltr.sequential.calibrated_fusion import (
     score_diagnostics,
     validation_metrics,
 )
+from caged_ltr.sequential.candidate_retrieval import (
+    CandidateRetrievalEvaluation,
+    evaluate_full_catalog_retrieval,
+)
 from caged_ltr.sequential.semantic_audit import (
     FullCatalogEvaluation,
     checkpoint_embedding_drift,
@@ -25,6 +29,7 @@ from caged_ltr.sequential.yelp_runner import (
 )
 
 __all__ = [
+    "CandidateRetrievalEvaluation",
     "FullCatalogEvaluation",
     "ValidationScoreBundle",
     "YelpSASRecRunConfig",
@@ -32,6 +37,7 @@ __all__ = [
     "checkpoint_embedding_drift",
     "confidence_aware_scores",
     "evaluate_full_catalog",
+    "evaluate_full_catalog_retrieval",
     "evaluate_yelp_test_checkpoint",
     "export_locked_test_scores",
     "export_validation_scores",
