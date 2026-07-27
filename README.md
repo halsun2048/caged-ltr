@@ -134,3 +134,8 @@ uv --cache-dir .uv-cache run --frozen \
 显示进度条。作者版 Beauty 的 52,204 用户和 57,289 物品与论文一致；其中
 1,706 个不足三次交互的用户依作者代码保留为仅训练用户。协议和运行状态见
 [`docs/experiments/beauty_r1_4.md`](docs/experiments/beauty_r1_4.md)。
+
+三种子正式结果中，置信门控 NDCG@10 为 `0.160692 ± 0.001793`，超过
+LLMInit 的 `0.143487 ± 0.001889` 和固定融合的 `0.159443 ± 0.001792`；
+Tail 相对固定融合获得 `+0.007048` 绝对增益。完整输出见
+`reports/experiments/beauty_r1_4.json`。
