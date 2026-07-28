@@ -1,0 +1,918 @@
+{
+  "aggregate": {
+    "lightgcn": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.0004895251309681669,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.00045372050816696913,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.0012556154733412742,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0008791844729344729,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0012062814304009055,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.001282051282051282,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.0009899432824384744,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0022727272727272726,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.004881180689081455,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0104325374071647,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.005259641393790222,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.011644525621826054,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "rlmrec_con": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.003962363033030859,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.004603338043003659,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.0053386673900326755,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0027268524624813467,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.002439759174745827,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0033755274261603376,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0016672121868334642,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0006868131868131869,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.003980862349730947,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.005697295536005213,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.006942485926655808,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.011521909080502829,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.005638651156045728,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.011515858612047361,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "semantic_only": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.0016811644228677117,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0011998562025616697,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.00963362578357162,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.015822784810126583,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0015011387167064058,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.002232142857142857,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.0012416895336878303,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0013426500321661611,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0009638397559162471,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0015822784810126582,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.001599736737378535,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.003658848713295174,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "shuffled_con": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.002337643848168179,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0015620948924034224,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.002701007025002956,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0012803741340094471,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0011530683952336463,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.002109704641350211,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0007180292062034511,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0006868131868131869,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.00190169377870915,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.002565982404692082,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.008490740918924572,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.011532738095238094,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.008711651732327548,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.012986849307175986,
+            "std": 0.0
+          }
+        }
+      }
+    }
+  },
+  "interpretation_boundary": "Public profile embeddings have no verifiable train-only cutoff; results are a structure reproduction and cannot establish leakage-free semantic gains.",
+  "runs": {
+    "lightgcn_seed42": {
+      "artifacts": {
+        "item_semantics_pca64.npy": "79cbc4bcc0c35acb056a00ce28f977b33f38fa9aa52475b9fcc5d650a5397d3b",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics_pca64.npy": "813abdf71bf29addf27b6957e4188d1c64c288763570da0bee4bf776b24d70cb",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 0,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 256,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "auto",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 128,
+        "evaluation_interval": 1,
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": 2,
+        "max_epochs": 1,
+        "max_eval_users": 128,
+        "output_dir": "runs/rlmrec_r2_smoke/lightgcn_seed42",
+        "patience": 1,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "variant": "lightgcn"
+      },
+      "device": "cpu",
+      "elapsed_seconds": 0.27608626399887726,
+      "epochs_ran": 1,
+      "parameters": 707232,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "CPU structure reproduction with joint PCA64",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.0007339923934622501,
+          "NDCG@20": 0.0004895251309681669,
+          "NDCG@5": 0.0011310782544167396,
+          "Recall@10": 0.00045372050816696913,
+          "Recall@20": 0.00045372050816696913,
+          "Recall@5": 0.00045372050816696913,
+          "users": 116
+        },
+        "overall": {
+          "NDCG@10": 0.0015249140686770398,
+          "NDCG@20": 0.0012556154733412742,
+          "NDCG@5": 0.002349884219915233,
+          "Recall@10": 0.0005898326210826211,
+          "Recall@20": 0.0008791844729344729,
+          "Recall@5": 0.0005898326210826211,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.0009825525281164295,
+          "NDCG@20": 0.0012062814304009055,
+          "NDCG@5": 0.001514108059257215,
+          "Recall@10": 0.0006868131868131869,
+          "Recall@20": 0.001282051282051282,
+          "Recall@5": 0.0006868131868131869,
+          "users": 112
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0009899432824384744,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0022727272727272726,
+          "Recall@5": 0.0,
+          "users": 110
+        },
+        "overall": {
+          "NDCG@10": 0.004429563606065927,
+          "NDCG@20": 0.004881180689081455,
+          "NDCG@5": 0.0011411589831461441,
+          "Recall@10": 0.009058779761904761,
+          "Recall@20": 0.0104325374071647,
+          "Recall@5": 0.00013020833333333333,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.005261172062814407,
+          "NDCG@20": 0.005259641393790222,
+          "NDCG@5": 0.0012592099124371246,
+          "Recall@10": 0.011515858612047361,
+          "Recall@20": 0.011644525621826054,
+          "Recall@5": 0.00022686025408348456,
+          "users": 116
+        }
+      },
+      "variant": "lightgcn"
+    },
+    "rlmrec_con_seed42": {
+      "artifacts": {
+        "item_semantics_pca64.npy": "79cbc4bcc0c35acb056a00ce28f977b33f38fa9aa52475b9fcc5d650a5397d3b",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics_pca64.npy": "813abdf71bf29addf27b6957e4188d1c64c288763570da0bee4bf776b24d70cb",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 0,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 256,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "auto",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 128,
+        "evaluation_interval": 1,
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": 2,
+        "max_epochs": 1,
+        "max_eval_users": 128,
+        "output_dir": "runs/rlmrec_r2_smoke/rlmrec_con_seed42",
+        "patience": 1,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "variant": "rlmrec_con"
+      },
+      "device": "cpu",
+      "elapsed_seconds": 0.2978919400484301,
+      "epochs_ran": 1,
+      "parameters": 711920,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "CPU structure reproduction with joint PCA64",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.0030925033397496333,
+          "NDCG@20": 0.003962363033030859,
+          "NDCG@5": 0.0037240539453576864,
+          "Recall@10": 0.0014853475517880156,
+          "Recall@20": 0.004603338043003659,
+          "Recall@5": 0.0011105349580848673,
+          "users": 116
+        },
+        "overall": {
+          "NDCG@10": 0.0056315719600520675,
+          "NDCG@20": 0.0053386673900326755,
+          "NDCG@5": 0.006024612991680529,
+          "Recall@10": 0.0013659931582060577,
+          "Recall@20": 0.0027268524624813467,
+          "Recall@5": 0.0007860466449761861,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.002169746110423578,
+          "NDCG@20": 0.002439759174745827,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.003013863773357444,
+          "Recall@20": 0.0033755274261603376,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.001965105056232859,
+          "NDCG@20": 0.0016672121868334642,
+          "NDCG@5": 0.00302821611851443,
+          "Recall@10": 0.0006868131868131869,
+          "Recall@20": 0.0006868131868131869,
+          "Recall@5": 0.0006868131868131869,
+          "users": 112
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.003538939221819447,
+          "NDCG@20": 0.003980862349730947,
+          "NDCG@5": 0.0030832745933965103,
+          "Recall@10": 0.0034245682632779405,
+          "Recall@20": 0.005697295536005213,
+          "Recall@5": 0.0013033561420658195,
+          "users": 110
+        },
+        "overall": {
+          "NDCG@10": 0.007651855003679421,
+          "NDCG@20": 0.006942485926655808,
+          "NDCG@5": 0.006813135643366126,
+          "Recall@10": 0.010219825747169495,
+          "Recall@20": 0.011521909080502829,
+          "Recall@5": 0.00882330560064935,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.005833151232011786,
+          "NDCG@20": 0.005638651156045728,
+          "NDCG@5": 0.004594147905838345,
+          "Recall@10": 0.011515858612047361,
+          "Recall@20": 0.011515858612047361,
+          "Recall@5": 0.009852216748768473,
+          "users": 116
+        }
+      },
+      "variant": "rlmrec_con"
+    },
+    "semantic_only_seed42": {
+      "artifacts": {
+        "item_semantics_pca64.npy": "79cbc4bcc0c35acb056a00ce28f977b33f38fa9aa52475b9fcc5d650a5397d3b",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics_pca64.npy": "813abdf71bf29addf27b6957e4188d1c64c288763570da0bee4bf776b24d70cb",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 0,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 256,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "auto",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 128,
+        "evaluation_interval": 1,
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": 2,
+        "max_epochs": 1,
+        "max_eval_users": 128,
+        "output_dir": "runs/rlmrec_r2_smoke/semantic_only_seed42",
+        "patience": 1,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "variant": "semantic_only"
+      },
+      "device": "cpu",
+      "elapsed_seconds": 0.07015076000243425,
+      "epochs_ran": 1,
+      "parameters": 4688,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "CPU structure reproduction with joint PCA64",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 116
+        },
+        "overall": {
+          "NDCG@10": 0.002398552580800511,
+          "NDCG@20": 0.0016811644228677117,
+          "NDCG@5": 0.0028129266763846405,
+          "Recall@10": 0.0011998562025616697,
+          "Recall@20": 0.0011998562025616697,
+          "Recall@5": 0.0007115749525616698,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.00963362578357162,
+          "NDCG@20": 0.00963362578357162,
+          "NDCG@5": 0.007986452576853893,
+          "Recall@10": 0.015822784810126583,
+          "Recall@20": 0.015822784810126583,
+          "Recall@5": 0.012658227848101266,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.0015011387167064058,
+          "NDCG@20": 0.0015011387167064058,
+          "NDCG@5": 0.0015011387167064058,
+          "Recall@10": 0.002232142857142857,
+          "Recall@20": 0.002232142857142857,
+          "Recall@5": 0.002232142857142857,
+          "users": 112
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 110
+        },
+        "overall": {
+          "NDCG@10": 0.0005176111207374144,
+          "NDCG@20": 0.0012416895336878303,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.00025201612903225806,
+          "Recall@20": 0.0013426500321661611,
+          "Recall@5": 0.0,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0009638397559162471,
+          "NDCG@20": 0.0009638397559162471,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0015822784810126582,
+          "Recall@20": 0.0015822784810126582,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.001599736737378535,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.003658848713295174,
+          "Recall@5": 0.0,
+          "users": 116
+        }
+      },
+      "variant": "semantic_only"
+    },
+    "shuffled_con_seed42": {
+      "artifacts": {
+        "item_semantics_pca64.npy": "79cbc4bcc0c35acb056a00ce28f977b33f38fa9aa52475b9fcc5d650a5397d3b",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics_pca64.npy": "813abdf71bf29addf27b6957e4188d1c64c288763570da0bee4bf776b24d70cb",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 0,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 256,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "auto",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 128,
+        "evaluation_interval": 1,
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": 2,
+        "max_epochs": 1,
+        "max_eval_users": 128,
+        "output_dir": "runs/rlmrec_r2_smoke/shuffled_con_seed42",
+        "patience": 1,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "variant": "shuffled_con"
+      },
+      "device": "cpu",
+      "elapsed_seconds": 0.2840660020010546,
+      "epochs_ran": 1,
+      "parameters": 711920,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "CPU structure reproduction with joint PCA64",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.0032298802230730905,
+          "NDCG@20": 0.002337643848168179,
+          "NDCG@5": 0.004054873127465154,
+          "Recall@10": 0.0015620948924034224,
+          "Recall@20": 0.0015620948924034224,
+          "Recall@5": 0.0007000259268861809,
+          "users": 116
+        },
+        "overall": {
+          "NDCG@10": 0.004185224169534519,
+          "NDCG@20": 0.002701007025002956,
+          "NDCG@5": 0.00481588775491144,
+          "Recall@10": 0.0012803741340094471,
+          "Recall@20": 0.0012803741340094471,
+          "Recall@5": 0.0006513483691141171,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0011530683952336463,
+          "NDCG@20": 0.0011530683952336463,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.002109704641350211,
+          "Recall@20": 0.002109704641350211,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.0008463246818709892,
+          "NDCG@20": 0.0007180292062034511,
+          "NDCG@5": 0.0013041816950241647,
+          "Recall@10": 0.0006868131868131869,
+          "Recall@20": 0.0006868131868131869,
+          "Recall@5": 0.0006868131868131869,
+          "users": 112
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.002106802949727902,
+          "NDCG@20": 0.00190169377870915,
+          "NDCG@5": 0.0015284321479192497,
+          "Recall@10": 0.002565982404692082,
+          "Recall@20": 0.002565982404692082,
+          "Recall@5": 0.0022727272727272726,
+          "users": 110
+        },
+        "overall": {
+          "NDCG@10": 0.007850045231968372,
+          "NDCG@20": 0.008490740918924572,
+          "NDCG@5": 0.00823649633413447,
+          "Recall@10": 0.010328311011904762,
+          "Recall@20": 0.011532738095238094,
+          "Recall@5": 0.010230654761904762,
+          "users": 128
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 79
+        },
+        "torso": {
+          "NDCG@10": 0.007468751204006759,
+          "NDCG@20": 0.008711651732327548,
+          "NDCG@5": 0.007829337766607809,
+          "Recall@10": 0.011288998357963875,
+          "Recall@20": 0.012986849307175986,
+          "Recall@5": 0.011288998357963875,
+          "users": 116
+        }
+      },
+      "variant": "shuffled_con"
+    }
+  },
+  "seeds": [
+    42
+  ],
+  "smoke": true,
+  "stage": "complete",
+  "variants": [
+    "lightgcn",
+    "semantic_only",
+    "rlmrec_con",
+    "shuffled_con"
+  ]
+}

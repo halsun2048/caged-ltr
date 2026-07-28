@@ -1,0 +1,41 @@
+dataset:
+  name: Yelp preprocessed by RLMRec authors
+  paper: RLMRec (WWW 2024)
+  source_repository: https://github.com/HKUDS/RLMRec
+  source_repository_commit: 22413752246de3dee8ab0d509f7f7a8889080f95
+  source_archive: https://archive.org/download/rlmrec_data/data.zip
+  archive_sha256: f7d283fc4b296764294ab836952ff9dda3556e743423da6cc538657c205ab997
+  prepared_on: 2026-07-28
+
+paths:
+  raw: data/raw/rlmrec/official/yelp
+  processed: data/processed/rlmrec_yelp_author
+  report: reports/data/rlmrec_yelp_author_summary.json
+
+split:
+  strategy: preserve_author_sparse_matrices
+  train_interactions: 166620
+  validation_interactions: 55479
+  test_interactions: 55436
+  users: 11091
+  items: 11010
+
+evaluation:
+  ranking: full catalog
+  mask: training interactions only
+  checkpoint_selection: validation Recall@20
+  test_access: once after checkpoint selection
+
+security:
+  pickle_policy: allowlisted non-executing pickletools decoder
+
+semantic_provenance:
+  profile_input: raw interactions and reviews
+  train_only_cutoff_documented: false
+  status: temporally_unverified
+  allowed_claim: official-structure reproduction only
+
+local_adaptation:
+  method: joint PCA64 of public user/item profile embeddings
+  random_state: 20240728
+  reason: CPU-feasible local structure reproduction

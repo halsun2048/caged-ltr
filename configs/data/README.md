@@ -8,3 +8,7 @@ Yelp 包含两个不可混用的配置：`yelp_llmesr_author.yaml` 用于论文�
 
 Fashion 与 Beauty 使用 LLM-ESR 作者包中已经编号的交互序列。Beauty 中不足三次
 交互的用户依作者 loader 保留为 train-only，不应强行构造验证或测试目标。
+
+RLMRec Yelp 使用作者公开的稀疏矩阵和 profile embedding。profile 生成截止时间
+不可验证，配置必须保留 `temporally_unverified` 标记；不得与严格 train-only
+语义资产混用。

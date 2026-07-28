@@ -151,3 +151,25 @@ uv --cache-dir .uv-cache run --frozen \
 缩小到 `+0.000164`/`+0.000644`，Tail 未达到预设 `0.005` 实际规模阈值。
 协议敏感性和配对置信区间见
 [`docs/experiments/beauty_r1_5.md`](docs/experiments/beauty_r1_5.md)。
+
+## RLMRec R2
+
+R2 使用作者公开 Yelp split 搭建 LightGCN、semantic-only、RLMRec-Con 和
+shuffled-Con。外部 SciPy/NumPy pickle 通过非执行式 allowlist 解码；公开
+profile embedding 的训练截止时间不可验证，因此本地结果明确标记为 PCA64
+结构复现，而不是严格无泄漏数值复现。
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/prepare_rlmrec_yelp.py
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_rlmrec_r2.py --smoke --progress
+```
+
+正式训练支持每 epoch checkpoint、断点续跑以及训练/全目录评测进度条。协议、
+作者代码差异和首轮正式命令见
+[`docs/experiments/rlmrec_r2.md`](docs/experiments/rlmrec_r2.md)。
+
+Seed 42 中 LightGCN 的 Recall/NDCG@20 为 `0.115823/0.073247`，基本重现论文
+`0.1157/0.0733`；PCA64 RLMRec-Con 为 `0.116277/0.073074`，未重现论文的
+整体增益，因此暂不扩展三种子。

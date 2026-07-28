@@ -1,0 +1,61 @@
+{
+  "dataset": "RLMRec public Yelp",
+  "local_structure_reproduction": {
+    "adaptation": "Joint deterministic PCA reduces the public 1536-dimensional user/item profile embeddings to 64 dimensions for CPU training.",
+    "enabled": true,
+    "faithfulness": "This changes the published semantic encoder output and is therefore a structure reproduction, not an exact numerical reproduction.",
+    "pca_random_state": 20240728
+  },
+  "protocol": {
+    "official_embedding_dimension": 32,
+    "official_lightgcn_layers": 3,
+    "ranking": "full catalog with training interactions masked",
+    "test_access": "once after checkpoint selection",
+    "validation_selection_metric": "Recall@20"
+  },
+  "safety": {
+    "decoder": "allowlisted pickletools bytecode extraction",
+    "pickle_load_used": false
+  },
+  "semantic_provenance_audit": {
+    "consequence": "Use only as an official-structure reproduction. Do not interpret semantic gains as strict leakage-free evidence.",
+    "profile_generation_inputs": "raw interaction and review text",
+    "split_cutoff_documented": false,
+    "status": "temporally_unverified",
+    "train_only_provenance_verifiable": false
+  },
+  "source": {
+    "archive": "https://archive.org/download/rlmrec_data/data.zip",
+    "archive_sha256": "f7d283fc4b296764294ab836952ff9dda3556e743423da6cc538657c205ab997",
+    "artifact_sha256": {
+      "itm_emb_np.pkl": "1fe3195f90ae39428eb491d80339d3e520cfe2a837f0c8175f71ebdf143a9315",
+      "itm_prf.pkl": "73851996b2bd7f4d210c1c16d166b522abe84fb7f88d149736e7b4760836a7c8",
+      "trn_mat.pkl": "2306f5b9de8f3dd3342744d937a45b04abd22ede422304a549fb324e12e5f6bd",
+      "tst_mat.pkl": "3007de4f5955223bf7752f59cadb3b069d92acb879987e7eee286f252772a564",
+      "usr_emb_np.pkl": "963b39db0b7f10fd6a673c61cdc620fe981a6d7acc6cf9515f419679013b4520",
+      "usr_prf.pkl": "bb3736724cfe8cce89b4872eeb901ff2a59777554c61a76dd2742a4318eb3424",
+      "val_mat.pkl": "33aaf3bd27bd25d7d3e8223700fbd2d5400feec217c9ce09c87785460bcb355b"
+    },
+    "repository": "https://github.com/HKUDS/RLMRec",
+    "repository_commit_audited": "22413752246de3dee8ab0d509f7f7a8889080f95"
+  },
+  "statistics": {
+    "interactions": {
+      "test": 55436,
+      "train": 166620,
+      "validation": 55479
+    },
+    "items": 11010,
+    "items_with_no_train_interaction": 0,
+    "local_semantic_dimension": 64,
+    "pca64_explained_variance_ratio": 0.622541069984436,
+    "semantic_dimension": 1536,
+    "split_pair_overlaps": {
+      "train_test": 0,
+      "train_validation": 0,
+      "validation_test": 0
+    },
+    "users": 11091,
+    "users_with_no_train_interaction": 0
+  }
+}
