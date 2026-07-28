@@ -3,6 +3,7 @@ report_path: reports/data/yelp_llmesr_author_summary.json
 output_dir: runs/yelp_sasrec
 model: sasrec
 semantic_path: data/processed/yelp_llmesr_author/pca64_item_embeddings.npy
+raw_semantic_path: data/processed/yelp_llmesr_author/raw_item_embeddings.npy
 seed: 42
 evaluation_seed: 20240722
 max_users: null

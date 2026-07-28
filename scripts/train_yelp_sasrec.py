@@ -21,8 +21,19 @@ def main() -> None:
         default=Path("configs/reproduction/yelp_sasrec_smoke.yaml"),
     )
     parser.add_argument(
-        "--model", choices=("sasrec", "llm_init", "semantic_only", "late_fusion")
+        "--model",
+        choices=(
+            "sasrec",
+            "llm_init",
+            "semantic_only",
+            "late_fusion",
+            "dual_view",
+            "dual_view_no_ca",
+            "dual_view_unshared",
+            "dual_view_capacity",
+        ),
     )
+    parser.add_argument("--raw-semantic-path", type=Path)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--max-users", type=int)
@@ -47,6 +58,7 @@ def main() -> None:
         max_users=args.max_users,
         max_epochs=args.max_epochs,
         semantic_weight=args.semantic_weight,
+        raw_semantic_path=args.raw_semantic_path,
         test_after_selection=False if args.validation_only else None,
     )
     if args.test_checkpoint is not None:

@@ -1,0 +1,21 @@
+{
+  "created_at_utc": "2026-07-27T11:03:56.077755+00:00",
+  "dataset": "yelp",
+  "decoder": "non-executing pickletools opcode validation plus numpy.frombuffer",
+  "kind": "item",
+  "output": {
+    "dtype": "float32",
+    "finite": true,
+    "path": "data/processed/yelp_llmesr_author/raw_item_embeddings.npy",
+    "sha256": "b551517c6c397b3049587597372321243a3ee7832b4b077d87102ae42db6d067",
+    "shape": [
+      11383,
+      1536
+    ]
+  },
+  "pickle_load_called": false,
+  "source": {
+    "path": "data/processed/yelp_llmesr_author/author_assets/itm_emb_np.pkl",
+    "sha256": "ea1ca9e8d2574d6f79dfc406e39f5ebf66079a7a881859b9a9d78446dca79335"
+  }
+}

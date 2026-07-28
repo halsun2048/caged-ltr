@@ -23,6 +23,7 @@ from caged_ltr.data.sequential import (
     load_yelp_author_sequences,
 )
 from caged_ltr.models import (
+    DualViewSASRec,
     FrozenSemanticLateFusion,
     FrozenSemanticOnly,
     SASRec,
@@ -38,6 +39,7 @@ class YelpSASRecRunConfig:
     output_dir: Path
     model: str = "sasrec"
     semantic_path: Path | None = None
+    raw_semantic_path: Path | None = None
     seed: int = 42
     evaluation_seed: int = 20240722
     max_users: int | None = None
@@ -60,12 +62,24 @@ class YelpSASRecRunConfig:
     test_after_selection: bool = True
 
     def __post_init__(self) -> None:
-        if self.model not in {"sasrec", "llm_init", "semantic_only", "late_fusion"}:
+        supported_models = {
+            "sasrec",
+            "llm_init",
+            "semantic_only",
+            "late_fusion",
+            "dual_view",
+            "dual_view_no_ca",
+            "dual_view_unshared",
+            "dual_view_capacity",
+        }
+        if self.model not in supported_models:
             raise ValueError(
-                "model must be sasrec, llm_init, semantic_only, or late_fusion"
+                f"model must be one of {sorted(supported_models)}"
             )
         if self.model != "sasrec" and self.semantic_path is None:
             raise ValueError("semantic_path is required by semantic model variants")
+        if self.model.startswith("dual_view") and self.raw_semantic_path is None:
+            raise ValueError("raw_semantic_path is required by dual-view variants")
         positive = (
             self.max_length,
             self.hidden_dim,
@@ -100,7 +114,13 @@ class YelpSASRecRunConfig:
             key: value for key, value in overrides.items() if value is not None
         }
         values = {**payload, **selected_overrides}
-        for key in ("processed_dir", "report_path", "output_dir", "semantic_path"):
+        for key in (
+            "processed_dir",
+            "report_path",
+            "output_dir",
+            "semantic_path",
+            "raw_semantic_path",
+        ):
             if values.get(key) is not None:
                 values[key] = Path(values[key])
         return cls(**values)
@@ -123,11 +143,25 @@ def _load_semantics(config: YelpSASRecRunConfig, num_items: int) -> np.ndarray |
     return np.asarray(array, dtype=np.float32)
 
 
+def _load_raw_semantics(
+    config: YelpSASRecRunConfig, num_items: int
+) -> np.ndarray | None:
+    if not config.model.startswith("dual_view"):
+        return None
+    if config.raw_semantic_path is None:
+        raise ValueError("raw_semantic_path was not configured")
+    array = np.load(config.raw_semantic_path, allow_pickle=False, mmap_mode="r")
+    if array.ndim != 2 or array.shape[0] != num_items or not np.isfinite(array).all():
+        raise ValueError("raw semantic NPY must be finite with one row per item")
+    return np.asarray(array, dtype=np.float32)
+
+
 def _build_model(
     config: YelpSASRecRunConfig,
     data: YelpSequenceData,
     semantic_items: np.ndarray | None,
-) -> SASRec | FrozenSemanticOnly:
+    raw_semantic_items: np.ndarray | None = None,
+) -> SASRec | FrozenSemanticOnly | DualViewSASRec:
     model_config = SASRecConfig(
         num_items=data.num_items,
         max_length=config.max_length,
@@ -145,7 +179,18 @@ def _build_model(
         return SASRec(model_config, item_initialization=semantic_items)
     if config.model == "semantic_only":
         return FrozenSemanticOnly(model_config, semantic_items)
-    return FrozenSemanticLateFusion(model_config, semantic_items)
+    if config.model == "late_fusion":
+        return FrozenSemanticLateFusion(model_config, semantic_items)
+    if raw_semantic_items is None:
+        raise ValueError("raw semantic item array was not loaded")
+    return DualViewSASRec(
+        model_config,
+        raw_semantic_items,
+        semantic_items,
+        use_cross_attention=config.model in {"dual_view", "dual_view_unshared"},
+        share_encoder=config.model != "dual_view_unshared",
+        capacity_control=config.model == "dual_view_capacity",
+    )
 
 
 def _bucket_metrics(
@@ -176,7 +221,7 @@ def _bucket_metrics(
 
 
 def _evaluate(
-    model: SASRec | FrozenSemanticOnly,
+    model: SASRec | FrozenSemanticOnly | DualViewSASRec,
     data: YelpSequenceData,
     config: YelpSASRecRunConfig,
     *,
@@ -265,7 +310,10 @@ def run_yelp_sasrec(
         max_users=config.max_users,
     )
     semantic_items = _load_semantics(config, data.num_items)
-    model = _build_model(config, data, semantic_items).to(device)
+    raw_semantic_items = _load_raw_semantics(config, data.num_items)
+    model = _build_model(
+        config, data, semantic_items, raw_semantic_items
+    ).to(device)
     history: list[dict[str, Any]] = []
     started = time.perf_counter()
     if isinstance(model, FrozenSemanticOnly):
@@ -380,6 +428,12 @@ def run_yelp_sasrec(
             if semantic_items is not None and config.semantic_path is not None
             else None
         ),
+        "raw_semantic_sha256": (
+            sha256_file(config.raw_semantic_path)
+            if raw_semantic_items is not None
+            and config.raw_semantic_path is not None
+            else None
+        ),
         "selected_users": len(data.train_histories),
         "training_users": training_users,
         "num_items": data.num_items,
@@ -391,9 +445,11 @@ def run_yelp_sasrec(
             "trainable": sum(
                 parameter.numel() for parameter in model.parameters() if parameter.requires_grad
             ),
-            "frozen_semantic_values": int(model.semantic_items.numel())
-            if isinstance(model, FrozenSemanticLateFusion | FrozenSemanticOnly)
-            else 0,
+            "frozen_semantic_values": (
+                int(model.semantic_items.numel())
+                if isinstance(model, FrozenSemanticLateFusion | FrozenSemanticOnly)
+                else int(getattr(model, "frozen_semantic_values", 0))
+            ),
         },
         "validation": validation_metrics,
         "test": test_metrics,
@@ -417,6 +473,24 @@ def run_yelp_sasrec(
                 "once after checkpoint selection"
                 if config.test_after_selection
                 else "not evaluated; validation-only run"
+            ),
+            "architecture": (
+                {
+                    "views": "frozen raw semantic adapter plus trainable PCA64 collaborative",
+                    "shared_sequence_encoder": model.share_encoder,
+                    "bidirectional_cross_attention": model.use_cross_attention,
+                    "capacity_matched_positionwise_control": model.capacity_control,
+                    "cross_attention_mask": (
+                        "causal plus padding"
+                        if model.use_cross_attention
+                        else "not applicable"
+                    ),
+                    "author_code_difference": (
+                        "cross attention adds a causal mask to prevent future leakage"
+                    ),
+                }
+                if isinstance(model, DualViewSASRec)
+                else None
             ),
         },
     }
@@ -445,7 +519,10 @@ def evaluate_yelp_test_checkpoint(
         max_users=config.max_users,
     )
     semantic_items = _load_semantics(config, data.num_items)
-    model = _build_model(config, data, semantic_items).to(device)
+    raw_semantic_items = _load_raw_semantics(config, data.num_items)
+    model = _build_model(
+        config, data, semantic_items, raw_semantic_items
+    ).to(device)
     checkpoint = checkpoint_path or config.output_dir / "best_model.pt"
     state = torch.load(checkpoint, map_location=device, weights_only=True)
     model.load_state_dict(state["state_dict"])
