@@ -1,0 +1,408 @@
+{
+  "experiment": "R1.2a-control-semantic-identity",
+  "dataset": "yelp",
+  "status": "stopped_after_identity_controls",
+  "seed": 42,
+  "control_seed": 20240725,
+  "split": "validation",
+  "test_accessed": false,
+  "control_report": "reports/data/yelp_raw_semantic_controls.json",
+  "thresholds": {
+    "minimum_overall_gain_over_each_identity_control": 0.003,
+    "minimum_tail_gain_over_each_identity_control": 0.005
+  },
+  "variants": {
+    "real_raw": {
+      "model": "dual_view_no_ca",
+      "seed": 42,
+      "best_epoch": 38,
+      "epochs_ran": 58,
+      "elapsed_seconds": 9322.051856849983,
+      "semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "raw_semantic_sha256": "b551517c6c397b3049587597372321243a3ee7832b4b077d87102ae42db6d067",
+      "parameters": {
+        "total": 19507456,
+        "trainable": 2021632,
+        "frozen_semantic_values": 17485824
+      },
+      "validation": {
+        "user_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6718829516539441,
+            "NDCG@10": 0.4265841823373533
+          },
+          "head": {
+            "count": 3259,
+            "Hit@10": 0.6695305308376802,
+            "NDCG@10": 0.4237720608742694
+          },
+          "tail": {
+            "count": 3813,
+            "Hit@10": 0.6349331235247836,
+            "NDCG@10": 0.39803999705610726
+          },
+          "torso": {
+            "count": 8648,
+            "Hit@10": 0.6890610545790934,
+            "NDCG@10": 0.4402293814961855
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6718829516539441,
+            "NDCG@10": 0.4265841823373533
+          },
+          "head": {
+            "count": 3144,
+            "Hit@10": 0.669529262086514,
+            "NDCG@10": 0.4240877319323931
+          },
+          "tail": {
+            "count": 12576,
+            "Hit@10": 0.6724713740458015,
+            "NDCG@10": 0.4272082949385934
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6718829516539441,
+            "NDCG@10": 0.4265841823373533
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11244,
+            "Hit@10": 0.8267520455353966,
+            "NDCG@10": 0.5424497752863159
+          },
+          "tail": {
+            "count": 1134,
+            "Hit@10": 0.08289241622574955,
+            "NDCG@10": 0.031651878766230546
+          },
+          "torso": {
+            "count": 3145,
+            "Hit@10": 0.3726550079491256,
+            "NDCG@10": 0.18146417885626448
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6718829516539441,
+            "NDCG@10": 0.4265841823373533
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11269,
+            "Hit@10": 0.8264264797231342,
+            "NDCG@10": 0.5420005257071792
+          },
+          "tail": {
+            "count": 4254,
+            "Hit@10": 0.2936060178655383,
+            "NDCG@10": 0.14059694925928357
+          }
+        }
+      },
+      "test": null,
+      "protocol": {
+        "train_objective": "BPR over next-item positions",
+        "validation_history": "train only",
+        "test_history": "train plus validation target",
+        "evaluation": "target plus 100 fixed unseen negatives",
+        "evaluation_seed": 20240722,
+        "checkpoint_selection": "validation NDCG@10",
+        "test_usage": "not evaluated; validation-only run",
+        "architecture": {
+          "views": "frozen raw semantic adapter plus trainable PCA64 collaborative",
+          "shared_sequence_encoder": true,
+          "bidirectional_cross_attention": false,
+          "capacity_matched_positionwise_control": false,
+          "cross_attention_mask": "not applicable",
+          "author_code_difference": "cross attention adds a causal mask to prevent future leakage"
+        }
+      }
+    },
+    "shuffled_raw": {
+      "model": "dual_view_no_ca",
+      "seed": 42,
+      "best_epoch": 44,
+      "epochs_ran": 64,
+      "elapsed_seconds": 10486.461739976017,
+      "semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "raw_semantic_sha256": "b7b35a45eeaf74e0ef215a3713cb4076dcd4fb6cb95eed66590e9aa926388453",
+      "parameters": {
+        "total": 19507456,
+        "trainable": 2021632,
+        "frozen_semantic_values": 17485824
+      },
+      "validation": {
+        "user_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.663295165394402,
+            "NDCG@10": 0.4195382539594335
+          },
+          "head": {
+            "count": 3259,
+            "Hit@10": 0.6649278919914084,
+            "NDCG@10": 0.4197667373356746
+          },
+          "tail": {
+            "count": 3813,
+            "Hit@10": 0.6202465250458956,
+            "NDCG@10": 0.38769211300048373
+          },
+          "torso": {
+            "count": 8648,
+            "Hit@10": 0.6816604995374653,
+            "NDCG@10": 0.433493469980861
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.663295165394402,
+            "NDCG@10": 0.4195382539594335
+          },
+          "head": {
+            "count": 3144,
+            "Hit@10": 0.6647582697201018,
+            "NDCG@10": 0.42041310580020025
+          },
+          "tail": {
+            "count": 12576,
+            "Hit@10": 0.6629293893129771,
+            "NDCG@10": 0.41931954099924185
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.663295165394402,
+            "NDCG@10": 0.4195382539594335
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11244,
+            "Hit@10": 0.8138562789043046,
+            "NDCG@10": 0.5316471272266033
+          },
+          "tail": {
+            "count": 1134,
+            "Hit@10": 0.07848324514991181,
+            "NDCG@10": 0.032153967013549695
+          },
+          "torso": {
+            "count": 3145,
+            "Hit@10": 0.37742448330683626,
+            "NDCG@10": 0.1846863132314789
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.663295165394402,
+            "NDCG@10": 0.4195382539594335
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11269,
+            "Hit@10": 0.8134705830153518,
+            "NDCG@10": 0.531163419813122
+          },
+          "tail": {
+            "count": 4254,
+            "Hit@10": 0.29619181946403383,
+            "NDCG@10": 0.14326769496197053
+          }
+        }
+      },
+      "test": null,
+      "protocol": {
+        "train_objective": "BPR over next-item positions",
+        "validation_history": "train only",
+        "test_history": "train plus validation target",
+        "evaluation": "target plus 100 fixed unseen negatives",
+        "evaluation_seed": 20240722,
+        "checkpoint_selection": "validation NDCG@10",
+        "test_usage": "not evaluated; validation-only run",
+        "architecture": {
+          "views": "frozen raw semantic adapter plus trainable PCA64 collaborative",
+          "shared_sequence_encoder": true,
+          "bidirectional_cross_attention": false,
+          "capacity_matched_positionwise_control": false,
+          "cross_attention_mask": "not applicable",
+          "author_code_difference": "cross attention adds a causal mask to prevent future leakage"
+        }
+      }
+    },
+    "matched_random_raw": {
+      "model": "dual_view_no_ca",
+      "seed": 42,
+      "best_epoch": 38,
+      "epochs_ran": 58,
+      "elapsed_seconds": 9270.49572034995,
+      "semantic_sha256": "1c9d876a42bfbfcc2e8c786d4af8c35c38116a691064e094ac5c965aee20a7d7",
+      "raw_semantic_sha256": "1d62fc605ffd393cd0e72e1dda96d5fb615da8fdbae56efffbbc1a9fc8e80374",
+      "parameters": {
+        "total": 19507456,
+        "trainable": 2021632,
+        "frozen_semantic_values": 17485824
+      },
+      "validation": {
+        "user_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6643765903307888,
+            "NDCG@10": 0.4213992074580193
+          },
+          "head": {
+            "count": 3259,
+            "Hit@10": 0.6630868364528997,
+            "NDCG@10": 0.4203819897342025
+          },
+          "tail": {
+            "count": 3813,
+            "Hit@10": 0.6226068712300026,
+            "NDCG@10": 0.3938411811561923
+          },
+          "torso": {
+            "count": 8648,
+            "Hit@10": 0.6832793709528214,
+            "NDCG@10": 0.43393318836120903
+          }
+        },
+        "user_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6643765903307888,
+            "NDCG@10": 0.4213992074580193
+          },
+          "head": {
+            "count": 3144,
+            "Hit@10": 0.6634860050890585,
+            "NDCG@10": 0.4213171690029033
+          },
+          "tail": {
+            "count": 12576,
+            "Hit@10": 0.6645992366412213,
+            "NDCG@10": 0.4214197170717982
+          }
+        },
+        "item_frequency": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6643765903307888,
+            "NDCG@10": 0.4213992074580193
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11244,
+            "Hit@10": 0.8186588402703664,
+            "NDCG@10": 0.5361509038444561
+          },
+          "tail": {
+            "count": 1134,
+            "Hit@10": 0.07936507936507936,
+            "NDCG@10": 0.033146280941941164
+          },
+          "torso": {
+            "count": 3145,
+            "Hit@10": 0.36534181240063596,
+            "NDCG@10": 0.17752842474557595
+          }
+        },
+        "item_paper": {
+          "overall": {
+            "count": 15720,
+            "Hit@10": 0.6643765903307888,
+            "NDCG@10": 0.4213992074580193
+          },
+          "cold_start": {
+            "count": 197,
+            "Hit@10": 0.0,
+            "NDCG@10": 0.0
+          },
+          "head": {
+            "count": 11269,
+            "Hit@10": 0.8183512290354069,
+            "NDCG@10": 0.5357620128000004
+          },
+          "tail": {
+            "count": 4254,
+            "Hit@10": 0.28725905030559473,
+            "NDCG@10": 0.13796272190805295
+          }
+        }
+      },
+      "test": null,
+      "protocol": {
+        "train_objective": "BPR over next-item positions",
+        "validation_history": "train only",
+        "test_history": "train plus validation target",
+        "evaluation": "target plus 100 fixed unseen negatives",
+        "evaluation_seed": 20240722,
+        "checkpoint_selection": "validation NDCG@10",
+        "test_usage": "not evaluated; validation-only run",
+        "architecture": {
+          "views": "frozen raw semantic adapter plus trainable PCA64 collaborative",
+          "shared_sequence_encoder": true,
+          "bidirectional_cross_attention": false,
+          "capacity_matched_positionwise_control": false,
+          "cross_attention_mask": "not applicable",
+          "author_code_difference": "cross attention adds a causal mask to prevent future leakage"
+        }
+      }
+    }
+  },
+  "real_minus_identity_controls": {
+    "shuffled_raw": {
+      "overall": 0.007045928377919786,
+      "head": 0.010802648059712538,
+      "torso": -0.0032221343752144305,
+      "tail": -0.000502088247319149,
+      "cold_start": 0.0
+    },
+    "matched_random_raw": {
+      "overall": 0.005184974879334003,
+      "head": 0.00629887144185981,
+      "torso": 0.003935754110688527,
+      "tail": -0.0014944021757106185,
+      "cold_start": 0.0
+    }
+  },
+  "real_minus_single_branches": null,
+  "acceptance": {
+    "test_not_accessed": true,
+    "identity_gate_passed": false,
+    "real_beats_each_identity_control_overall": true,
+    "real_beats_each_identity_control_tail": false,
+    "dual_beats_each_single_branch_overall": null,
+    "dual_beats_each_single_branch_tail": null
+  },
+  "stop_rule": "Do not run single branches or R1.2b when the identity gate fails."
+}

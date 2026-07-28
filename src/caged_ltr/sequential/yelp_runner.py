@@ -24,6 +24,7 @@ from caged_ltr.data.sequential import (
 )
 from caged_ltr.models import (
     DualViewSASRec,
+    FrozenRawSemanticSASRec,
     FrozenSemanticLateFusion,
     FrozenSemanticOnly,
     SASRec,
@@ -71,15 +72,18 @@ class YelpSASRecRunConfig:
             "dual_view_no_ca",
             "dual_view_unshared",
             "dual_view_capacity",
+            "raw_semantic_only",
         }
         if self.model not in supported_models:
             raise ValueError(
                 f"model must be one of {sorted(supported_models)}"
             )
-        if self.model != "sasrec" and self.semantic_path is None:
+        if self.model not in {"sasrec", "raw_semantic_only"} and self.semantic_path is None:
             raise ValueError("semantic_path is required by semantic model variants")
-        if self.model.startswith("dual_view") and self.raw_semantic_path is None:
-            raise ValueError("raw_semantic_path is required by dual-view variants")
+        if (
+            self.model.startswith("dual_view") or self.model == "raw_semantic_only"
+        ) and self.raw_semantic_path is None:
+            raise ValueError("raw_semantic_path is required by raw-semantic variants")
         positive = (
             self.max_length,
             self.hidden_dim,
@@ -135,7 +139,7 @@ def _device(requested: str) -> torch.device:
 
 
 def _load_semantics(config: YelpSASRecRunConfig, num_items: int) -> np.ndarray | None:
-    if config.model == "sasrec" or config.semantic_path is None:
+    if config.model in {"sasrec", "raw_semantic_only"} or config.semantic_path is None:
         return None
     array = np.load(config.semantic_path, allow_pickle=False)
     if array.ndim != 2 or array.shape[0] != num_items or not np.isfinite(array).all():
@@ -146,7 +150,9 @@ def _load_semantics(config: YelpSASRecRunConfig, num_items: int) -> np.ndarray |
 def _load_raw_semantics(
     config: YelpSASRecRunConfig, num_items: int
 ) -> np.ndarray | None:
-    if not config.model.startswith("dual_view"):
+    if not (
+        config.model.startswith("dual_view") or config.model == "raw_semantic_only"
+    ):
         return None
     if config.raw_semantic_path is None:
         raise ValueError("raw_semantic_path was not configured")
@@ -161,7 +167,7 @@ def _build_model(
     data: YelpSequenceData,
     semantic_items: np.ndarray | None,
     raw_semantic_items: np.ndarray | None = None,
-) -> SASRec | FrozenSemanticOnly | DualViewSASRec:
+) -> SASRec | FrozenSemanticOnly | DualViewSASRec | FrozenRawSemanticSASRec:
     model_config = SASRecConfig(
         num_items=data.num_items,
         max_length=config.max_length,
@@ -173,6 +179,10 @@ def _build_model(
     )
     if config.model == "sasrec":
         return SASRec(model_config)
+    if config.model == "raw_semantic_only":
+        if raw_semantic_items is None:
+            raise ValueError("raw semantic item array was not loaded")
+        return FrozenRawSemanticSASRec(model_config, raw_semantic_items)
     if semantic_items is None:
         raise ValueError("semantic item array was not loaded")
     if config.model == "llm_init":
@@ -221,7 +231,7 @@ def _bucket_metrics(
 
 
 def _evaluate(
-    model: SASRec | FrozenSemanticOnly | DualViewSASRec,
+    model: SASRec | FrozenSemanticOnly | DualViewSASRec | FrozenRawSemanticSASRec,
     data: YelpSequenceData,
     config: YelpSASRecRunConfig,
     *,
@@ -490,7 +500,18 @@ def run_yelp_sasrec(
                     ),
                 }
                 if isinstance(model, DualViewSASRec)
-                else None
+                else (
+                    {
+                        "views": "frozen raw semantic adapter only",
+                        "shared_sequence_encoder": False,
+                        "bidirectional_cross_attention": False,
+                        "capacity_matched_positionwise_control": False,
+                        "cross_attention_mask": "not applicable",
+                        "author_code_difference": None,
+                    }
+                    if isinstance(model, FrozenRawSemanticSASRec)
+                    else None
+                )
             ),
         },
     }

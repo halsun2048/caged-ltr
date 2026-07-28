@@ -15,6 +15,7 @@ from caged_ltr.data.sequential import (
 )
 from caged_ltr.models import (
     DualViewSASRec,
+    FrozenRawSemanticSASRec,
     FrozenSemanticLateFusion,
     FrozenSemanticOnly,
     SASRec,
@@ -225,6 +226,44 @@ def test_dual_view_controls_isolate_sharing_and_cross_attention_capacity() -> No
     )
 
 
+def test_raw_semantic_only_is_causal_frozen_and_scores_catalog() -> None:
+    config = SASRecConfig(
+        num_items=8,
+        max_length=4,
+        hidden_dim=4,
+        num_blocks=1,
+        num_heads=1,
+        dropout=0.0,
+    )
+    raw = np.arange(48, dtype=np.float32).reshape(8, 6) / 48.0
+    model = FrozenRawSemanticSASRec(config, raw).eval()
+    assert not model.semantic_items.weight.requires_grad
+    assert [type(layer) for layer in model.semantic_adapter] == [
+        torch.nn.Linear,
+        torch.nn.Linear,
+    ]
+    before = model.semantic_items.weight.detach().clone()
+    first = torch.tensor([[0, 1, 2, 3]])
+    changed_future = torch.tensor([[0, 1, 2, 4]])
+    with torch.no_grad():
+        torch.testing.assert_close(
+            model.encode(first)[:, :3],
+            model.encode(changed_future)[:, :3],
+        )
+    positives = torch.tensor([[0, 0, 2, 3]])
+    negatives = torch.tensor([[0, 0, 5, 6]])
+    loss = model.loss(first, positives, negatives)
+    loss.backward()
+    assert loss.isfinite()
+    torch.testing.assert_close(before, model.semantic_items.weight)
+    catalog = torch.arange(1, config.num_items + 1).unsqueeze(0)
+    with torch.no_grad():
+        torch.testing.assert_close(
+            model.score_catalog(first),
+            model.score_candidates(first, catalog),
+        )
+
+
 def test_yelp_sasrec_runner_writes_a_leakage_aware_smoke_run(tmp_path: Path) -> None:
     processed, report = _write_sequence_fixture(tmp_path)
     semantic_path = tmp_path / "semantic.npy"
@@ -344,3 +383,38 @@ def test_yelp_runner_supports_validation_only_dual_view(tmp_path: Path) -> None:
     assert architecture["shared_sequence_encoder"] is True
     assert architecture["bidirectional_cross_attention"] is True
     assert architecture["cross_attention_mask"] == "causal plus padding"
+
+
+def test_yelp_runner_supports_raw_semantic_only_ablation(tmp_path: Path) -> None:
+    processed, report = _write_sequence_fixture(tmp_path)
+    raw_path = tmp_path / "raw.npy"
+    np.save(raw_path, np.arange(48, dtype=np.float32).reshape(8, 6) / 48.0)
+    output = tmp_path / "raw-only"
+    summary = run_yelp_sasrec(
+        YelpSASRecRunConfig(
+            processed_dir=processed,
+            report_path=report,
+            output_dir=output,
+            model="raw_semantic_only",
+            raw_semantic_path=raw_path,
+            max_length=4,
+            hidden_dim=4,
+            num_blocks=1,
+            num_heads=1,
+            dropout=0.0,
+            batch_size=3,
+            evaluation_batch_size=3,
+            max_epochs=1,
+            patience=1,
+            evaluation_negatives=2,
+            top_k=2,
+            test_after_selection=False,
+        ),
+        epoch_callback=lambda _: None,
+    )
+
+    assert summary["test"] is None
+    assert summary["semantic_sha256"] is None
+    assert summary["raw_semantic_sha256"] is not None
+    assert summary["parameters"]["frozen_semantic_values"] == 54
+    assert summary["protocol"]["architecture"]["views"].endswith("only")

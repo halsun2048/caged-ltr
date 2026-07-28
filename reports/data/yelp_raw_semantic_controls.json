@@ -1,0 +1,44 @@
+{
+  "created_at_utc": "2026-07-28T04:18:20.771341+00:00",
+  "dataset": "yelp",
+  "control_seed": 20240725,
+  "source": {
+    "path": "data/processed/yelp_llmesr_author/raw_item_embeddings.npy",
+    "sha256": "b551517c6c397b3049587597372321243a3ee7832b4b077d87102ae42db6d067",
+    "shape": [
+      11383,
+      1536
+    ],
+    "dtype": "float32"
+  },
+  "controls": {
+    "shuffled": {
+      "path": "data/processed/yelp_llmesr_author/raw_semantic_controls/shuffled_seed20240725.npy",
+      "sha256": "b7b35a45eeaf74e0ef215a3713cb4076dcd4fb6cb95eed66590e9aa926388453",
+      "shape": [
+        11383,
+        1536
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "per_dimension_mean_max_abs_error": 3.5762786865234375e-07,
+      "per_dimension_std_max_abs_error": 2.561137080192566e-08
+    },
+    "matched_random": {
+      "path": "data/processed/yelp_llmesr_author/raw_semantic_controls/matched_random_seed20240725.npy",
+      "sha256": "1d62fc605ffd393cd0e72e1dda96d5fb615da8fdbae56efffbbc1a9fc8e80374",
+      "shape": [
+        11383,
+        1536
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "per_dimension_mean_max_abs_error": 1.3113021850585938e-06,
+      "per_dimension_std_max_abs_error": 3.073364496231079e-08
+    }
+  },
+  "definitions": {
+    "shuffled": "row permutation preserving every source vector exactly",
+    "matched_random": "Gaussian matrix standardized to every source dimension's empirical mean and standard deviation"
+  }
+}

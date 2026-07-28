@@ -91,12 +91,14 @@ Cross-Attention 输出直接替换原视图造成的损失。共享编码器相�
 no-CA 模型约有 202 万可训练参数，明显多于约 79 万参数的 LLMInit；原始高维 embedding
 也可能只提供可利用的随机特征。因此还不能把增益归因于真实语义。
 
-不对当前 CA 做三种子或测试集评测。下一步先完成 R1.2a-control：
+不对当前 CA 做三种子或测试集评测。随后完成的 R1.2a-control 包含：
 
 1. shuffled raw semantic；
 2. 与真实向量逐维统计匹配的 random raw semantic；
 3. 删除语义分支；
 4. 删除协同分支。
 
-这些对照仍只在 seed 42 验证集运行，并保持与 no-CA 相同训练协议。只有真实语义显著优于
-shuffled/random，且两条单分支都不能解释双视图增益，才进入 R1.2b 语义近邻自蒸馏。
+身份门控结果见
+[`yelp_r1_2a_controls.md`](yelp_r1_2a_controls.md)：真实语义虽改善 Overall/Head，
+但 Tail 略低于 shuffled 和 matched-random，门控失败；单分支按预注册规则跳过，R1.2b
+语义近邻自蒸馏停止。

@@ -311,3 +311,119 @@ class DualViewSASRec(nn.Module):
             semantic_states[:, -1] @ semantic_items.transpose(0, 1)
             + collaborative_states[:, -1] @ collaborative_items.transpose(0, 1)
         )
+
+
+class FrozenRawSemanticSASRec(nn.Module):
+    """Trainable causal semantic route without a collaborative item-ID route."""
+
+    def __init__(
+        self,
+        config: SASRecConfig,
+        raw_semantic_items: np.ndarray,
+    ) -> None:
+        super().__init__()
+        self.config = config
+        raw = np.array(raw_semantic_items, dtype=np.float32, copy=True)
+        if (
+            raw.ndim != 2
+            or raw.shape[0] != config.num_items
+            or not np.isfinite(raw).all()
+        ):
+            raise ValueError("raw semantics must be finite with one row per item")
+        table = torch.cat(
+            (torch.zeros(1, raw.shape[1]), torch.from_numpy(raw)),
+            dim=0,
+        )
+        self.semantic_items = nn.Embedding.from_pretrained(
+            table,
+            freeze=True,
+            padding_idx=0,
+        )
+        adapter_dim = max(1, raw.shape[1] // 2)
+        self.semantic_adapter = nn.Sequential(
+            nn.Linear(raw.shape[1], adapter_dim),
+            nn.Linear(adapter_dim, config.hidden_dim),
+        )
+        self.position_embedding = nn.Embedding(config.max_length + 1, config.hidden_dim)
+        nn.init.normal_(self.position_embedding.weight, mean=0.0, std=0.02)
+        self.embedding_dropout = nn.Dropout(config.dropout)
+        self.encoder = _CausalSequenceEncoder(config)
+
+    @property
+    def frozen_semantic_values(self) -> int:
+        return self.semantic_items.weight.numel()
+
+    def encode(self, sequences: torch.Tensor) -> torch.Tensor:
+        if sequences.ndim != 2 or sequences.shape[1] != self.config.max_length:
+            raise ValueError("sequences must have shape [batch, max_length]")
+        if sequences.dtype != torch.long:
+            raise ValueError("sequences must use torch.long item IDs")
+        if ((sequences < 0) | (sequences > self.config.num_items)).any():
+            raise ValueError("sequence item ID is outside the catalog")
+        padding_mask = sequences.eq(0)
+        if padding_mask.all(dim=1).any():
+            raise ValueError("each sequence must contain at least one non-padding item")
+        positions = (~padding_mask).long().cumsum(dim=1)
+        hidden = (
+            self.semantic_adapter(self.semantic_items(sequences))
+            * self.config.hidden_dim**0.5
+            + self.position_embedding(positions)
+        )
+        hidden = self.embedding_dropout(hidden)
+        hidden = hidden.masked_fill(padding_mask.unsqueeze(-1), 0.0)
+        return self.encoder(hidden, padding_mask=padding_mask)
+
+    def _scores(
+        self,
+        states: torch.Tensor,
+        item_ids: torch.Tensor,
+    ) -> torch.Tensor:
+        items = self.semantic_adapter(self.semantic_items(item_ids))
+        return (states * items).sum(dim=-1)
+
+    def training_scores(
+        self,
+        sequences: torch.Tensor,
+        positive_items: torch.Tensor,
+        negative_items: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        if positive_items.shape != sequences.shape or negative_items.shape != sequences.shape:
+            raise ValueError("training item tensors must match sequence shape")
+        states = self.encode(sequences)
+        return (
+            self._scores(states, positive_items),
+            self._scores(states, negative_items),
+        )
+
+    def loss(
+        self,
+        sequences: torch.Tensor,
+        positive_items: torch.Tensor,
+        negative_items: torch.Tensor,
+    ) -> torch.Tensor:
+        positive_scores, negative_scores = self.training_scores(
+            sequences, positive_items, negative_items
+        )
+        return bpr_loss(positive_scores, negative_scores, mask=positive_items.ne(0))
+
+    def score_candidates(
+        self,
+        sequences: torch.Tensor,
+        candidate_items: torch.Tensor,
+    ) -> torch.Tensor:
+        if candidate_items.ndim != 2 or candidate_items.shape[0] != sequences.shape[0]:
+            raise ValueError("candidate_items must have shape [batch, candidates]")
+        states = self.encode(sequences)[:, -1]
+        candidates = self.semantic_adapter(self.semantic_items(candidate_items))
+        return torch.einsum("bd,bcd->bc", states, candidates)
+
+    def score_catalog(self, sequences: torch.Tensor) -> torch.Tensor:
+        states = self.encode(sequences)[:, -1]
+        item_ids = torch.arange(
+            1,
+            self.config.num_items + 1,
+            dtype=torch.long,
+            device=sequences.device,
+        )
+        items = self.semantic_adapter(self.semantic_items(item_ids))
+        return states @ items.transpose(0, 1)

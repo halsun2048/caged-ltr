@@ -31,6 +31,7 @@ def main() -> None:
             "dual_view_no_ca",
             "dual_view_unshared",
             "dual_view_capacity",
+            "raw_semantic_only",
         ),
     )
     parser.add_argument("--raw-semantic-path", type=Path)
