@@ -1,0 +1,46 @@
+processed_dir: data/processed/rlmrec_yelp_author
+output_root: runs/rlmrec_r2_batch4096
+report: reports/experiments/rlmrec_r2_batch4096.json
+
+experiment:
+  name: r2_1_batch_fidelity
+  purpose: Isolate the in-batch contrastive denominator from the PCA64 adaptation
+  seed: 42
+  variants: [lightgcn, rlmrec_con, shuffled_con]
+
+model:
+  embedding_dim: 32
+  layer_count: 3
+  keep_rate: 0.8
+  semantic_adapter: shared_mlp
+  semantic_input: joint_pca64
+
+training:
+  batch_size: 4096
+  learning_rate: 0.001
+  baseline_regularization_weight: 0.000001
+  con_regularization_weight: 0.0000001
+  official_code_alignment_weight: 0.01
+  temperature: 0.2
+  max_epochs: 3000
+  evaluation_interval: 3
+  patience: 5
+  resume_checkpoint_each_epoch: true
+
+evaluation:
+  cutoffs: [5, 10, 20]
+  selection_metric: Recall@20
+  ranking: full_catalog
+  mask: train_only
+  test_after_selection: true
+
+gates:
+  paper_lightgcn_absolute_tolerance: 0.002
+  con_must_beat_lightgcn: [Recall@20, NDCG@20]
+  real_con_must_beat_shuffled: [Recall@20, NDCG@20]
+  tail_ndcg20_minimum_absolute_gain: 0.001
+  head_ndcg20_maximum_absolute_drop: 0.002
+
+stop_rule:
+  pass: Expand batch-4096 RLMRec-Con to seeds 2024 and 3407
+  fail: Do not tune alignment weight; decide between raw-1536 GPU audit and closing R2

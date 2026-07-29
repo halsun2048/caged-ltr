@@ -1,4 +1,16 @@
 {
+  "acceptance": {
+    "con_beats_lightgcn_both_overall_metrics_all_seeds": true,
+    "head_ndcg20_drop_at_most_0p002_all_seeds": true,
+    "paper_lightgcn_within_0p002_all_seeds": false,
+    "real_con_beats_shuffled_both_overall_metrics_all_seeds": true,
+    "tail_ndcg20_gain_at_least_0p001_all_seeds": true,
+    "thresholds": {
+      "head_NDCG@20_maximum_drop": 0.002,
+      "paper_baseline_absolute_tolerance": 0.002,
+      "tail_NDCG@20_absolute_gain": 0.001
+    }
+  },
   "aggregate": {
     "lightgcn": {
       "test": {
@@ -341,6 +353,46 @@
             "mean": 0.012986849307175986,
             "std": 0.0
           }
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "42": {
+      "lightgcn": {
+        "head": {
+          "NDCG@20": 0.0034728379020626922,
+          "Recall@20": 0.00414961753483669
+        },
+        "overall": {
+          "NDCG@20": 0.0040830519166914015,
+          "Recall@20": 0.0018476679895468738
+        },
+        "tail": {
+          "NDCG@20": 0.002439759174745827,
+          "Recall@20": 0.0033755274261603376
+        },
+        "torso": {
+          "NDCG@20": 0.00046093075643255875,
+          "Recall@20": -0.0005952380952380952
+        }
+      },
+      "shuffled_con": {
+        "head": {
+          "NDCG@20": 0.0016247191848626804,
+          "Recall@20": 0.0030412431506002366
+        },
+        "overall": {
+          "NDCG@20": 0.0026376603650297196,
+          "Recall@20": 0.0014464783284718996
+        },
+        "tail": {
+          "NDCG@20": 0.0012866907795121806,
+          "Recall@20": 0.0012658227848101268
+        },
+        "torso": {
+          "NDCG@20": 0.0009491829806300131,
+          "Recall@20": 0.0
         }
       }
     }

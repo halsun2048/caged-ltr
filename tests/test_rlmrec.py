@@ -104,6 +104,8 @@ def test_prepare_and_run_rlmrec_structure_reproduction(
 
     resumed = run_rlmrec(base)
     assert resumed["best_epoch"] == 0
+    with pytest.raises(ValueError, match="checkpoint configuration mismatch"):
+        run_rlmrec(replace(base, max_epochs=2))
 
     semantic = run_rlmrec(
         replace(

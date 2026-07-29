@@ -159,3 +159,72 @@ semantic-only 的 Overall 明显较弱，不能替代协同模型；其 Tail NDC
 PCA64，只把 batch 从 1024 恢复为作者配置的 4096，同时运行 LightGCN、
 RLMRec-Con、shuffled-Con。Con 的批内负样本数量直接随 batch 改变，这一步能够
 先隔离 batch 忠实度；若仍失败，再决定是否把原始 1536 维 MLP 迁移到服务器。
+
+## R2.1：Batch 4096 忠实度消融
+
+R2.1 使用独立的输出目录和报告，禁止读取 R2 batch-1024 checkpoint。runner 会把
+完整解析配置写入 summary/latest checkpoint；配置不一致时直接报错，不静默复用。
+
+```bash
+systemd-inhibit --what=sleep --mode=block \
+  --why="R2.1 RLMRec batch 4096 fidelity training" \
+  uv --cache-dir .uv-cache run --frozen \
+    python scripts/run_rlmrec_r2.py \
+      --seeds 42 \
+      --variants lightgcn rlmrec_con shuffled_con \
+      --batch-size 4096 \
+      --max-epochs 3000 \
+      --output-root runs/rlmrec_r2_batch4096 \
+      --report reports/experiments/rlmrec_r2_batch4096.json \
+      --progress
+```
+
+进度输出覆盖 epoch 内 batch、验证用户和最终测试用户；每个 epoch 保存
+`latest.pt`，中断后重复命令从最后完成的 epoch 继续。报告自动计算 Con 相对
+LightGCN/shuffled-Con 的 Overall/Head/Torso/Tail Recall/NDCG@20 差值。
+
+进入三种子的必要条件：
+
+- LightGCN 的论文 Recall/NDCG@20 绝对误差均不超过 `0.002`；
+- Con 的 Overall Recall@20、NDCG@20 同时超过 LightGCN；
+- 真实 Con 的两个 Overall 指标同时超过 shuffled-Con；
+- Tail NDCG@20 绝对增益至少 `0.001`；
+- Head NDCG@20 绝对下降不超过 `0.002`。
+
+任一核心条件失败，都不在本地搜索对齐权重；下一决策只能是原始 1536 维 GPU
+忠实审计，或记录 R2 未复现后进入 R3。
+
+### R2.1 正式结果
+
+三组 seed 42 均完成，所有输入数据与 R2 batch-1024 的 SHA-256 一致：
+
+| 模型 | Recall@20 | NDCG@20 | 最佳 epoch | 总耗时 |
+|---|---:|---:|---:|---:|
+| LightGCN | 0.117697 | 0.073911 | 210 | 11m03s |
+| RLMRec-Con | 0.116937 | 0.072712 | 96 | 1h11m39s |
+| shuffled-Con | 0.093074 | 0.059081 | 69 | 54m40s |
+
+耗时是包含定期全目录验证和最终测试的实验训练成本，不是线上推理 latency。
+
+RLMRec-Con 相对同 batch LightGCN：
+
+| 分桶 | Recall@20 差值 | NDCG@20 差值 |
+|---|---:|---:|
+| Overall | -0.000760 | -0.001199 |
+| Head | -0.006436 | -0.004014 |
+| Torso | +0.004830 | +0.001862 |
+| Tail | +0.000321 | +0.000068 |
+
+五项门槛只通过两项：LightGCN 在论文值 `0.002` 容差内，且真实 Con 显著超过
+shuffled-Con。Con 同时超过 LightGCN、Tail `0.001` 实际规模、Head `0.002`
+下降容差均失败。
+
+相较 batch-1024，batch-4096 LightGCN 的 Recall/NDCG@20 增加
+`+0.001874/+0.000665`；RLMRec-Con 仅变化 `+0.000659/-0.000362`。因此 Con
+相对基线从 Recall 略升、NDCG 略降，恶化为两个整体指标同时下降。作者 batch
+未恢复论文增益，batch 假设被排除。
+
+依停止规则，不运行本地 seed 2024/3407，也不搜索对齐权重。R2 只保留一次最终
+忠实度决策：在 GPU 上使用公开原始 1536 维 embedding、batch 4096 运行 seed 42
+的真实/打乱 Con，并复用本轮 LightGCN。若原始维度仍不能同时提升 Recall/NDCG，
+则正式记录 R2 未复现，进入 R3。

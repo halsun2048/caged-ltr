@@ -307,8 +307,21 @@ def run_rlmrec(
     stale_evaluations = 0
     validation_result: dict[str, Any] | None = None
     epochs_ran = 0
+    config_signature = json.dumps(
+        _config_payload(config),
+        ensure_ascii=False,
+        sort_keys=True,
+    )
     if latest_path.is_file():
         checkpoint = torch.load(latest_path, map_location=device, weights_only=True)
+        checkpoint_signature = checkpoint.get("config_signature")
+        if (
+            checkpoint_signature is not None
+            and checkpoint_signature != config_signature
+        ):
+            raise ValueError(
+                f"resume checkpoint configuration mismatch: {latest_path}"
+            )
         model.load_state_dict(checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_epoch = int(checkpoint["epoch"]) + 1
@@ -391,6 +404,7 @@ def run_rlmrec(
                 "best_epoch": best_epoch,
                 "best_recall": best_recall,
                 "stale_evaluations": stale_evaluations,
+                "config_signature": config_signature,
             },
             latest_path,
         )

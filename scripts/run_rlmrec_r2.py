@@ -6,7 +6,7 @@ import argparse
 import json
 import sys
 import time
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Any
 
@@ -147,15 +147,120 @@ def _aggregate(summaries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     return aggregate
 
 
-def _cached_summary(path: Path, *, variant: str, seed: int) -> dict[str, Any] | None:
+def _serialized_config(config: RLMRecRunConfig) -> dict[str, Any]:
+    return json.loads(json.dumps(asdict(config), default=str))
+
+
+def _cached_summary(
+    path: Path,
+    *,
+    config: RLMRecRunConfig,
+) -> dict[str, Any] | None:
     if not path.is_file():
         return None
     summary = json.loads(path.read_text(encoding="utf-8"))
-    if summary.get("variant") != variant or summary.get("seed") != seed:
+    if (
+        summary.get("variant") != config.variant
+        or summary.get("seed") != config.seed
+        or summary.get("config") != _serialized_config(config)
+    ):
         raise ValueError(f"cached result identity mismatch: {path}")
     if summary.get("stage") != "complete":
         return None
     return summary
+
+
+def _comparisons(
+    summaries: dict[str, dict[str, Any]],
+    seeds: list[int],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    required = {"lightgcn", "rlmrec_con", "shuffled_con"}
+    variants = {summary["variant"] for summary in summaries.values()}
+    if not required <= variants:
+        return None, None
+    comparisons: dict[str, Any] = {}
+    for seed in seeds:
+        selected = {
+            summary["variant"]: summary
+            for summary in summaries.values()
+            if summary["seed"] == seed
+        }
+        if not required <= selected.keys() or any(
+            selected[variant]["test"] is None for variant in required
+        ):
+            return None, None
+        comparisons[str(seed)] = {
+            baseline: {
+                bucket: {
+                    metric: (
+                        float(selected["rlmrec_con"]["test"][bucket][metric])
+                        - float(selected[baseline]["test"][bucket][metric])
+                    )
+                    for metric in ("Recall@20", "NDCG@20")
+                }
+                for bucket in ("overall", "head", "torso", "tail")
+            }
+            for baseline in ("lightgcn", "shuffled_con")
+        }
+
+    baseline_tolerance = 0.002
+    tail_gain_threshold = 0.001
+    head_drop_tolerance = 0.002
+    acceptance = {
+        "paper_lightgcn_within_0p002_all_seeds": all(
+            abs(
+                float(
+                    next(
+                        summary
+                        for summary in summaries.values()
+                        if summary["seed"] == seed
+                        and summary["variant"] == "lightgcn"
+                    )["test"]["overall"]["Recall@20"]
+                )
+                - 0.1157
+            )
+            <= baseline_tolerance
+            and abs(
+                float(
+                    next(
+                        summary
+                        for summary in summaries.values()
+                        if summary["seed"] == seed
+                        and summary["variant"] == "lightgcn"
+                    )["test"]["overall"]["NDCG@20"]
+                )
+                - 0.0733
+            )
+            <= baseline_tolerance
+            for seed in seeds
+        ),
+        "con_beats_lightgcn_both_overall_metrics_all_seeds": all(
+            comparisons[str(seed)]["lightgcn"]["overall"]["Recall@20"] > 0
+            and comparisons[str(seed)]["lightgcn"]["overall"]["NDCG@20"] > 0
+            for seed in seeds
+        ),
+        "real_con_beats_shuffled_both_overall_metrics_all_seeds": all(
+            comparisons[str(seed)]["shuffled_con"]["overall"]["Recall@20"] > 0
+            and comparisons[str(seed)]["shuffled_con"]["overall"]["NDCG@20"] > 0
+            for seed in seeds
+        ),
+        "tail_ndcg20_gain_at_least_0p001_all_seeds": all(
+            comparisons[str(seed)]["lightgcn"]["tail"]["NDCG@20"]
+            >= tail_gain_threshold
+            for seed in seeds
+        ),
+        "head_ndcg20_drop_at_most_0p002_all_seeds": all(
+            comparisons[str(seed)]["lightgcn"]["head"]["NDCG@20"]
+            >= -head_drop_tolerance
+            for seed in seeds
+        ),
+        "thresholds": {
+            "paper_baseline_absolute_tolerance": baseline_tolerance,
+            "tail_NDCG@20_absolute_gain": tail_gain_threshold,
+            "head_NDCG@20_maximum_drop": head_drop_tolerance,
+        },
+    }
+    return comparisons, acceptance
 
 
 def main() -> None:
@@ -169,6 +274,9 @@ def main() -> None:
     )
     parser.add_argument("--progress", action="store_true")
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--batch-size", type=int)
+    parser.add_argument("--evaluation-batch-size", type=int)
+    parser.add_argument("--max-epochs", type=int)
     parser.add_argument(
         "--processed-dir",
         type=Path,
@@ -187,6 +295,12 @@ def main() -> None:
         output_dir=args.output_root,
         variant="lightgcn",
     )
+    if args.batch_size is not None:
+        base = replace(base, batch_size=args.batch_size)
+    if args.evaluation_batch_size is not None:
+        base = replace(base, evaluation_batch_size=args.evaluation_batch_size)
+    if args.max_epochs is not None:
+        base = replace(base, max_epochs=args.max_epochs)
     if args.smoke:
         base = replace(
             base,
@@ -217,8 +331,7 @@ def main() -> None:
             progress.start(index, label, config)
             cached = _cached_summary(
                 output_dir / "summary.json",
-                variant=variant,
-                seed=seed,
+                config=config,
             )
             if cached is not None:
                 summaries[f"{variant}_seed{seed}"] = cached
@@ -232,6 +345,7 @@ def main() -> None:
             summaries[f"{variant}_seed{seed}"] = summary
             progress.finish(summary)
 
+    comparisons, acceptance = _comparisons(summaries, args.seeds)
     report = {
         "stage": "complete",
         "seeds": args.seeds,
@@ -239,6 +353,8 @@ def main() -> None:
         "smoke": args.smoke,
         "runs": summaries,
         "aggregate": _aggregate(summaries),
+        "comparisons": comparisons,
+        "acceptance": acceptance,
         "interpretation_boundary": (
             "Public profile embeddings have no verifiable train-only cutoff; results are "
             "a structure reproduction and cannot establish leakage-free semantic gains."
