@@ -1,0 +1,51 @@
+experiment:
+  name: prp_r3_1d_truncation_audit
+  result_type: isolated_input_truncation_sensitivity_audit
+  output_dir: runs/prp_r3_1d_truncation_audit
+  report: reports/experiments/prp_r3_1d_truncation_audit.json
+
+baseline:
+  experiment: prp_r3_1c_flan_t5_xl_top100
+  output_dir: runs/prp_r3_1c_flan_t5_xl_top100
+  manifest_identity_sha256: 6f632b5968b6b014f68c9edbac54006a3355b50275228593597a4412d7d70c76
+  ordered_prompts: 960300
+  truncated_ordered_prompts: 184
+  max_input_tokens: 512
+  immutable: true
+
+data:
+  teacher_input: data/processed/prp_trec_dl_top100/teacher_inputs.jsonl
+  teacher_input_sha256: afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f
+  qrels: data/processed/prp_trec_dl_top100/qrels.parquet
+  qrels_sha256: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+
+teacher:
+  model_name: google/flan-t5-xl
+  model_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  tokenizer_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  dtype: float16
+  prompt_version: naacl2024_appendix_e1
+  prompt_sha256: 03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827
+  scoring_mode: likelihood
+  max_input_tokens: 1024
+  batch_size: 2
+
+protocol:
+  target_rule: baseline response input_truncated is true
+  cache_policy: isolated overlay; never overwrite baseline responses
+  aggregation: replace only the 184 target responses, then rerun bidirectional Allpair Borda
+  qrels_access: only after all 184 responses complete with zero remaining truncation
+  parameter_selection: fixed before qrels access; no result-dependent tuning
+
+acceptance:
+  target_count_exact: 184
+  remaining_truncated_inputs: 0
+  invalid_outputs: 0
+  qrels_delayed_until_audit_completion: true
+  maximum_absolute_overall_ndcg_at_10_delta: 0.002
+  maximum_top10_membership_changed_query_rate: 0.05
+  paper_ndcg_at_10_absolute_tolerance_each_year: 0.02
+
+stop_rule:
+  pass: close R3.1c and proceed to frozen real Sliding-10 quality-cost comparison
+  fail: report sensitivity and use the audited ranking as the corrected Allpair result

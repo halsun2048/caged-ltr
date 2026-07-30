@@ -1,0 +1,103 @@
+{
+  "experiment": "R3.1d isolated truncation sensitivity audit",
+  "stage": "complete",
+  "result_type": "isolated input-truncation sensitivity audit",
+  "baseline": {
+    "experiment": "R3.1c FLAN-T5-XL PRP Allpair on frozen TREC-DL Top100",
+    "manifest_identity_sha256": "6f632b5968b6b014f68c9edbac54006a3355b50275228593597a4412d7d70c76",
+    "max_input_tokens": 512,
+    "ordered_prompts": 960300,
+    "truncated_ordered_prompts": 184
+  },
+  "audit_protocol": {
+    "target_rule": "baseline response input_truncated is true",
+    "target_ordered_prompts": 184,
+    "unique_target_keys": 184,
+    "cache_policy": "isolated overlay; baseline responses were not overwritten",
+    "max_input_tokens": 1024,
+    "batch_size": 2,
+    "qrels_accessed_only_after_all_targets_completed_without_truncation": true,
+    "manifest_identity_sha256": "947865f82ef67a0ec996165fbc14ab6e517ee6b19ec7fb0a87a162d9ba33d1b9"
+  },
+  "teacher": {
+    "model_name": "google/flan-t5-xl",
+    "model_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "tokenizer_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "dtype": "float16",
+    "prompt_version": "naacl2024_appendix_e1",
+    "prompt_sha256": "03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827",
+    "scoring_mode": "likelihood",
+    "tie_margin": 0.0
+  },
+  "rescored_inputs": {
+    "completed": 184,
+    "remaining_truncated": 0,
+    "input_tokens_min": 513,
+    "input_tokens_max": 599,
+    "input_tokens_mean": 540.2282608695652,
+    "first_choices": 99,
+    "second_choices": 85,
+    "tie_choices": 0,
+    "invalid_outputs": 0,
+    "choice_changes_from_512_token_baseline": 49,
+    "choice_change_rate": 0.266304347826087
+  },
+  "ranking_sensitivity": {
+    "ranking_changed_queries": 8,
+    "top10_order_changed_queries": 2,
+    "top10_membership_changed_queries": 0,
+    "top10_membership_changed_query_rate": 0.0,
+    "maximum_candidate_rank_shift": 4,
+    "overall_ndcg_at_10_delta": 0.0
+  },
+  "audited_evaluation": {
+    "metric": "linear graded NDCG@10 over complete official qrels",
+    "overall": {
+      "queries": 97,
+      "bm25_ndcg_at_10": 0.49124859191629333,
+      "teacher_ndcg_at_10": 0.6937468893452119,
+      "absolute_gain": 0.20249829742891856
+    },
+    "dl2019": {
+      "queries": 43,
+      "bm25_ndcg_at_10": 0.5058310024399073,
+      "teacher_ndcg_at_10": 0.7094306828597035,
+      "absolute_gain": 0.20359968041979615,
+      "difference_from_paper": 0.011930682859703556
+    },
+    "dl2020": {
+      "queries": 54,
+      "bm25_ndcg_at_10": 0.4796366724252675,
+      "teacher_ndcg_at_10": 0.6812579426577464,
+      "absolute_gain": 0.20162127023247894,
+      "difference_from_paper": 0.000057942657746390846
+    }
+  },
+  "audited_diagnostics": {
+    "mean_swap_agreement": 0.7950473810267624,
+    "mean_bidirectional_conflict_ratio": 0.20495261897323755
+  },
+  "runtime": {
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "gpu_count_used": 1,
+    "inference_wall_seconds": 7.892686473205686,
+    "throughput_prompts_per_second": 23.312721292635704,
+    "cuda_peak_allocated_bytes": 7216885760,
+    "cuda_peak_reserved_bytes": 8816427008
+  },
+  "acceptance": {
+    "target_count_exact": true,
+    "zero_remaining_truncations": true,
+    "zero_invalid_outputs": true,
+    "qrels_delayed_until_audit_completion": true,
+    "absolute_overall_ndcg_delta_within_0p002": true,
+    "top10_membership_changed_query_rate_within_0p05": true,
+    "dl2019_within_paper_tolerance": true,
+    "dl2020_within_paper_tolerance": true,
+    "all_pre_registered_gates_passed": true
+  },
+  "decision": {
+    "conclusion": "The 512-token truncations change some local pair choices but do not change Top10 membership or any reported NDCG@10 value. R3.1c is closed as a successful paper-depth numeric reproduction.",
+    "next": "Proceed to the frozen real Sliding-10 quality-cost comparison using a 1024-token input limit."
+  }
+}

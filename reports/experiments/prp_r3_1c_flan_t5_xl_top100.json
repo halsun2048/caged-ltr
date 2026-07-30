@@ -1,6 +1,6 @@
 {
   "experiment": "R3.1c FLAN-T5-XL PRP Allpair on frozen TREC-DL Top100",
-  "stage": "numeric_pass_protocol_audit_required",
+  "stage": "complete_after_r3_1d_sensitivity_audit",
   "result_type": "paper-depth real-teacher reproduction",
   "protocol": {
     "queries": 97,
@@ -88,7 +88,16 @@
     "all_pre_registered_gates_passed": false
   },
   "decision": {
-    "conclusion": "Paper-depth numeric reproduction succeeds, but the pre-registered zero-truncation protocol gate is not yet satisfied.",
-    "next": "Rescore only the 184 truncated ordered prompts with a larger input limit in an isolated sensitivity cache, then recompute rankings without tuning on qrels. If rankings are stable, proceed to the frozen real Sliding-10 quality-cost comparison."
+    "conclusion": "Paper-depth numeric reproduction succeeds. R3.1d rescored all 184 truncated prompts at 1024 tokens: Top10 membership and every reported NDCG@10 value remained unchanged.",
+    "next": "Proceed to the frozen real Sliding-10 quality-cost comparison using a 1024-token input limit."
+  },
+  "followup_audit": {
+    "experiment": "R3.1d isolated truncation sensitivity audit",
+    "report": "reports/experiments/prp_r3_1d_truncation_audit.json",
+    "remaining_truncated_inputs": 0,
+    "choice_changes": 49,
+    "top10_membership_changed_queries": 0,
+    "overall_ndcg_at_10_delta": 0.0,
+    "resolved_original_zero_truncation_gate": true
   }
 }
