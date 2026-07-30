@@ -145,3 +145,59 @@ grade 1 清零和项目通用指数 gain 三种口径，主对照使用 `bm25_tr
 这些数值只是冻结候选集上的 BM25 初排，不是 PRP 教师结果。下一步 R3.1b 才调用
 真实 FLAN-T5-XL 教师；该阶段需要 24 GB NVIDIA GPU，并先做少量 pair 的
 tokenizer、输出解析、显存和吞吐准入。
+
+## R3.1b 真实 FLAN-T5-XL 教师
+
+R3.1b 已在 RTX 4090 上完成真实 `google/flan-t5-xl` 推理。模型和 tokenizer
+固定到 revision
+`7d6315df2c2fb742f0f5b556879d730926ca9001`，使用论文 Appendix E.1 的 pairwise
+prompt；模板 SHA-256 为
+`03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827`。
+主实验比较完整目标 `Passage A`、`Passage B` 的序列 log-likelihood，不采样，
+`float16`、最大输入 512 token、batch 8。
+
+GPU 环境不能使用仓库 `uv.lock` 中显式锁定的 CPU PyTorch。需在保留 CUDA
+PyTorch 的独立环境中直接执行：
+
+```bash
+PYTHONPATH=src .venv-gpu/bin/python \
+  scripts/run_prp_r3_1b_flan_t5.py \
+  --queries 97 \
+  --batch-size 8 \
+  --max-ordered-prompts 0 \
+  --scoring-mode likelihood \
+  --output-dir runs/prp_r3_1b_flan_t5_xl_97q \
+  --progress
+```
+
+脚本按有序 pair 逐条追加 JSONL 并 `fsync`；重复执行会校验 manifest 后只补齐
+缺失 pair。教师输入不含 qrels 字段，且程序只在 8,730 个 prompt 全部完成后
+读取独立 qrels 文件。1 Query/32 prompt 的 likelihood 准入和 8 prompt 的
+generation 严格解析审计均为零截断、零非法输出；generation 原始输出全部严格为
+`Passage A` 或 `Passage B`。
+
+97 Query 的全量 Top10 结果如下：
+
+| 数据 | Query | BM25 NDCG@10 | FLAN-T5-XL PRP | 绝对增益 |
+|---|---:|---:|---:|---:|
+| DL19 | 43 | 0.505831 | 0.547891 | +0.042060 |
+| DL20 | 54 | 0.479637 | 0.519842 | +0.040205 |
+| 合计 | 97 | 0.491249 | 0.532276 | +0.041028 |
+
+两个年度方向一致，说明真实教师能在冻结 BM25 Top10 内提供有效的重排序信号，而
+不是只依赖某一年度。平均 swap agreement 为 `0.805956`；其余 `0.194044`
+双向比较发生冲突并按预注册协议记为 tie。这里的 tie 是 A/B 对调后选择了不同
+候选的冲突，不是 likelihood 数值相等。8,730 个单向输出中没有 raw tie/invalid，
+也没有输入被 512-token 上限截断。
+
+本次全量推理耗时 `249.51s`，吞吐 `34.99 prompt/s`；CUDA peak allocated /
+reserved 分别为 `8.55/13.57 GB`，24 GB 显存余量充足。机器可读结果见
+`reports/experiments/prp_r3_1b_flan_t5_xl_top10.json`，复现配置见
+`configs/reproduction/prp_r3_1b_flan_t5_xl.yaml`。
+
+需要严格限制结论：论文 Table 2 的 FLAN-T5-XL PRP-Allpair
+`0.6975/0.6812` 来自 BM25 Top100 重排序，本实验只重排 Top10。候选深度不同会
+改变可达到的上限、pair 数和聚合行为，因此当前结果是“真实教师 Top10 管线与质量
+验证”，不能宣称数值复现论文 Top100。若要进行论文级对照，下一步应冻结 Top100
+文本并运行每 Query 9,900 个有序 prompt；在查看该结果前不得用 test qrels 调整
+prompt、tie 规则或聚合器。

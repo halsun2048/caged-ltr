@@ -133,12 +133,18 @@ class TeacherResponse:
     output_tokens: int
     latency_ms: float
     raw_output: str
+    score_first: float | None = None
+    score_second: float | None = None
+    input_truncated: bool = False
 
     def __post_init__(self) -> None:
         if self.choice not in {"first", "second", "tie"}:
             raise ValueError(f"unsupported pair choice: {self.choice}")
         if self.input_tokens < 0 or self.output_tokens < 0 or self.latency_ms < 0:
             raise ValueError("teacher cost fields must be non-negative")
+        scores = (self.score_first, self.score_second)
+        if any(score is not None and not math.isfinite(score) for score in scores):
+            raise ValueError("teacher likelihood scores must be finite when provided")
 
 
 class PairwiseTeacher(Protocol):

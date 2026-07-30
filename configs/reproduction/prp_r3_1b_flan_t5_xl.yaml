@@ -1,0 +1,60 @@
+experiment:
+  name: prp_r3_1b_flan_t5_xl_top10
+  result_type: real_flan_t5_prp_teacher_inference
+  output_dir: runs/prp_r3_1b_flan_t5_xl_97q
+  report: reports/experiments/prp_r3_1b_flan_t5_xl_top10.json
+
+data:
+  source: official_trec_dl_2019_2020_passage
+  teacher_input: data/processed/prp_trec_dl_top10/teacher_inputs.jsonl
+  teacher_input_sha256: 312e3ad27cd6f51da72baee9f32ac0b25cd9ad6a37d2ed26e63118e7b856785c
+  qrels: data/processed/prp_trec_dl_top10/qrels.parquet
+  qrels_sha256: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+  queries: 97
+  candidates_per_query: 10
+  candidate_depth: 10
+
+teacher:
+  backend: transformers_flan_t5
+  model_name: google/flan-t5-xl
+  model_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  tokenizer_name: google/flan-t5-xl
+  tokenizer_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  dtype: float16
+  quantization: unquantized
+  prompt_name: prp_author_pairwise
+  prompt_version: naacl2024_appendix_e1
+  prompt_sha256: 03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827
+  scoring_mode: likelihood
+  targets: [Passage A, Passage B]
+  max_input_tokens: 512
+  tie_margin: 0.0
+  do_sample: false
+
+protocol:
+  aggregator: allpair_borda
+  pair_orders_per_unordered_pair: 2
+  inconsistent_bidirectional_pair: tie_with_half_point_each
+  ordered_prompts_per_query: 90
+  total_ordered_prompts: 8730
+  batch_size: 8
+  cache_unit: ordered_pair
+  qrels_access: only_after_all_teacher_prompts_complete
+  tie_breaker: frozen_bm25_rank
+
+environment:
+  python: 3.12.11
+  pytorch: 2.13.0+cu132
+  transformers: 4.53.2
+  sentencepiece: 0.2.0
+  gpu: NVIDIA GeForce RTX 4090
+
+evaluation:
+  metric: linear_graded_ndcg_at_10_over_complete_official_qrels
+  compare_against: frozen_bm25_top10
+
+claim_boundary:
+  paper_candidate_depth: 100
+  current_candidate_depth: 10
+  directly_comparable_to_paper_table_2: false
+  reason: candidate-depth mismatch; this is a frozen Top10 teacher/pipeline result

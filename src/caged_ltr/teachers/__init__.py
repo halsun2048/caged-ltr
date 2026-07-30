@@ -1,5 +1,13 @@
 """Offline ranking teacher integrations."""
 
+from caged_ltr.teachers.flan_t5 import (
+    AUTHOR_PRP_PROMPT,
+    DEFAULT_FLAN_T5_XL_REVISION,
+    FlanT5PairwiseTeacher,
+    OrderedPairRequest,
+    likelihood_margin,
+    parse_prp_generation,
+)
 from caged_ltr.teachers.prp import (
     DEFAULT_PRP_PROMPT,
     DeterministicMockTeacher,
@@ -20,8 +28,12 @@ from caged_ltr.teachers.prp import (
 )
 
 __all__ = [
+    "AUTHOR_PRP_PROMPT",
+    "DEFAULT_FLAN_T5_XL_REVISION",
     "DEFAULT_PRP_PROMPT",
     "DeterministicMockTeacher",
+    "FlanT5PairwiseTeacher",
+    "OrderedPairRequest",
     "PRPCandidate",
     "PRPQuery",
     "PRPRanking",
@@ -31,7 +43,9 @@ __all__ = [
     "TeacherResponse",
     "allpair_borda",
     "compare_bidirectional",
+    "likelihood_margin",
     "pair_diagnostics",
+    "parse_prp_generation",
     "prompt_sha256",
     "query_fingerprint",
     "render_pair_prompt",

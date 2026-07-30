@@ -1,0 +1,98 @@
+{
+  "experiment": "R3.1b FLAN-T5-XL PRP Allpair on frozen TREC-DL Top10",
+  "status": "complete",
+  "result_type": "real FLAN-T5 PRP teacher inference",
+  "data": {
+    "queries": 97,
+    "candidates_per_query": 10,
+    "teacher_input_sha256": "312e3ad27cd6f51da72baee9f32ac0b25cd9ad6a37d2ed26e63118e7b856785c",
+    "qrels_sha256": "64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32"
+  },
+  "teacher": {
+    "model_name": "google/flan-t5-xl",
+    "model_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "tokenizer_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "prompt_version": "naacl2024_appendix_e1",
+    "prompt_sha256": "03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827",
+    "scoring_mode": "likelihood",
+    "dtype": "float16",
+    "max_input_tokens": 512
+  },
+  "protocol": {
+    "aggregation": "bidirectional Allpair Borda",
+    "expected_ordered_prompts": 8730,
+    "completed_ordered_prompts": 8730,
+    "batch_size": 8,
+    "qrels_accessed_only_after_inference_completed": true,
+    "manifest_identity_sha256": "2354fb02690446b15001de0645dc0794adc16d3aa22aabf02985059d2a3ed8f8"
+  },
+  "admission": {
+    "likelihood": {
+      "queries": 1,
+      "ordered_prompts": 32,
+      "input_truncations": 0,
+      "invalid_outputs": 0,
+      "qrels_accessed": false,
+      "throughput_prompts_per_second": 21.085
+    },
+    "generation_parser_audit": {
+      "queries": 1,
+      "ordered_prompts": 8,
+      "input_truncations": 0,
+      "invalid_outputs": 0,
+      "all_raw_outputs_exact_passage_a_or_b": true,
+      "qrels_accessed": false,
+      "throughput_prompts_per_second": 13.368
+    }
+  },
+  "full_run": {
+    "wall_seconds": 249.50737913511693,
+    "throughput_prompts_per_second": 34.98894513766024,
+    "input_truncations": 0,
+    "raw_likelihood_ties_or_invalid_outputs": 0,
+    "mean_swap_agreement": 0.8059564719358534,
+    "mean_bidirectional_conflict_ratio": 0.19404352806414663,
+    "runtime": {
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "cuda_total_memory_bytes": 25252724736,
+      "cuda_peak_allocated_bytes": 8547952128,
+      "cuda_peak_reserved_bytes": 13566476288
+    }
+  },
+  "ndcg_at_10": {
+    "metric": "linear graded NDCG@10 over complete official qrels",
+    "overall": {
+      "queries": 97,
+      "bm25": 0.49124859191629333,
+      "flan_t5_xl_prp": 0.5322761458482328,
+      "absolute_gain": 0.041027553931939464
+    },
+    "dl2019": {
+      "queries": 43,
+      "bm25": 0.5058310024399073,
+      "flan_t5_xl_prp": 0.547891035430407,
+      "absolute_gain": 0.04206003299049965
+    },
+    "dl2020": {
+      "queries": 54,
+      "bm25": 0.4796366724252675,
+      "flan_t5_xl_prp": 0.519842067106872,
+      "absolute_gain": 0.0402053946816045
+    }
+  },
+  "acceptance": {
+    "all_prompts_completed": true,
+    "qrels_isolated_until_teacher_completion": true,
+    "no_input_truncation": true,
+    "no_invalid_likelihood_output": true,
+    "positive_gain_on_both_years": true
+  },
+  "claim_boundary": {
+    "paper_prp_allpair_top100_dl2019_ndcg_at_10": 0.6975,
+    "paper_prp_allpair_top100_dl2020_ndcg_at_10": 0.6812,
+    "current_candidate_depth": 10,
+    "paper_candidate_depth": 100,
+    "direct_numeric_reproduction_claim_allowed": false,
+    "reason": "The current experiment only permutes the frozen BM25 Top10. The paper reranks Top100, so its Table 2 values are not directly comparable."
+  }
+}

@@ -209,3 +209,9 @@ R3.1a 已用 Pyserini 2.3.0、`msmarco-v1-passage`、BM25
 Top-10 输入。教师输入与 qrels 物理分离；DL19/20 的 `trec_eval` NDCG@10 为
 `0.505831/0.479637`，对齐公开基线 `0.5058/0.4796`。该结果只是数据基线，
 真实 FLAN-T5-XL 教师推理从 R3.1b 开始并需要 24 GB NVIDIA GPU。
+
+R3.1b 已用固定 revision 的 FLAN-T5-XL 和作者 Appendix E.1 prompt 完成 97
+Query、8,730 个双向 Allpair prompt。DL19/20 NDCG@10 从 BM25 的
+`0.505831/0.479637` 提升到 `0.547891/0.519842`，两个年度方向一致；整体增益
+为 `+0.041028`。所有输入均未截断，qrels 只在教师推理完整结束后读取。该结果的
+候选深度为 Top10；论文报告的是 Top100，不能直接进行数值复现声明。
