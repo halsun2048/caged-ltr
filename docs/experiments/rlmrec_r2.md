@@ -228,3 +228,93 @@ shuffled-Con。Con 同时超过 LightGCN、Tail `0.001` 实际规模、Head `0.0
 忠实度决策：在 GPU 上使用公开原始 1536 维 embedding、batch 4096 运行 seed 42
 的真实/打乱 Con，并复用本轮 LightGCN。若原始维度仍不能同时提升 Recall/NDCG，
 则正式记录 R2 未复现，进入 R3。
+
+## R2.2：Raw-1536 GPU 最终审计
+
+公开 pickle 已在数据准备阶段安全转换为 float32 NPY，与作者代码
+`torch.tensor(...).float()` 的输入精度一致：
+
+- `data/processed/rlmrec_yelp_author/user_semantics.npy`
+- `data/processed/rlmrec_yelp_author/item_semantics.npy`
+
+固定 SHA-256 分别为
+`8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f`
+和 `721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c`。
+runner 会在构建模型前验证，避免传输损坏后继续训练。
+
+runner 的 `--semantic-space raw1536` 会把两个文件名、SHA-256、复现类型和设备写入
+summary/checkpoint 配置身份。raw 与 PCA checkpoint 不允许互相恢复。
+
+当前 `uv.lock` 明确使用 CPU PyTorch，不能用 `uv run --frozen` 启动本实验。
+必须进入已安装 CUDA PyTorch 的 GPU 环境，先确认：
+
+```bash
+python -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+```
+
+输出中的 CUDA availability 必须为 `True`，然后运行：
+
+```bash
+python scripts/run_rlmrec_r2.py \
+  --seeds 42 \
+  --variants lightgcn rlmrec_con shuffled_con \
+  --semantic-space raw1536 \
+  --device cuda \
+  --batch-size 4096 \
+  --max-epochs 3000 \
+  --output-root runs/rlmrec_r2_raw1536_gpu \
+  --report reports/experiments/rlmrec_r2_raw1536_gpu.json \
+  --progress
+```
+
+进度和断点恢复协议与 R2.1 相同。该命令是 R2 最后一次忠实度实验；不允许在结果
+之后搜索对齐权重。五项门槛全部通过才扩展种子，否则关闭 R2 并进入 R3。
+
+### R2.2 正式结果
+
+实验在单张 RTX 4090、PyTorch `2.13.0+cu132` 上运行。三组均使用 batch 4096、
+公开原始 1536 维语义资产、seed 42；验证集 Recall@20 选择 checkpoint，测试集
+只在 checkpoint 固定后访问一次。
+
+| 模型 | Recall@20 | NDCG@20 | 最佳 epoch | 总耗时 |
+|---|---:|---:|---:|---:|
+| 论文 LightGCN | 0.115700 | 0.073300 | — | — |
+| 论文 RLMRec-Con | 0.123000 | 0.077600 | — | — |
+| GPU LightGCN | 0.117730 | 0.073781 | 213 | 4m56s |
+| GPU RLMRec-Con | 0.122898 | 0.077361 | 90 | 4m04s |
+| GPU shuffled-Con | 0.101566 | 0.063230 | 96 | 3m21s |
+
+原始维度 RLMRec-Con 相对同次 LightGCN：
+
+| 分桶 | Recall@20 差值 | NDCG@20 差值 |
+|---|---:|---:|
+| Overall | +0.005168 | +0.003580 |
+| Head | +0.007747 | +0.004758 |
+| Torso | +0.003959 | +0.001709 |
+| Tail | +0.000198 | +0.000012 |
+
+Overall Recall/NDCG@20 分别相对 LightGCN 提升约 `4.39%/4.85%`，而论文报告
+的 RLMRec-Con 数值只相差 `-0.000102/-0.000239`。真实语义也在两个 Overall
+指标上显著超过 shuffled-Con，说明原始实体—语义对应关系是结果所必需，增益不能
+由额外 MLP 参数量或对齐损失本身解释。PCA64 两轮未恢复增益而 raw-1536 恢复，
+因此此前失败的主要工程原因是语义压缩损失，而不是 batch size。
+
+五项预设门槛通过三项：
+
+- RLMRec-Con 的两个 Overall 指标均超过 LightGCN；
+- 真实 Con 的两个 Overall 指标均超过 shuffled-Con；
+- Head NDCG@20 没有下降，反而增加 `+0.004758`。
+
+失败的两项：
+
+- Tail NDCG@20 只增加 `+0.000012`，远低于 `0.001` 实际规模门槛；Overall
+  提升主要来自 Head，其次是 Torso，不能解释为长尾改善；
+- LightGCN NDCG@20 与论文只差 `+0.000481`，但 Recall@20 差 `+0.002030`，
+  比 `0.002` 容差多 `0.000030`，因而自动门槛技术性未通过。这不构成基线失配
+  的实质证据，但必须按预注册判定保留为失败。
+
+因此 R2 的最终结论是：作者公开 raw-1536 语义条件下，seed 42 的整体数值结果
+基本复现成功，且身份对照支持真实语义有效；但没有获得有实际规模的 Tail 增益。
+按预设停止规则不扩展 seed 2024/3407，不进行结果后权重搜索，关闭 R2 并进入
+R3。公开 profile 的生成截止时间仍不可验证，以上结论只能称为官方公开资产数值
+复现，不能证明无泄漏或因果语义增益。

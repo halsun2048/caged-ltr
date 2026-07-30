@@ -1,0 +1,771 @@
+{
+  "acceptance": {
+    "con_beats_lightgcn_both_overall_metrics_all_seeds": true,
+    "head_ndcg20_drop_at_most_0p002_all_seeds": true,
+    "paper_lightgcn_within_0p002_all_seeds": false,
+    "real_con_beats_shuffled_both_overall_metrics_all_seeds": true,
+    "tail_ndcg20_gain_at_least_0p001_all_seeds": false,
+    "thresholds": {
+      "head_NDCG@20_maximum_drop": 0.002,
+      "paper_baseline_absolute_tolerance": 0.002,
+      "tail_NDCG@20_absolute_gain": 0.001
+    }
+  },
+  "aggregate": {
+    "lightgcn": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.12866087713901633,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.2453151071852945,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.07378138446587325,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.11772990393247308,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.00012136650295545517,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.00029644268774703554,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.003767982837648762,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.011393467875956038,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.1303007576335802,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.24983924695474208,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.07553137494109685,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.12001150010617603,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.00011500191175702895,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0004885197850512946,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0033242923579033007,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.008757232580123994,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "rlmrec_con": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.13341864218168764,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.2530624542337141,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.07736121685370764,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.12289832088688961,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.00013298434790559303,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0004940711462450593,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.005477189840386349,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.015352947507404078,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.13593123423121778,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.2525658770411117,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.07939825085731744,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.12363705093378458,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 6.813457392553246e-05,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0002442598925256473,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0050483840797743585,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.013560711634485608,
+            "std": 0.0
+          }
+        }
+      }
+    },
+    "shuffled_con": {
+      "test": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.11047301350190046,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.21278213629412118,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.0632301280118537,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.10156600213785229,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0024630475295872056,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.007121360943416104,
+            "std": 0.0
+          }
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@20": {
+            "mean": 0.11313205917747672,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.2147893031709143,
+            "std": 0.0
+          }
+        },
+        "overall": {
+          "NDCG@20": {
+            "mean": 0.06563603923784148,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.10303891228023791,
+            "std": 0.0
+          }
+        },
+        "tail": {
+          "NDCG@20": {
+            "mean": 0.00024111796303846595,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.0004885197850512946,
+            "std": 0.0
+          }
+        },
+        "torso": {
+          "NDCG@20": {
+            "mean": 0.0022956397089145164,
+            "std": 0.0
+          },
+          "Recall@20": {
+            "mean": 0.006589989173141742,
+            "std": 0.0
+          }
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "42": {
+      "lightgcn": {
+        "head": {
+          "NDCG@20": 0.004757765042671308,
+          "Recall@20": 0.007747347048419589
+        },
+        "overall": {
+          "NDCG@20": 0.0035798323878343946,
+          "Recall@20": 0.005168416954416527
+        },
+        "tail": {
+          "NDCG@20": 1.161784495013786e-05,
+          "Recall@20": 0.0001976284584980237
+        },
+        "torso": {
+          "NDCG@20": 0.0017092070027375874,
+          "Recall@20": 0.00395947963144804
+        }
+      },
+      "shuffled_con": {
+        "head": {
+          "NDCG@20": 0.02294562867978718,
+          "Recall@20": 0.04028031793959291
+        },
+        "overall": {
+          "NDCG@20": 0.014131088841853948,
+          "Recall@20": 0.02133231874903732
+        },
+        "tail": {
+          "NDCG@20": 0.00013298434790559303,
+          "Recall@20": 0.0004940711462450593
+        },
+        "torso": {
+          "NDCG@20": 0.003014142310799144,
+          "Recall@20": 0.008231586563987973
+        }
+      }
+    }
+  },
+  "interpretation_boundary": "Public profile embeddings have no verifiable train-only cutoff; results are a structure reproduction and cannot establish leakage-free semantic gains.",
+  "runs": {
+    "lightgcn_seed42": {
+      "artifacts": {
+        "item_semantics.npy": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics.npy": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 213,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 4096,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "cuda",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 512,
+        "evaluation_interval": 3,
+        "expected_item_semantic_sha256": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "expected_user_semantic_sha256": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "item_semantic_filename": "item_semantics.npy",
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": null,
+        "max_epochs": 3000,
+        "max_eval_users": null,
+        "output_dir": "runs/rlmrec_r2_raw1536_gpu/lightgcn_seed42",
+        "patience": 5,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "user_semantic_filename": "user_semantics.npy",
+        "variant": "lightgcn"
+      },
+      "device": "cuda",
+      "elapsed_seconds": 296.18151198141277,
+      "epochs_ran": 229,
+      "parameters": 707232,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "semantic_files": {
+          "item": "item_semantics.npy",
+          "user": "user_semantics.npy"
+        },
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.0990747536645577,
+          "NDCG@20": 0.12866087713901633,
+          "NDCG@5": 0.07683164617287501,
+          "Recall@10": 0.15234934192031416,
+          "Recall@20": 0.2453151071852945,
+          "Recall@5": 0.09062112892338522,
+          "users": 8577
+        },
+        "overall": {
+          "NDCG@10": 0.05800976961056028,
+          "NDCG@20": 0.07378138446587325,
+          "NDCG@5": 0.04862719173990854,
+          "Recall@10": 0.0715792715726694,
+          "Recall@20": 0.11772990393247308,
+          "Recall@5": 0.04154435228491103,
+          "users": 10593
+        },
+        "tail": {
+          "NDCG@10": 6.52342200031104e-05,
+          "NDCG@20": 0.00012136650295545517,
+          "NDCG@5": 6.52342200031104e-05,
+          "Recall@10": 0.00012351778656126481,
+          "Recall@20": 0.00029644268774703554,
+          "Recall@5": 0.00012351778656126481,
+          "users": 4048
+        },
+        "torso": {
+          "NDCG@10": 0.0011865403350485853,
+          "NDCG@20": 0.003767982837648762,
+          "NDCG@5": 0.00032911262280209093,
+          "Recall@10": 0.0026695257820248245,
+          "Recall@20": 0.011393467875956038,
+          "Recall@5": 0.0004468277504721056,
+          "users": 8311
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.10019386225398433,
+          "NDCG@20": 0.1303007576335802,
+          "NDCG@5": 0.07713069986338962,
+          "Recall@10": 0.1533012311906652,
+          "Recall@20": 0.24983924695474208,
+          "Recall@5": 0.08920894889037767,
+          "users": 8714
+        },
+        "overall": {
+          "NDCG@10": 0.059666820407299356,
+          "NDCG@20": 0.07553137494109685,
+          "NDCG@5": 0.049866063836644194,
+          "Recall@10": 0.07272639238919812,
+          "Recall@20": 0.12001150010617603,
+          "Recall@5": 0.041765451746316774,
+          "users": 10611
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.00011500191175702895,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0004885197850512946,
+          "Recall@5": 0.0,
+          "users": 4094
+        },
+        "torso": {
+          "NDCG@10": 0.001531588055548747,
+          "NDCG@20": 0.0033242923579033007,
+          "NDCG@5": 0.000676514484359058,
+          "Recall@10": 0.003146244840026473,
+          "Recall@20": 0.008757232580123994,
+          "Recall@5": 0.0008744696561037847,
+          "users": 8298
+        }
+      },
+      "variant": "lightgcn"
+    },
+    "rlmrec_con_seed42": {
+      "artifacts": {
+        "item_semantics.npy": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics.npy": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 90,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 4096,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "cuda",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 512,
+        "evaluation_interval": 3,
+        "expected_item_semantic_sha256": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "expected_user_semantic_sha256": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "item_semantic_filename": "item_semantics.npy",
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": null,
+        "max_epochs": 3000,
+        "max_eval_users": null,
+        "output_dir": "runs/rlmrec_r2_raw1536_gpu/rlmrec_con_seed42",
+        "patience": 5,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "user_semantic_filename": "user_semantics.npy",
+        "variant": "rlmrec_con"
+      },
+      "device": "cuda",
+      "elapsed_seconds": 243.77818033657968,
+      "epochs_ran": 106,
+      "parameters": 1937360,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "semantic_files": {
+          "item": "item_semantics.npy",
+          "user": "user_semantics.npy"
+        },
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.10313456204719106,
+          "NDCG@20": 0.13341864218168764,
+          "NDCG@5": 0.08100977404270149,
+          "Recall@10": 0.15750574469148287,
+          "Recall@20": 0.2530624542337141,
+          "Recall@5": 0.0966122315856358,
+          "users": 8577
+        },
+        "overall": {
+          "NDCG@10": 0.06094048863647871,
+          "NDCG@20": 0.07736121685370764,
+          "NDCG@5": 0.05166203638377156,
+          "Recall@10": 0.07486067906946162,
+          "Recall@20": 0.12289832088688961,
+          "Recall@5": 0.0452594298358081,
+          "users": 10593
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.00013298434790559303,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0004940711462450593,
+          "Recall@5": 0.0,
+          "users": 4048
+        },
+        "torso": {
+          "NDCG@10": 0.0021609333647266324,
+          "NDCG@20": 0.005477189840386349,
+          "NDCG@5": 0.0008998707387147372,
+          "Recall@10": 0.0048561957437154735,
+          "Recall@20": 0.015352947507404078,
+          "Recall@5": 0.001621117704692273,
+          "users": 8311
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.10649328722214439,
+          "NDCG@20": 0.13593123423121778,
+          "NDCG@5": 0.08372901473552181,
+          "Recall@10": 0.15935486433060977,
+          "Recall@20": 0.2525658770411117,
+          "Recall@5": 0.09629536740892572,
+          "users": 8714
+        },
+        "overall": {
+          "NDCG@10": 0.06322894487321151,
+          "NDCG@20": 0.07939825085731744,
+          "NDCG@5": 0.05384310271832218,
+          "Recall@10": 0.0751965228045561,
+          "Recall@20": 0.12363705093378458,
+          "Recall@5": 0.04526092226352953,
+          "users": 10611
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 6.813457392553246e-05,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0002442598925256473,
+          "Recall@5": 0.0,
+          "users": 4094
+        },
+        "torso": {
+          "NDCG@10": 0.002104477398732645,
+          "NDCG@20": 0.0050483840797743585,
+          "NDCG@5": 0.000946639120412434,
+          "Recall@10": 0.00419081668177836,
+          "Recall@20": 0.013560711634485608,
+          "Recall@5": 0.0012879370435408036,
+          "users": 8298
+        }
+      },
+      "variant": "rlmrec_con"
+    },
+    "shuffled_con_seed42": {
+      "artifacts": {
+        "item_semantics.npy": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "test.npz": "6051b6a8fc486129982ac4f93c902a28b78e066c8fe8d0b45d31d40e6134ac2c",
+        "train.npz": "7ff429518a0c94ddb1b8efed9f55c30d7eaf59bacb2004f42a6e3e8a52ab63ed",
+        "user_semantics.npy": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "validation.npz": "b399c939e46b251a41a155dda3ba272bbaf2e22650fac657cd903c0de40fd1ae"
+      },
+      "best_epoch": 96,
+      "bucket_definition": {
+        "definition": "bottom/top 20% of item identities ranked by train interaction count",
+        "head_items": 2202,
+        "head_min_train_degree": 19,
+        "tail_items": 2202,
+        "tail_max_train_degree": 7,
+        "torso_items": 6606
+      },
+      "config": {
+        "alignment_weight": 0.01,
+        "baseline_regularization_weight": 1e-06,
+        "batch_size": 4096,
+        "con_regularization_weight": 1e-07,
+        "control_seed": 20240728,
+        "cutoffs": [
+          5,
+          10,
+          20
+        ],
+        "device": "cuda",
+        "embedding_dim": 32,
+        "evaluation_batch_size": 512,
+        "evaluation_interval": 3,
+        "expected_item_semantic_sha256": "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c",
+        "expected_user_semantic_sha256": "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f",
+        "item_semantic_filename": "item_semantics.npy",
+        "keep_rate": 0.8,
+        "layer_count": 3,
+        "learning_rate": 0.001,
+        "max_batches_per_epoch": null,
+        "max_epochs": 3000,
+        "max_eval_users": null,
+        "output_dir": "runs/rlmrec_r2_raw1536_gpu/shuffled_con_seed42",
+        "patience": 5,
+        "processed_dir": "data/processed/rlmrec_yelp_author",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "seed": 42,
+        "temperature": 0.2,
+        "test_after_selection": true,
+        "user_semantic_filename": "user_semantics.npy",
+        "variant": "shuffled_con"
+      },
+      "device": "cuda",
+      "elapsed_seconds": 200.73385918606073,
+      "epochs_ran": 112,
+      "parameters": 1937360,
+      "protocol": {
+        "masked_during_validation_and_test": "training interactions only",
+        "official_code_alignment_weight": 0.01,
+        "ranking": "full catalog",
+        "reproduction_type": "Official public 1536-dimensional semantic embedding reproduction",
+        "selection": "validation Recall@20 only",
+        "semantic_asset_status": "temporally_unverified",
+        "semantic_files": {
+          "item": "item_semantics.npy",
+          "user": "user_semantics.npy"
+        },
+        "test_access": "once after best checkpoint selection"
+      },
+      "seed": 42,
+      "stage": "complete",
+      "test": {
+        "head": {
+          "NDCG@10": 0.08504714541461197,
+          "NDCG@20": 0.11047301350190046,
+          "NDCG@5": 0.06548363613294299,
+          "Recall@10": 0.13215802022739478,
+          "Recall@20": 0.21278213629412118,
+          "Recall@5": 0.07849183135302801,
+          "users": 8577
+        },
+        "overall": {
+          "NDCG@10": 0.049807791206930116,
+          "NDCG@20": 0.0632301280118537,
+          "NDCG@5": 0.04187220655124168,
+          "Recall@10": 0.06140521713549982,
+          "Recall@20": 0.10156600213785229,
+          "Recall@5": 0.036272123208382745,
+          "users": 10593
+        },
+        "tail": {
+          "NDCG@10": 0.0,
+          "NDCG@20": 0.0,
+          "NDCG@5": 0.0,
+          "Recall@10": 0.0,
+          "Recall@20": 0.0,
+          "Recall@5": 0.0,
+          "users": 4048
+        },
+        "torso": {
+          "NDCG@10": 0.0007917399139695662,
+          "NDCG@20": 0.0024630475295872056,
+          "NDCG@5": 0.0003315373206427751,
+          "Recall@10": 0.0016118656769014362,
+          "Recall@20": 0.007121360943416104,
+          "Recall@5": 0.00046357571625289107,
+          "users": 8311
+        }
+      },
+      "validation": {
+        "head": {
+          "NDCG@10": 0.08679153303406563,
+          "NDCG@20": 0.11313205917747672,
+          "NDCG@5": 0.06816472655661303,
+          "Recall@10": 0.13147666436558572,
+          "Recall@20": 0.2147893031709143,
+          "Recall@5": 0.07918103069333421,
+          "users": 8714
+        },
+        "overall": {
+          "NDCG@10": 0.051918758024249924,
+          "NDCG@20": 0.06563603923784148,
+          "NDCG@5": 0.044172879081876136,
+          "Recall@10": 0.06269290643607608,
+          "Recall@20": 0.10303891228023791,
+          "Recall@5": 0.03729181899602882,
+          "users": 10611
+        },
+        "tail": {
+          "NDCG@10": 0.00024111796303846595,
+          "NDCG@20": 0.00024111796303846595,
+          "NDCG@5": 0.00015411083379859733,
+          "Recall@10": 0.0004885197850512946,
+          "Recall@20": 0.0004885197850512946,
+          "Recall@5": 0.0002442598925256473,
+          "users": 4094
+        },
+        "torso": {
+          "NDCG@10": 0.0009450502860834975,
+          "NDCG@20": 0.0022956397089145164,
+          "NDCG@5": 0.00030981313585940623,
+          "Recall@10": 0.0022985075768879094,
+          "Recall@20": 0.006589989173141742,
+          "Recall@5": 0.0005164755707055056,
+          "users": 8298
+        }
+      },
+      "variant": "shuffled_con"
+    }
+  },
+  "seeds": [
+    42
+  ],
+  "smoke": false,
+  "stage": "complete",
+  "variants": [
+    "lightgcn",
+    "rlmrec_con",
+    "shuffled_con"
+  ]
+}

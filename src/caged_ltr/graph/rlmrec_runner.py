@@ -25,6 +25,11 @@ class RLMRecRunConfig:
     processed_dir: Path
     output_dir: Path
     variant: RLMRecVariant
+    user_semantic_filename: str = "user_semantics_pca64.npy"
+    item_semantic_filename: str = "item_semantics_pca64.npy"
+    expected_user_semantic_sha256: str | None = None
+    expected_item_semantic_sha256: str | None = None
+    reproduction_type: str = "CPU structure reproduction with joint PCA64"
     seed: int = 42
     embedding_dim: int = 32
     layer_count: int = 3
@@ -50,6 +55,10 @@ class RLMRecRunConfig:
 def _resolve_device(name: str) -> torch.device:
     if name == "auto":
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if name.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError(
+            "CUDA was requested but this PyTorch runtime has no CUDA support"
+        )
     return torch.device(name)
 
 
@@ -215,16 +224,17 @@ def evaluate_full_catalog(
     return result
 
 
-def _artifact_hashes(processed_dir: Path) -> dict[str, str]:
+def _artifact_hashes(config: RLMRecRunConfig) -> dict[str, str]:
+    filenames = (
+        "train.npz",
+        "validation.npz",
+        "test.npz",
+        config.user_semantic_filename,
+        config.item_semantic_filename,
+    )
     return {
-        name: sha256_file(processed_dir / name)
-        for name in (
-            "train.npz",
-            "validation.npz",
-            "test.npz",
-            "user_semantics_pca64.npy",
-            "item_semantics_pca64.npy",
-        )
+        name: sha256_file(config.processed_dir / name)
+        for name in dict.fromkeys(filenames)
     }
 
 
@@ -249,6 +259,14 @@ def run_rlmrec(
         raise ValueError("early-stopping settings must be positive")
     seed_everything(config.seed)
     device = _resolve_device(config.device)
+    artifact_hashes = _artifact_hashes(config)
+    expected_semantic_hashes = {
+        config.user_semantic_filename: config.expected_user_semantic_sha256,
+        config.item_semantic_filename: config.expected_item_semantic_sha256,
+    }
+    for filename, expected_hash in expected_semantic_hashes.items():
+        if expected_hash is not None and artifact_hashes[filename] != expected_hash:
+            raise ValueError(f"semantic artifact SHA-256 mismatch: {filename}")
     train = load_npz(config.processed_dir / "train.npz").tocsr().astype(np.float32)
     validation = (
         load_npz(config.processed_dir / "validation.npz").tocsr().astype(np.float32)
@@ -258,11 +276,11 @@ def run_rlmrec(
     item_semantics: torch.Tensor | None = None
     if config.variant != "lightgcn":
         user_array = np.load(
-            config.processed_dir / "user_semantics_pca64.npy",
+            config.processed_dir / config.user_semantic_filename,
             allow_pickle=False,
         )
         item_array = np.load(
-            config.processed_dir / "item_semantics_pca64.npy",
+            config.processed_dir / config.item_semantic_filename,
             allow_pickle=False,
         )
         if config.variant == "shuffled_con":
@@ -465,7 +483,7 @@ def run_rlmrec(
         "parameters": sum(parameter.numel() for parameter in model.parameters()),
         "device": str(device),
         "config": _config_payload(config),
-        "artifacts": _artifact_hashes(config.processed_dir),
+        "artifacts": artifact_hashes,
         "bucket_definition": bucket_definition,
         "validation": validation_result,
         "test": test_result,
@@ -479,7 +497,11 @@ def run_rlmrec(
                 else "not accessed"
             ),
             "semantic_asset_status": "temporally_unverified",
-            "reproduction_type": "CPU structure reproduction with joint PCA64",
+            "reproduction_type": config.reproduction_type,
+            "semantic_files": {
+                "user": config.user_semantic_filename,
+                "item": config.item_semantic_filename,
+            },
             "official_code_alignment_weight": config.alignment_weight,
         },
     }

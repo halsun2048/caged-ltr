@@ -1,0 +1,56 @@
+processed_dir: data/processed/rlmrec_yelp_author
+output_root: runs/rlmrec_r2_raw1536_gpu
+report: reports/experiments/rlmrec_r2_raw1536_gpu.json
+
+experiment:
+  name: r2_2_raw1536_gpu_fidelity
+  purpose: Final R2 fidelity audit after rejecting the batch-size hypothesis
+  seed: 42
+  variants: [lightgcn, rlmrec_con, shuffled_con]
+  device: cuda
+
+model:
+  embedding_dim: 32
+  layer_count: 3
+  keep_rate: 0.8
+  semantic_adapter: shared_mlp
+  semantic_input: official_public_raw1536
+  user_semantic_file: user_semantics.npy
+  item_semantic_file: item_semantics.npy
+  user_semantic_sha256: 8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f
+  item_semantic_sha256: 721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c
+
+training:
+  batch_size: 4096
+  learning_rate: 0.001
+  baseline_regularization_weight: 0.000001
+  con_regularization_weight: 0.0000001
+  official_code_alignment_weight: 0.01
+  temperature: 0.2
+  max_epochs: 3000
+  evaluation_interval: 3
+  patience: 5
+  resume_checkpoint_each_epoch: true
+
+evaluation:
+  cutoffs: [5, 10, 20]
+  selection_metric: Recall@20
+  ranking: full_catalog
+  mask: train_only
+  test_after_selection: true
+
+gates:
+  paper_lightgcn_absolute_tolerance: 0.002
+  con_must_beat_lightgcn: [Recall@20, NDCG@20]
+  real_con_must_beat_shuffled: [Recall@20, NDCG@20]
+  tail_ndcg20_minimum_absolute_gain: 0.001
+  head_ndcg20_maximum_absolute_drop: 0.002
+
+stop_rule:
+  pass: Expand the raw-1536 GPU route to seeds 2024 and 3407
+  fail: Close R2 as not reproduced and proceed to R3
+
+limitations:
+  - Public profile embeddings have no verifiable train-only cutoff.
+  - A successful run is an author-asset reproduction, not leakage-free evidence.
+  - No hyperparameter search is allowed after this audit.

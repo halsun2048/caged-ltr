@@ -13,6 +13,12 @@ from typing import Any
 from caged_ltr.graph import RLMRecRunConfig, run_rlmrec
 
 DEFAULT_VARIANTS = ("lightgcn", "semantic_only", "rlmrec_con", "shuffled_con")
+RAW_USER_SEMANTIC_SHA256 = (
+    "8ff791d86a34d79fd2664fda19135a7f7c3d26575314d64580c9797fdabdbb6f"
+)
+RAW_ITEM_SEMANTIC_SHA256 = (
+    "721ca457da34920f16d69b70bd5dfa5da2163f5650c9bbb7b540fe7de1729d6c"
+)
 
 
 def _duration(seconds: float) -> str:
@@ -159,10 +165,25 @@ def _cached_summary(
     if not path.is_file():
         return None
     summary = json.loads(path.read_text(encoding="utf-8"))
+    cached_config = dict(summary.get("config", {}))
+    cached_config.setdefault(
+        "user_semantic_filename",
+        "user_semantics_pca64.npy",
+    )
+    cached_config.setdefault(
+        "item_semantic_filename",
+        "item_semantics_pca64.npy",
+    )
+    cached_config.setdefault("expected_user_semantic_sha256", None)
+    cached_config.setdefault("expected_item_semantic_sha256", None)
+    cached_config.setdefault(
+        "reproduction_type",
+        "CPU structure reproduction with joint PCA64",
+    )
     if (
         summary.get("variant") != config.variant
         or summary.get("seed") != config.seed
-        or summary.get("config") != _serialized_config(config)
+        or cached_config != _serialized_config(config)
     ):
         raise ValueError(f"cached result identity mismatch: {path}")
     if summary.get("stage") != "complete":
@@ -277,6 +298,12 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--evaluation-batch-size", type=int)
     parser.add_argument("--max-epochs", type=int)
+    parser.add_argument("--device", default="auto")
+    parser.add_argument(
+        "--semantic-space",
+        choices=("pca64", "raw1536"),
+        default="pca64",
+    )
     parser.add_argument(
         "--processed-dir",
         type=Path,
@@ -294,7 +321,19 @@ def main() -> None:
         processed_dir=args.processed_dir,
         output_dir=args.output_root,
         variant="lightgcn",
+        device=args.device,
     )
+    if args.semantic_space == "raw1536":
+        base = replace(
+            base,
+            user_semantic_filename="user_semantics.npy",
+            item_semantic_filename="item_semantics.npy",
+            expected_user_semantic_sha256=RAW_USER_SEMANTIC_SHA256,
+            expected_item_semantic_sha256=RAW_ITEM_SEMANTIC_SHA256,
+            reproduction_type=(
+                "Official public 1536-dimensional semantic embedding reproduction"
+            ),
+        )
     if args.batch_size is not None:
         base = replace(base, batch_size=args.batch_size)
     if args.evaluation_batch_size is not None:

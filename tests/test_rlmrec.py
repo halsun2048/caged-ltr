@@ -106,20 +106,36 @@ def test_prepare_and_run_rlmrec_structure_reproduction(
     assert resumed["best_epoch"] == 0
     with pytest.raises(ValueError, match="checkpoint configuration mismatch"):
         run_rlmrec(replace(base, max_epochs=2))
+    with pytest.raises(ValueError, match="semantic artifact SHA-256 mismatch"):
+        run_rlmrec(
+            replace(
+                base,
+                output_dir=tmp_path / "bad-hash",
+                expected_user_semantic_sha256="0" * 64,
+            )
+        )
 
     semantic = run_rlmrec(
         replace(
             base,
             output_dir=tmp_path / "semantic",
             variant="semantic_only",
+            user_semantic_filename="user_semantics.npy",
+            item_semantic_filename="item_semantics.npy",
+            reproduction_type="raw semantic test",
             test_after_selection=False,
         )
     )
     assert semantic["test"] is None
+    assert semantic["protocol"]["semantic_files"]["user"] == "user_semantics.npy"
+    assert "user_semantics.npy" in semantic["artifacts"]
     con = run_rlmrec(
         replace(base, output_dir=tmp_path / "con", variant="rlmrec_con")
     )
     assert np.isfinite(con["validation"]["overall"]["NDCG@20"])
+    if not torch.cuda.is_available():
+        with pytest.raises(RuntimeError, match="no CUDA support"):
+            run_rlmrec(replace(base, output_dir=tmp_path / "cuda", device="cuda"))
 
 
 def test_lightgcn_controls_and_negative_sampling() -> None:

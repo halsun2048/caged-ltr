@@ -177,3 +177,11 @@ Seed 42 中 LightGCN 的 Recall/NDCG@20 为 `0.115823/0.073247`，基本重现�
 R2.1 恢复作者 batch 4096 后，LightGCN 为 `0.117697/0.073911`，RLMRec-Con
 为 `0.116937/0.072712`，两个整体指标均低于同 batch 基线。batch 假设已排除，
 不扩展本地三种子；仅保留原始 1536 维 GPU 忠实审计。
+
+R2.2 通过 `--semantic-space raw1536 --device cuda` 选择作者公开原始语义资产。
+仓库锁定的 PyTorch 是 CPU 版，正式命令必须在外部 CUDA PyTorch 环境执行。
+RTX 4090 上 seed 42 的 LightGCN 与 RLMRec-Con Recall/NDCG@20 分别为
+`0.117730/0.073781` 和 `0.122898/0.077361`，基本恢复论文整体结果；真实语义
+也显著超过 shuffled-Con 的 `0.101566/0.063230`。但 Tail NDCG@20 绝对增益
+仅 `+0.000012`，未达到 `0.001` 预设门槛，因此 R2 不扩展三种子，也不据此
+宣称长尾改善。
