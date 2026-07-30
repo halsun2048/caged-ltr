@@ -1,0 +1,66 @@
+experiment:
+  name: prp_r3_smoke
+  result_type: synthetic_deterministic_pipeline_smoke
+  fidelity_claim: pipeline_only_not_prp_reproduction
+  output_dir: runs/prp_r3_smoke
+  report: reports/experiments/prp_r3_smoke.json
+
+data:
+  source: deterministic_synthetic
+  queries: 100
+  candidates_per_query: 10
+  seed: 42
+  initial_orders:
+    - bm25
+    - reverse
+    - random
+
+teacher:
+  backend: deterministic_mock
+  model_name: synthetic-score-oracle
+  model_revision: r3.0
+  tokenizer_name: whitespace-estimator
+  tokenizer_revision: r3.0
+  quantization: not_applicable
+  prompt_name: prp_pair_ab
+  prompt_version: "1"
+  generation:
+    position_bias: 0.025
+    noise_scale: 0.015
+    tie_margin: 0.005
+    seed: 42
+
+protocol:
+  pair_orders_per_unordered_pair: 2
+  consensus: strict_only
+  inconsistent_pair: tie
+  aggregators:
+    allpair:
+      method: borda
+      expected_ordered_prompts_per_query: 90
+    sliding_k:
+      backward_passes: 3
+      expected_ordered_prompts_per_query: 54
+  total_expected_ordered_prompts: 43200
+  resumable_unit: query
+
+diagnostics:
+  - swap_agreement
+  - tie_ratio
+  - pair_coverage
+  - pair_accuracy
+  - pair_accuracy_with_tie_credit
+  - cycle_rate
+  - ndcg_at_5
+  - ndcg_at_10
+  - exact_order_stability
+
+acceptance:
+  all_queries_serialized_once: true
+  total_prompt_count_exact: true
+  allpair_prompt_count_exact: true
+  allpair_reverse_exact_all_queries: true
+  allpair_random_exact_all_queries: true
+  mock_allpair_beats_initial_ndcg10: true
+  bm25_swap_agreement_at_least: 0.9
+  mock_cycle_rate: 0.0

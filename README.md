@@ -185,3 +185,21 @@ RTX 4090 上 seed 42 的 LightGCN 与 RLMRec-Con Recall/NDCG@20 分别为
 也显著超过 shuffled-Con 的 `0.101566/0.063230`。但 Tail NDCG@20 绝对增益
 仅 `+0.000012`，未达到 `0.001` 预设门槛，因此 R2 不扩展三种子，也不据此
 宣称长尾改善。
+
+## PRP R3
+
+R3.0 提供双向 A/B 比较、严格一致偏好、Allpair/Borda、Sliding-K、循环与顺序
+稳定性诊断，以及按 Query 断点恢复。首轮使用确定性模拟教师验证 100 Query 管线，
+明确不作为真实 PRP 结果：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_prp_r3_smoke.py --progress
+```
+
+协议、成本计数和真实模型准入门槛见
+[`docs/experiments/prp_r3.md`](docs/experiments/prp_r3.md)。
+
+100 Query 正式 smoke 已完成，43,200 个有序 prompt 计数准确，swap agreement
+为 `0.988`，Allpair 在正序、逆序和随机初排下逐 Query 完全一致。以上仅为模拟
+教师管线验收；真实教师质量从 R3.1 开始评估。
