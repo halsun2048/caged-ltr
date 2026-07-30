@@ -31,6 +31,8 @@ class _Progress:
     def __init__(self, *, enabled: bool) -> None:
         self.enabled = enabled
         self.started = time.monotonic()
+        self.inference_started = self.started
+        self.initial_done = 0
         self.line_open = False
 
     def model_loading(self, model: str, revision: str) -> None:
@@ -48,17 +50,25 @@ class _Progress:
             return
         done = int(event["prompt_done"])
         total = int(event["prompt_total"])
+        if event["stage"] == "resume":
+            self.initial_done = done
+            self.inference_started = time.monotonic()
         width = 24
         filled = round(width * done / max(total, 1))
         bar = "#" * filled + "-" * (width - filled)
         elapsed = time.monotonic() - self.started
-        rate = done / elapsed if elapsed > 0 else 0.0
+        inference_elapsed = time.monotonic() - self.inference_started
+        newly_done = max(done - self.initial_done, 0)
+        rate = newly_done / inference_elapsed if inference_elapsed > 0 else 0.0
+        remaining = max(total - done, 0)
+        eta = remaining / rate if rate > 0 else 0.0
         sys.stderr.write("\r\033[2K")
         sys.stderr.write(
             f"[{bar}] prompts={done:>4}/{total:<4} "
             f"stage={event['stage']!s:<10} "
             f"batch={int(event['batch_size']):>2} "
-            f"rate={rate:>5.2f}/s elapsed={_duration(elapsed)}"
+            f"rate={rate:>5.2f}/s elapsed={_duration(elapsed)} "
+            f"ETA={_duration(eta) if rate > 0 else '--'}"
         )
         sys.stderr.flush()
         self.line_open = True
@@ -98,6 +108,12 @@ def main() -> None:
     parser.add_argument("--queries", type=int, default=1)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument(
+        "--batch-order",
+        choices=("input", "length"),
+        default="input",
+        help="Order pending prompts as generated or by approximate input length.",
+    )
+    parser.add_argument(
         "--max-ordered-prompts",
         type=int,
         default=32,
@@ -119,6 +135,11 @@ def main() -> None:
         action=argparse.BooleanOptionalAction,
         default=True,
     )
+    parser.add_argument(
+        "--defer-evaluation",
+        action="store_true",
+        help="Finish inference without reading qrels; intended for disjoint GPU shards.",
+    )
     args = parser.parse_args()
     progress = _Progress(enabled=args.progress)
     progress.model_loading(args.model, args.revision)
@@ -138,6 +159,8 @@ def main() -> None:
         qrels_path=args.qrels,
         query_limit=args.queries,
         batch_size=args.batch_size,
+        batch_order=args.batch_order,
+        evaluate_when_complete=not args.defer_evaluation,
         max_ordered_prompts=(
             args.max_ordered_prompts
             if args.max_ordered_prompts > 0

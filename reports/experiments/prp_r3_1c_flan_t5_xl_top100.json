@@ -1,0 +1,94 @@
+{
+  "experiment": "R3.1c FLAN-T5-XL PRP Allpair on frozen TREC-DL Top100",
+  "stage": "numeric_pass_protocol_audit_required",
+  "result_type": "paper-depth real-teacher reproduction",
+  "protocol": {
+    "queries": 97,
+    "candidates_per_query": 100,
+    "aggregation": "bidirectional Allpair Borda",
+    "inconsistent_bidirectional_pair": "tie with half point per candidate",
+    "tie_breaker": "frozen BM25 rank",
+    "expected_ordered_prompts": 960300,
+    "cached_ordered_prompts": 960300,
+    "unique_cache_keys": 960300,
+    "cache_layout": "per_query_compact_jsonl_v2",
+    "cache_shards": 97,
+    "gpu_workers": 8,
+    "worker_failures": 0,
+    "batch_size": 8,
+    "batch_order": "length",
+    "qrels_accessed_only_after_all_shards_merged": true,
+    "manifest_identity_sha256": "6f632b5968b6b014f68c9edbac54006a3355b50275228593597a4412d7d70c76"
+  },
+  "teacher": {
+    "backend": "transformers_flan_t5",
+    "model_name": "google/flan-t5-xl",
+    "model_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "tokenizer_revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "quantization": "float16_unquantized",
+    "prompt_version": "naacl2024_appendix_e1",
+    "prompt_sha256": "03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827",
+    "scoring_mode": "likelihood",
+    "targets": [
+      "Passage A",
+      "Passage B"
+    ],
+    "max_input_tokens": 512,
+    "tie_margin": 0.0,
+    "do_sample": false
+  },
+  "paper_reference": {
+    "source": "PRP Table 2, FLAN-T5-XL PRP-Allpair, BM25 Top100",
+    "absolute_tolerance_each_year": 0.02,
+    "dl2019_ndcg_at_10": 0.6975,
+    "dl2020_ndcg_at_10": 0.6812
+  },
+  "evaluation": {
+    "metric": "linear graded NDCG@10 over complete official qrels",
+    "overall": {
+      "queries": 97,
+      "bm25_ndcg_at_10": 0.49124859191629333,
+      "teacher_ndcg_at_10": 0.6937468893452119,
+      "absolute_gain": 0.20249829742891856
+    },
+    "dl2019": {
+      "queries": 43,
+      "bm25_ndcg_at_10": 0.5058310024399073,
+      "teacher_ndcg_at_10": 0.7094306828597035,
+      "absolute_gain": 0.20359968041979615,
+      "difference_from_paper": 0.011930682859703556
+    },
+    "dl2020": {
+      "queries": 54,
+      "bm25_ndcg_at_10": 0.4796366724252675,
+      "teacher_ndcg_at_10": 0.6812579426577464,
+      "absolute_gain": 0.20162127023247894,
+      "difference_from_paper": 0.000057942657746390846
+    }
+  },
+  "diagnostics": {
+    "mean_swap_agreement": 0.794986983234406,
+    "mean_bidirectional_conflict_ratio": 0.2050130167655941,
+    "exact_likelihood_ties": 9,
+    "invalid_outputs": 0,
+    "truncated_inputs": 184,
+    "truncated_input_rate": 0.00019160678954493387
+  },
+  "acceptance": {
+    "total_prompt_count_exact": true,
+    "global_cache_keys_unique": true,
+    "zero_worker_failures": true,
+    "qrels_delayed_until_teacher_completion": true,
+    "zero_invalid_likelihood_outputs": true,
+    "zero_input_truncations": false,
+    "dl2019_within_paper_tolerance": true,
+    "dl2020_within_paper_tolerance": true,
+    "no_test_set_prompt_or_aggregation_tuning": true,
+    "numeric_reproduction_passed": true,
+    "all_pre_registered_gates_passed": false
+  },
+  "decision": {
+    "conclusion": "Paper-depth numeric reproduction succeeds, but the pre-registered zero-truncation protocol gate is not yet satisfied.",
+    "next": "Rescore only the 184 truncated ordered prompts with a larger input limit in an isolated sensitivity cache, then recompute rankings without tuning on qrels. If rankings are stable, proceed to the frozen real Sliding-10 quality-cost comparison."
+  }
+}

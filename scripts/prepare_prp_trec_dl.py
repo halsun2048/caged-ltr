@@ -1,4 +1,4 @@
-"""Download and prepare the official DL19/DL20 Top-10 passage candidates for PRP."""
+"""Download and prepare official DL19/DL20 Top-K passage candidates for PRP."""
 
 from __future__ import annotations
 
@@ -95,6 +95,14 @@ def main() -> None:
         type=Path,
         default=Path("data/raw/prp_trec_dl/pyserini_bm25_top10.jsonl.gz"),
     )
+    parser.add_argument(
+        "--candidate-snapshot-sha256",
+        default=None,
+        help=(
+            "Required immutable snapshot digest for non-default snapshots. "
+            "The default Top10 snapshot keeps its repository-pinned digest."
+        ),
+    )
     parser.add_argument("--top-k", type=int, default=10)
     parser.add_argument(
         "--progress",
@@ -102,13 +110,23 @@ def main() -> None:
         default=True,
     )
     args = parser.parse_args()
+    default_snapshot = Path(
+        "data/raw/prp_trec_dl/pyserini_bm25_top10.jsonl.gz"
+    )
+    expected_snapshot_sha256 = args.candidate_snapshot_sha256
+    if expected_snapshot_sha256 is None:
+        if args.candidate_snapshot != default_snapshot:
+            raise ValueError(
+                "--candidate-snapshot-sha256 is required for a non-default snapshot"
+            )
+        expected_snapshot_sha256 = EXPECTED_SNAPSHOT_SHA256
     progress = _Progress(enabled=args.progress)
     manifest = prepare_prp_trec_dl(
         args.raw_dir,
         args.processed_dir,
         top_k=args.top_k,
         candidate_snapshot=args.candidate_snapshot,
-        candidate_snapshot_sha256=EXPECTED_SNAPSHOT_SHA256,
+        candidate_snapshot_sha256=expected_snapshot_sha256,
         progress_callback=progress,
     )
     progress.finish()
@@ -124,7 +142,7 @@ def main() -> None:
             {
                 "stage": manifest["stage"],
                 "queries": manifest["audit"]["queries"],
-                "candidates": manifest["audit"]["top10_candidates"],
+                "candidates": manifest["audit"]["candidates"],
                 "report": str(args.report),
             },
             ensure_ascii=False,

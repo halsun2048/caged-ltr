@@ -1,0 +1,55 @@
+experiment:
+  name: prp_r3_1c_flan_t5_xl_top100
+  result_type: paper_depth_real_teacher_reproduction
+  output_dir: runs/prp_r3_1c_flan_t5_xl_top100
+  report: reports/experiments/prp_r3_1c_flan_t5_xl_top100.json
+
+data:
+  teacher_input: data/processed/prp_trec_dl_top100/teacher_inputs.jsonl
+  teacher_input_sha256: afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f
+  qrels: data/processed/prp_trec_dl_top100/qrels.parquet
+  qrels_sha256: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+  queries: 97
+  candidates_per_query: 100
+
+teacher:
+  backend: transformers_flan_t5
+  model_name: google/flan-t5-xl
+  model_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  tokenizer_revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  dtype: float16
+  quantization: unquantized
+  prompt_version: naacl2024_appendix_e1
+  prompt_sha256: 03cbcdf0bc51111f3ac5f2ad1609e2a86892a33c3efb31c8b7c95bd6b8b0a827
+  scoring_mode: likelihood
+  targets: [Passage A, Passage B]
+  max_input_tokens: 512
+  tie_margin: 0.0
+  do_sample: false
+
+protocol:
+  aggregator: bidirectional_allpair_borda
+  inconsistent_bidirectional_pair: tie_with_half_point_each
+  tie_breaker: frozen_bm25_rank
+  ordered_prompts_per_query: 9900
+  total_ordered_prompts: 960300
+  batch_size: 8
+  cache_layout: per_query_compact_jsonl_v2
+  qrels_access: only_after_all_teacher_prompts_complete
+
+paper_reference:
+  source: PRP Table 2, FLAN-T5-XL PRP-Allpair, BM25 Top100
+  dl2019_ndcg_at_10: 0.6975
+  dl2020_ndcg_at_10: 0.6812
+
+acceptance:
+  total_prompt_count_exact: true
+  qrels_delayed_until_teacher_completion: true
+  maximum_input_truncations: 0
+  maximum_invalid_likelihood_outputs: 0
+  paper_ndcg_at_10_absolute_tolerance_each_year: 0.02
+  no_test_set_prompt_or_aggregation_tuning: true
+
+stop_rule:
+  pass: proceed to real Sliding-10 quality-cost comparison
+  fail: audit data/model/protocol identity; do not tune on TREC-DL qrels

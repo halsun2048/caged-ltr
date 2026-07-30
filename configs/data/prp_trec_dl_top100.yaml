@@ -1,0 +1,42 @@
+dataset:
+  name: trec_dl_2019_2020_passage_top100
+  task: passage_reranking
+  source: official_msmarco_and_nist
+  prepared_on: "2026-07-30"
+  license_boundary: non_commercial_research
+
+selection:
+  query_set: all_queries_with_official_qrels
+  years:
+    "2019":
+      judged_queries: 43
+    "2020":
+      judged_queries: 54
+  candidate_source: pyserini_msmarco_v1_passage
+  candidate_limit: 100
+  primary_metric: trec_eval_linear_graded_ndcg_at_10
+
+retrieval:
+  pyserini_version: 2.3.0
+  java_version: 21
+  index: msmarco-v1-passage
+  index_artifact: lucene-inverted.msmarco-v1-passage.20221004.252b5e
+  bm25:
+    k1: 0.9
+    b: 0.4
+  runs:
+    run.msmarco-v1-passage.bm25-default.dl19.txt:
+      sha256: 6a06594df12a97e7a62bc2630efc452e22a29907f626697ee9a233e98f8dc3c7
+    run.msmarco-v1-passage.bm25-default.dl20.txt:
+      sha256: fc8b3c1b629e85e6f44d6e324ebd523c50b2f9f3111d8582d26c2bf6e013725b
+  top100_text_snapshot:
+    sha256: 946beda10b856e97f58900906919f5f5c12f11e6fa065ac060cbef1aa81f3860
+
+outputs:
+  processed_dir: data/processed/prp_trec_dl_top100
+  report: reports/data/prp_trec_dl_top100_summary.json
+  queries_sha256: 2cabc89caa3f4d1bfbd6a1b5e742cecfc0797e7f731349a0999a8e65dea08ffb
+  candidates_sha256: 5aebe8fc51e30f1c1fccbcaba63f0f8a792cedb647975cc6f6ad4fafafebee8f
+  qrels_sha256: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+  teacher_inputs_sha256: afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f
+  teacher_input_excludes_qrels: true

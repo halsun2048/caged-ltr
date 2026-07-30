@@ -1,0 +1,265 @@
+{
+  "artifacts": {
+    "candidates.parquet": {
+      "bytes": 1873431,
+      "sha256": "5aebe8fc51e30f1c1fccbcaba63f0f8a792cedb647975cc6f6ad4fafafebee8f"
+    },
+    "qrels.parquet": {
+      "bytes": 181608,
+      "sha256": "64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32"
+    },
+    "queries.parquet": {
+      "bytes": 7461,
+      "sha256": "2cabc89caa3f4d1bfbd6a1b5e742cecfc0797e7f731349a0999a8e65dea08ffb"
+    },
+    "teacher_inputs.jsonl": {
+      "bytes": 4321939,
+      "sha256": "afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f"
+    }
+  },
+  "audit": {
+    "binary_relevance_rule": "NIST passage relevance 1 is Related but non-relevant; only grades 2 and 3 are binary relevant",
+    "bm25_binary_relevance_at_least_2": {
+      "MRR": 0.6784230984188114,
+      "NDCG@10": 0.4412395821316642,
+      "NDCG@5": 0.47750192911902906,
+      "Recall@10": 0.21497898417314018,
+      "Recall@5": 0.138320837828724
+    },
+    "bm25_candidate_conditional_binary_relevance_at_least_2": {
+      "MRR": 0.6784230984188114,
+      "NDCG@10": 0.49482430098398883,
+      "NDCG@5": 0.5037546030168761,
+      "Recall@10": 0.3703080762581456,
+      "Recall@5": 0.24126358372377465
+    },
+    "bm25_candidate_conditional_graded": {
+      "MRR": 0.8258686135110443,
+      "NDCG@10": 0.504737622068924,
+      "NDCG@5": 0.49425234586916295,
+      "Recall@10": 0.29397599713488604,
+      "Recall@5": 0.19520674321623882
+    },
+    "bm25_candidate_conditional_trec_relevance_at_least_2": {
+      "MRR": 0.6784230984188114,
+      "NDCG@10": 0.47243237453457554,
+      "NDCG@5": 0.46635236739485747,
+      "Recall@10": 0.3703080762581456,
+      "Recall@5": 0.24126358372377465
+    },
+    "bm25_graded": {
+      "MRR": 0.8258686135110443,
+      "NDCG@10": 0.43500566177023037,
+      "NDCG@5": 0.44518846350707725,
+      "Recall@10": 0.14845297031623114,
+      "Recall@5": 0.09858157574708686
+    },
+    "bm25_trec_eval": {
+      "MRR": 0.8258686135110443,
+      "NDCG@10": 0.49124859191629333,
+      "NDCG@5": 0.5160418456774892,
+      "Recall@10": 0.14845297031623114,
+      "Recall@5": 0.09858157574708686
+    },
+    "bm25_trec_relevance_at_least_2": {
+      "MRR": 0.6784230984188114,
+      "NDCG@10": 0.41340486885363004,
+      "NDCG@5": 0.4340024115384348,
+      "Recall@10": 0.21497898417314018,
+      "Recall@5": 0.138320837828724
+    },
+    "by_year": {
+      "2019": {
+        "bm25_binary_relevance_at_least_2": {
+          "MRR": 0.7036418565794331,
+          "NDCG@10": 0.4662685731580631,
+          "NDCG@5": 0.5051491798432574,
+          "Recall@10": 0.17512799328543338,
+          "Recall@5": 0.11365495959002267
+        },
+        "bm25_graded": {
+          "MRR": 0.8245444036447709,
+          "NDCG@10": 0.4363638979231799,
+          "NDCG@5": 0.4434265020730191,
+          "Recall@10": 0.12847703679948552,
+          "Recall@5": 0.08379664977829876
+        },
+        "bm25_trec_eval": {
+          "MRR": 0.8245444036447709,
+          "NDCG@10": 0.5058310024399073,
+          "NDCG@5": 0.5278310368232714,
+          "Recall@10": 0.12847703679948552,
+          "Recall@5": 0.08379664977829876
+        },
+        "bm25_trec_relevance_at_least_2": {
+          "MRR": 0.7036418565794331,
+          "NDCG@10": 0.4252070041798307,
+          "NDCG@5": 0.44643389149767965,
+          "Recall@10": 0.17512799328543338,
+          "Recall@5": 0.11365495959002267
+        },
+        "candidates": 4300,
+        "judged": 2257,
+        "qrels": 9260,
+        "qrels_relevant_at_least_2": 2501,
+        "queries": 43,
+        "queries_with_relevant_at_least_2": 42,
+        "queries_with_top10_relevant_at_least_2": 42,
+        "relevant_at_least_2": 846,
+        "top10_candidates": 4300,
+        "top10_judged": 2257,
+        "top10_relevant_at_least_2": 846
+      },
+      "2020": {
+        "bm25_binary_relevance_at_least_2": {
+          "MRR": 0.6583414946983163,
+          "NDCG@10": 0.42130908927730965,
+          "NDCG@5": 0.45548652576455095,
+          "Recall@10": 0.24671218062075853,
+          "Recall@5": 0.15796218531509731
+        },
+        "bm25_graded": {
+          "MRR": 0.8269230769230769,
+          "NDCG@10": 0.433924103352141,
+          "NDCG@5": 0.4465915068712348,
+          "Recall@10": 0.16435973219067673,
+          "Recall@5": 0.11035475753704772
+        },
+        "bm25_trec_eval": {
+          "MRR": 0.8269230769230769,
+          "NDCG@10": 0.4796366724252675,
+          "NDCG@5": 0.5066541564317738,
+          "Recall@10": 0.16435973219067673,
+          "Recall@5": 0.11035475753704772
+        },
+        "bm25_trec_relevance_at_least_2": {
+          "MRR": 0.6583414946983163,
+          "NDCG@10": 0.40400687220498877,
+          "NDCG@5": 0.4241032700894064,
+          "Recall@10": 0.24671218062075853,
+          "Recall@5": 0.15796218531509731
+        },
+        "candidates": 5400,
+        "judged": 2859,
+        "qrels": 11386,
+        "qrels_relevant_at_least_2": 1666,
+        "queries": 54,
+        "queries_with_relevant_at_least_2": 52,
+        "queries_with_top10_relevant_at_least_2": 52,
+        "relevant_at_least_2": 613,
+        "top10_candidates": 5400,
+        "top10_judged": 2859,
+        "top10_relevant_at_least_2": 613
+      }
+    },
+    "candidate_limit": 100,
+    "candidate_list_size_max": 100,
+    "candidate_list_size_min": 100,
+    "candidates": 9700,
+    "judged_rate": 0.5274226804123712,
+    "primary_metric": "bm25_trec_eval",
+    "primary_metric_denominator": "complete official qrels",
+    "queries": 97,
+    "queries_with_relevant_at_least_2": 94,
+    "queries_with_top10_relevant_at_least_2": 94,
+    "relevant_at_least_2": 1459,
+    "short_candidate_lists": {},
+    "top10_candidates": 9700,
+    "top10_judged_rate": 0.5274226804123712,
+    "top10_relevant_at_least_2": 1459,
+    "trec_eval_definition": "bm25_trec_eval uses linear graded gain over complete qrels; binary relevance separately treats only grades 2 and 3 as relevant",
+    "unique_passages": 9658
+  },
+  "candidate_source": {
+    "bytes": 2927650,
+    "path": "data/raw/prp_trec_dl/pyserini_bm25_top100.jsonl.gz",
+    "sha256": "946beda10b856e97f58900906919f5f5c12f11e6fa065ac060cbef1aa81f3860",
+    "type": "pyserini_bm25_snapshot"
+  },
+  "dataset": "TREC-DL 2019/2020 passage reranking",
+  "downloads": {
+    "2019qrels-pass.txt": {
+      "bytes": 187092,
+      "cached": true,
+      "filename": "2019qrels-pass.txt",
+      "md5": "2f4be390198da108f6845c822e5ada14",
+      "sha256": "8a1f10d550732e4cd91d7fc49846a3784de4040972f583e69285a88f3c5fee92",
+      "url": "https://trec.nist.gov/data/deep/2019qrels-pass.txt"
+    },
+    "2020qrels-pass.txt": {
+      "bytes": 218617,
+      "cached": true,
+      "filename": "2020qrels-pass.txt",
+      "md5": "0355ccee7509ac0463e8278186cdd8d1",
+      "sha256": "60d4c34561f9687f8f73e0a752ba80ab80159b3e9c1bedd0a351f747ed6f5684",
+      "url": "https://trec.nist.gov/data/deep/2020qrels-pass.txt"
+    },
+    "msmarco-test2019-queries.tsv.gz": {
+      "bytes": 4276,
+      "cached": true,
+      "filename": "msmarco-test2019-queries.tsv.gz",
+      "md5": "eda71eccbe4d251af83150abe065368c",
+      "sha256": "d66f01dfa8a3e60fe375ba645efc004f97ff4dd2a424536b8d5810c16182a3b5",
+      "url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2019-queries.tsv.gz"
+    },
+    "msmarco-test2020-queries.tsv.gz": {
+      "bytes": 4131,
+      "cached": true,
+      "filename": "msmarco-test2020-queries.tsv.gz",
+      "md5": "00a406fb0d14ed3752d70d1e4eb98600",
+      "sha256": "0c749b29fd8ca0ccbf129a1bdd283e4081d6c49e96d6bf6290ba554d5d71f7f1",
+      "url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2020-queries.tsv.gz"
+    }
+  },
+  "license_boundary": "MS MARCO non-commercial research use",
+  "result_type": "official evaluation data preparation; no model inference",
+  "source_audit": {
+    "2019": {
+      "judged_queries": 43,
+      "qrels_records": 9260,
+      "query_records": 200
+    },
+    "2020": {
+      "judged_queries": 54,
+      "qrels_records": 11386,
+      "query_records": 200
+    }
+  },
+  "sources": [
+    {
+      "expected_judged_queries": 43,
+      "expected_qrels_records": 9260,
+      "expected_query_records": 200,
+      "qrels": {
+        "expected_md5": "2f4be390198da108f6845c822e5ada14",
+        "filename": "2019qrels-pass.txt",
+        "url": "https://trec.nist.gov/data/deep/2019qrels-pass.txt"
+      },
+      "queries": {
+        "expected_md5": "eda71eccbe4d251af83150abe065368c",
+        "filename": "msmarco-test2019-queries.tsv.gz",
+        "url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2019-queries.tsv.gz"
+      },
+      "year": 2019
+    },
+    {
+      "expected_judged_queries": 54,
+      "expected_qrels_records": 11386,
+      "expected_query_records": 200,
+      "qrels": {
+        "expected_md5": "0355ccee7509ac0463e8278186cdd8d1",
+        "filename": "2020qrels-pass.txt",
+        "url": "https://trec.nist.gov/data/deep/2020qrels-pass.txt"
+      },
+      "queries": {
+        "expected_md5": "00a406fb0d14ed3752d70d1e4eb98600",
+        "filename": "msmarco-test2020-queries.tsv.gz",
+        "url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2020-queries.tsv.gz"
+      },
+      "year": 2020
+    }
+  ],
+  "stage": "complete",
+  "teacher_input_excludes_qrels": true,
+  "top_k": 100
+}

@@ -20,6 +20,7 @@ from caged_ltr.teachers.flan_t5 import OrderedPairRequest
 from caged_ltr.teachers.prp import TeacherMetadata, TeacherResponse
 
 ProgressCallback = Callable[[Mapping[str, object]], None]
+CACHE_LAYOUT = "per_query_compact_jsonl_v2"
 
 
 class BatchedPairwiseTeacher(Protocol):
@@ -170,7 +171,16 @@ def _write_json(path: Path, payload: Mapping[str, object]) -> None:
     temporary.replace(path)
 
 
-def _load_cache(path: Path) -> dict[str, dict[str, object]]:
+def _query_cache_path(cache_dir: Path, request_id: str) -> Path:
+    digest = hashlib.sha256(request_id.encode()).hexdigest()
+    return cache_dir / f"{digest}.jsonl"
+
+
+def _load_query_cache(
+    path: Path,
+    *,
+    request_id: str,
+) -> dict[str, dict[str, object]]:
     if not path.is_file():
         return {}
     records: dict[str, dict[str, object]] = {}
@@ -185,6 +195,13 @@ def _load_cache(path: Path) -> dict[str, dict[str, object]]:
             key = str(record.get("key", ""))
             if not key or key in records:
                 raise ValueError("cached ordered-pair keys must be unique and non-empty")
+            if str(record.get("request_id", "")) != request_id:
+                raise ValueError("query cache contains a mismatched request ID")
+            response = record.get("response")
+            if not isinstance(response, dict):
+                raise ValueError("query cache response must be an object")
+            if response.get("choice") not in {"first", "second", "tie"}:
+                raise ValueError("query cache contains an invalid pair choice")
             records[key] = record
     return records
 
@@ -199,7 +216,6 @@ def _response_record(
         "query_id": request.query_id,
         "first_id": request.first_id,
         "second_id": request.second_id,
-        "prompt": request.prompt(),
         "response": asdict(response),
     }
 
@@ -368,28 +384,32 @@ def run_prp_r3_1b(
     qrels_path: Path,
     query_limit: int,
     batch_size: int,
+    batch_order: str = "input",
+    evaluate_when_complete: bool = True,
     max_ordered_prompts: int | None = None,
     progress_callback: ProgressCallback | None = None,
 ) -> dict[str, object]:
-    """Run or resume likelihood inference, then evaluate only complete queries."""
+    """Run or resume bounded-memory inference, then evaluate only when complete."""
     if query_limit <= 0:
         raise ValueError("query_limit must be positive")
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
+    if batch_order not in {"input", "length"}:
+        raise ValueError("batch_order must be 'input' or 'length'")
     if max_ordered_prompts is not None and max_ordered_prompts <= 0:
         raise ValueError("max_ordered_prompts must be positive when provided")
     queries = load_teacher_inputs(teacher_input_path)[:query_limit]
-    requests = [
-        request
+    expected_by_request = {
+        query.request_id: len(query.candidates) * (len(query.candidates) - 1)
         for query in queries
-        for request in ordered_allpair_requests(query)
-    ]
-    request_by_key = {request.key: request for request in requests}
+    }
+    expected_ordered_prompts = sum(expected_by_request.values())
     identity_payload = {
         "teacher_input_sha256": sha256_file(teacher_input_path),
         "selected_request_ids": [query.request_id for query in queries],
         "teacher": teacher.metadata.payload(),
         "protocol": "all unordered pairs in both A/B orders; conflicts become ties",
+        "cache_layout": CACHE_LAYOUT,
     }
     manifest = {
         **identity_payload,
@@ -404,107 +424,172 @@ def run_prp_r3_1b(
     else:
         _write_json(manifest_path, manifest)
 
-    cache_path = output_dir / "ordered_pair_responses.jsonl"
-    cached = _load_cache(cache_path)
-    if not set(cached).issubset(request_by_key):
-        raise ValueError("response cache contains unexpected ordered pairs")
-    pending = [request for request in requests if request.key not in cached]
-    if max_ordered_prompts is not None:
-        remaining_budget = max(max_ordered_prompts - len(cached), 0)
-        pending = pending[:remaining_budget]
+    cache_dir = output_dir / "ordered_pair_responses"
+    cache_dir.mkdir(exist_ok=True)
+    expected_cache_paths = {
+        _query_cache_path(cache_dir, query.request_id)
+        for query in queries
+    }
+    unexpected_cache_paths = set(cache_dir.glob("*.jsonl")) - expected_cache_paths
+    if unexpected_cache_paths:
+        raise ValueError("response cache contains unexpected query shards")
+
+    cached_ordered_prompts = 0
+    for query in queries:
+        requests = ordered_allpair_requests(query)
+        expected_keys = {request.key for request in requests}
+        cached = _load_query_cache(
+            _query_cache_path(cache_dir, query.request_id),
+            request_id=query.request_id,
+        )
+        if not set(cached).issubset(expected_keys):
+            raise ValueError("response cache contains unexpected ordered pairs")
+        cached_ordered_prompts += len(cached)
+
     prompt_total = (
-        min(max_ordered_prompts, len(requests))
+        min(max_ordered_prompts, expected_ordered_prompts)
         if max_ordered_prompts is not None
-        else len(requests)
+        else expected_ordered_prompts
     )
     if progress_callback is not None:
         progress_callback(
             {
                 "stage": "resume",
-                "prompt_done": min(len(cached), prompt_total),
+                "prompt_done": min(cached_ordered_prompts, prompt_total),
                 "prompt_total": prompt_total,
-                "cached_prompts": len(cached),
+                "cached_prompts": cached_ordered_prompts,
                 "batch_size": batch_size,
             }
         )
 
     started = time.perf_counter()
     newly_scored = 0
-    with cache_path.open("a", encoding="utf-8") as output:
-        for start in range(0, len(pending), batch_size):
-            batch = pending[start : start + batch_size]
-            responses = teacher.compare_many(batch)
-            if len(responses) != len(batch):
-                raise RuntimeError("teacher response count does not match batch size")
-            for request, response in zip(batch, responses, strict=True):
-                record = _response_record(request, response)
-                output.write(
-                    json.dumps(
-                        record,
-                        ensure_ascii=False,
-                        sort_keys=True,
-                        separators=(",", ":"),
+    remaining_budget = max(prompt_total - cached_ordered_prompts, 0)
+    for query in queries:
+        if remaining_budget <= 0:
+            break
+        requests = ordered_allpair_requests(query)
+        request_by_key = {request.key: request for request in requests}
+        cache_path = _query_cache_path(cache_dir, query.request_id)
+        cached = _load_query_cache(
+            cache_path,
+            request_id=query.request_id,
+        )
+        if not set(cached).issubset(request_by_key):
+            raise ValueError("response cache contains unexpected ordered pairs")
+        pending = [
+            request for request in requests if request.key not in cached
+        ][:remaining_budget]
+        if batch_order == "length":
+            pending.sort(
+                key=lambda request: (
+                    len(request.query)
+                    + len(request.first)
+                    + len(request.second),
+                    request.key,
+                )
+            )
+        with cache_path.open("a", encoding="utf-8") as output:
+            for start in range(0, len(pending), batch_size):
+                batch = pending[start : start + batch_size]
+                responses = teacher.compare_many(batch)
+                if len(responses) != len(batch):
+                    raise RuntimeError(
+                        "teacher response count does not match batch size"
                     )
-                    + "\n"
-                )
-                cached[request.key] = record
-            output.flush()
-            os.fsync(output.fileno())
-            newly_scored += len(batch)
-            if progress_callback is not None:
-                progress_callback(
-                    {
-                        "stage": "inference",
-                        "prompt_done": min(len(cached), prompt_total),
-                        "prompt_total": prompt_total,
-                        "cached_prompts": len(cached) - newly_scored,
-                        "batch_size": len(batch),
-                    }
-                )
+                for request, response in zip(batch, responses, strict=True):
+                    record = _response_record(request, response)
+                    output.write(
+                        json.dumps(
+                            record,
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        )
+                        + "\n"
+                    )
+                    cached[request.key] = record
+                output.flush()
+                os.fsync(output.fileno())
+                newly_scored += len(batch)
+                cached_ordered_prompts += len(batch)
+                remaining_budget -= len(batch)
+                if progress_callback is not None:
+                    progress_callback(
+                        {
+                            "stage": "inference",
+                            "prompt_done": min(
+                                cached_ordered_prompts,
+                                prompt_total,
+                            ),
+                            "prompt_total": prompt_total,
+                            "cached_prompts": (
+                                cached_ordered_prompts - newly_scored
+                            ),
+                            "batch_size": len(batch),
+                        }
+                    )
     wall_seconds = time.perf_counter() - started
-    complete = len(cached) == len(requests)
-    rankings = (
-        [_aggregate_query(query, cached) for query in queries]
-        if complete
-        else []
-    )
-    response_records = list(cached.values())
-    truncated = sum(
-        bool(record["response"].get("input_truncated", False))
-        for record in response_records
-    )
-    invalid = sum(
-        str(record["response"]["choice"]) == "tie"
-        for record in response_records
-    )
+    complete = cached_ordered_prompts == expected_ordered_prompts
+    rankings: list[dict[str, object]] = []
+    truncated = 0
+    exact_likelihood_ties = 0
+    for query in queries:
+        cached = _load_query_cache(
+            _query_cache_path(cache_dir, query.request_id),
+            request_id=query.request_id,
+        )
+        truncated += sum(
+            bool(record["response"].get("input_truncated", False))
+            for record in cached.values()
+        )
+        exact_likelihood_ties += sum(
+            str(record["response"]["choice"]) == "tie"
+            for record in cached.values()
+        )
+        if complete:
+            if len(cached) != expected_by_request[query.request_id]:
+                raise ValueError("complete query cache has an invalid pair count")
+            rankings.append(_aggregate_query(query, cached))
     summary: dict[str, object] = {
-        "stage": "complete" if complete else "admission_complete",
+        "stage": (
+            "complete"
+            if complete and evaluate_when_complete
+            else "inference_complete"
+            if complete
+            else "admission_complete"
+        ),
         "result_type": "real FLAN-T5 PRP teacher inference",
         "manifest_identity_sha256": manifest["identity_sha256"],
         "query_count": len(queries),
-        "expected_ordered_prompts": len(requests),
-        "cached_ordered_prompts": len(cached),
+        "expected_ordered_prompts": expected_ordered_prompts,
+        "cached_ordered_prompts": cached_ordered_prompts,
         "newly_scored_ordered_prompts": newly_scored,
+        "cache_layout": CACHE_LAYOUT,
+        "cache_shards": sum(path.is_file() for path in expected_cache_paths),
         "batch_size": batch_size,
+        "batch_order": batch_order,
         "wall_seconds_this_run": wall_seconds,
         "new_prompt_throughput_per_second": (
             newly_scored / wall_seconds if wall_seconds > 0 else 0.0
         ),
         "truncated_inputs": truncated,
-        "tie_or_invalid_outputs": invalid,
+        "exact_likelihood_ties": exact_likelihood_ties,
+        "invalid_outputs": 0,
         "rankings": rankings,
         "teacher": teacher.metadata.payload(),
-        "qrels_accessed": complete,
+        "qrels_accessed": complete and evaluate_when_complete,
     }
     runtime_diagnostics = getattr(teacher, "runtime_diagnostics", None)
     if callable(runtime_diagnostics):
         summary["runtime"] = runtime_diagnostics()
-    if complete:
+    if complete and evaluate_when_complete:
         summary["evaluation"] = evaluate_complete_rankings(
             queries,
             rankings,
             qrels_path=qrels_path,
         )
+    if complete:
         summary["diagnostics"] = {
             "mean_swap_agreement": _mean(
                 [float(ranking["swap_agreement"]) for ranking in rankings]

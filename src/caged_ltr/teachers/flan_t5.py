@@ -10,6 +10,7 @@ from typing import Literal
 
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers.modeling_outputs import BaseModelOutput
 
 from caged_ltr.teachers.prp import (
     PRPCandidate,
@@ -300,15 +301,31 @@ class FlanT5PairwiseTeacher:
         target_ids = targets["input_ids"].to(self.device)
         target_mask = targets["attention_mask"].to(self.device).bool()
         labels = target_ids.masked_fill(~target_mask, -100).repeat(len(requests), 1)
-        expanded_inputs = {
-            key: value.repeat_interleave(2, dim=0)
-            for key, value in encoded.items()
-        }
         if self.device.type == "cuda":
             torch.cuda.synchronize(self.device)
         started = time.perf_counter()
         with torch.inference_mode():
-            output = self.model(**expanded_inputs, labels=labels)
+            encoder = self.model.get_encoder()
+            encoder_output = encoder(
+                input_ids=encoded["input_ids"],
+                attention_mask=encoded.get("attention_mask"),
+                return_dict=True,
+            )
+            expanded_encoder_output = BaseModelOutput(
+                last_hidden_state=encoder_output.last_hidden_state.repeat_interleave(
+                    2,
+                    dim=0,
+                )
+            )
+            expanded_attention_mask = encoded["attention_mask"].repeat_interleave(
+                2,
+                dim=0,
+            )
+            output = self.model(
+                encoder_outputs=expanded_encoder_output,
+                attention_mask=expanded_attention_mask,
+                labels=labels,
+            )
             log_probabilities = torch.log_softmax(output.logits.float(), dim=-1)
             safe_labels = labels.clamp_min(0)
             token_scores = log_probabilities.gather(

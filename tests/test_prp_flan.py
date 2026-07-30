@@ -69,7 +69,18 @@ class _FakeTokenizer:
 class _FakeLikelihoodModel:
     config = SimpleNamespace(decoder_start_token_id=0)
 
+    def get_encoder(self) -> _FakeLikelihoodModel:
+        return self
+
     def __call__(self, **kwargs: torch.Tensor) -> SimpleNamespace:
+        if "labels" not in kwargs:
+            input_ids = kwargs["input_ids"]
+            return SimpleNamespace(
+                last_hidden_state=torch.zeros(
+                    (*input_ids.shape, 4),
+                    dtype=torch.float32,
+                )
+            )
         labels = kwargs["labels"]
         logits = torch.zeros((*labels.shape, 8), dtype=torch.float32)
         for row in range(labels.shape[0]):
@@ -257,12 +268,20 @@ def test_real_runner_admission_resume_and_delayed_qrels_access(tmp_path) -> None
     assert complete["evaluation"]["overall"]["absolute_gain"] == pytest.approx(0.0)
     assert cached["newly_scored_ordered_prompts"] == 0
     assert teacher.calls == calls_after_completion
-    with (output_dir / "ordered_pair_responses.jsonl").open(
-        encoding="utf-8"
-    ) as response_file:
-        response_lines = list(response_file)
+    response_lines = []
+    for path in sorted(
+        (output_dir / "ordered_pair_responses").glob("*.jsonl")
+    ):
+        with path.open(encoding="utf-8") as response_file:
+            response_lines.extend(response_file)
     assert len(response_lines) == 12
     assert "graded_relevance" not in response_lines[0]
+    assert "prompt" not in json.loads(response_lines[0])
+    assert complete["cache_layout"] == "per_query_compact_jsonl_v2"
+    assert complete["cache_shards"] == 2
+    assert complete["batch_order"] == "input"
+    assert complete["exact_likelihood_ties"] == 0
+    assert complete["invalid_outputs"] == 0
 
     with pytest.raises(ValueError, match="identity mismatch"):
         run_prp_r3_1b(
@@ -273,6 +292,45 @@ def test_real_runner_admission_resume_and_delayed_qrels_access(tmp_path) -> None
             query_limit=2,
             batch_size=3,
         )
+
+
+def test_real_runner_can_batch_pending_requests_by_length(tmp_path) -> None:
+    teacher_input, qrels_path = _write_fixture(tmp_path)
+    output_dir = tmp_path / "length-ordered"
+    teacher = _DeterministicBatchTeacher()
+
+    summary = run_prp_r3_1b(
+        teacher,
+        teacher_input_path=teacher_input,
+        output_dir=output_dir,
+        qrels_path=qrels_path,
+        query_limit=2,
+        batch_size=3,
+        batch_order="length",
+    )
+
+    assert summary["stage"] == "complete"
+    assert summary["batch_order"] == "length"
+    assert summary["cached_ordered_prompts"] == 12
+
+
+def test_real_runner_can_defer_qrels_until_shards_are_merged(tmp_path) -> None:
+    teacher_input, _ = _write_fixture(tmp_path)
+    summary = run_prp_r3_1b(
+        _DeterministicBatchTeacher(),
+        teacher_input_path=teacher_input,
+        output_dir=tmp_path / "deferred",
+        qrels_path=tmp_path / "must-not-be-read.parquet",
+        query_limit=2,
+        batch_size=3,
+        evaluate_when_complete=False,
+    )
+
+    assert summary["stage"] == "inference_complete"
+    assert summary["cached_ordered_prompts"] == 12
+    assert summary["qrels_accessed"] is False
+    assert "evaluation" not in summary
+    assert summary["diagnostics"]["mean_swap_agreement"] == 1.0
 
 
 def test_teacher_input_rejects_evaluation_fields(tmp_path) -> None:

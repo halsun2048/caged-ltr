@@ -565,14 +565,24 @@ def _audit(
         year_qrels = qrels[qrels["year"] == year]
         by_year[str(year)] = {
             "queries": len(year_queries),
+            "candidates": len(year_candidates),
             "top10_candidates": len(year_candidates),
             "qrels": len(year_qrels),
             "qrels_relevant_at_least_2": int(
                 (year_qrels["graded_relevance"] >= 2).sum()
             ),
+            "judged": int(year_candidates["judged"].sum()),
             "top10_judged": int(year_candidates["judged"].sum()),
+            "relevant_at_least_2": int(
+                (year_candidates["graded_relevance"] >= 2).sum()
+            ),
             "top10_relevant_at_least_2": int(
                 (year_candidates["graded_relevance"] >= 2).sum()
+            ),
+            "queries_with_relevant_at_least_2": int(
+                year_candidates.groupby("request_id")["binary_relevance"]
+                .max()
+                .sum()
             ),
             "queries_with_top10_relevant_at_least_2": int(
                 year_candidates.groupby("request_id")["binary_relevance"]
@@ -604,6 +614,7 @@ def _audit(
         }
     return {
         "queries": len(queries),
+        "candidates": len(candidates),
         "top10_candidates": len(candidates),
         "candidate_limit": top_k,
         "candidate_list_size_min": int(list_sizes.min()),
@@ -614,9 +625,16 @@ def _audit(
             if size < top_k
         },
         "unique_passages": int(candidates["passage_id"].nunique()),
+        "judged_rate": float(candidates["judged"].mean()),
         "top10_judged_rate": float(candidates["judged"].mean()),
+        "relevant_at_least_2": int(
+            (candidates["graded_relevance"] >= 2).sum()
+        ),
         "top10_relevant_at_least_2": int(
             (candidates["graded_relevance"] >= 2).sum()
+        ),
+        "queries_with_relevant_at_least_2": int(
+            candidates.groupby("request_id")["binary_relevance"].max().sum()
         ),
         "queries_with_top10_relevant_at_least_2": int(
             candidates.groupby("request_id")["binary_relevance"].max().sum()
