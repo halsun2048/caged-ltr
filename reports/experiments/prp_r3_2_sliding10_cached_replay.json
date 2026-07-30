@@ -1,0 +1,93 @@
+{
+  "experiment": "R3.2 FLAN-T5-XL PRP Sliding-10 cached replay on frozen TREC-DL Top100",
+  "stage": "complete",
+  "result_type": "exact cached teacher replay",
+  "protocol": {
+    "queries": 97,
+    "candidates_per_query": 100,
+    "backward_passes": 10,
+    "initial_orders": [
+      "bm25",
+      "reverse_bm25",
+      "random_seed_42"
+    ],
+    "random_seed": 42,
+    "allpair_manifest_identity_sha256": "6f632b5968b6b014f68c9edbac54006a3355b50275228593597a4412d7d70c76",
+    "truncation_overlay_manifest_identity_sha256": "947865f82ef67a0ec996165fbc14ab6e517ee6b19ec7fb0a87a162d9ba33d1b9",
+    "truncation_overlay_records": 184,
+    "rankings_fixed_before_qrels_access": true,
+    "new_gpu_calls": 0
+  },
+  "allpair_reference": {
+    "logical_ordered_prompts": 960300,
+    "overall_ndcg_at_10": 0.6937468893452119,
+    "overall_absolute_gain_over_bm25": 0.20249829742891856,
+    "dl2019_ndcg_at_10": 0.7094306828597035,
+    "dl2020_ndcg_at_10": 0.6812579426577464
+  },
+  "methods": {
+    "bm25": {
+      "logical_ordered_prompts": 192060,
+      "unique_ordered_prompts_accessed": 100438,
+      "logical_prompt_ratio_vs_allpair": 0.2,
+      "overall_ndcg_at_10": 0.6683154678883176,
+      "overall_absolute_gain_over_bm25": 0.1770668759720243,
+      "overall_allpair_gain_retention": 0.8744116776299254,
+      "dl2019_ndcg_at_10": 0.6807271861291243,
+      "dl2019_allpair_gain_retention": 0.8590199322936252,
+      "dl2020_ndcg_at_10": 0.6584320626224901,
+      "dl2020_allpair_gain_retention": 0.8867883333492692,
+      "mean_top10_membership_overlap_with_allpair": 0.663917525773196,
+      "exact_top10_membership_queries": 8,
+      "mean_swap_agreement": 0.6736019993751953,
+      "mean_conflict_ratio": 0.32639800062480473
+    },
+    "reverse_bm25": {
+      "logical_ordered_prompts": 192060,
+      "unique_ordered_prompts_accessed": 139060,
+      "logical_prompt_ratio_vs_allpair": 0.2,
+      "overall_ndcg_at_10": 0.5575305308124713,
+      "overall_absolute_gain_over_bm25": 0.06628193889617795,
+      "overall_allpair_gain_retention": 0.3273209688068829,
+      "overall_ndcg_delta_from_bm25_order": -0.11078493707584636,
+      "dl2019_ndcg_at_10": 0.5516003960019387,
+      "dl2020_ndcg_at_10": 0.5622526751986363,
+      "mean_top10_membership_overlap_with_allpair": 0.5175257731958763,
+      "mean_swap_agreement": 0.8069353327085285,
+      "mean_conflict_ratio": 0.1930646672914714
+    },
+    "random_seed_42": {
+      "logical_ordered_prompts": 192060,
+      "unique_ordered_prompts_accessed": 123032,
+      "logical_prompt_ratio_vs_allpair": 0.2,
+      "overall_ndcg_at_10": 0.6106539860928761,
+      "overall_absolute_gain_over_bm25": 0.1194053941765828,
+      "overall_allpair_gain_retention": 0.5896612252678163,
+      "overall_ndcg_delta_from_bm25_order": -0.057661481795441505,
+      "dl2019_ndcg_at_10": 0.6349973026709752,
+      "dl2020_ndcg_at_10": 0.5912694932621675,
+      "mean_top10_membership_overlap_with_allpair": 0.5927835051546392,
+      "mean_swap_agreement": 0.7586275122357596,
+      "mean_conflict_ratio": 0.24137248776424033
+    }
+  },
+  "acceptance": {
+    "bm25_order_positive_gain_dl2019": true,
+    "bm25_order_positive_gain_dl2020": true,
+    "bm25_order_overall_gain_retention_at_least_0p9": false,
+    "logical_prompt_ratio_at_most_0p25": true,
+    "reverse_and_random_reported_without_selection": true,
+    "zero_new_gpu_calls": true,
+    "qrels_delayed_until_all_rankings_complete": true,
+    "all_pre_registered_gates_passed": false
+  },
+  "runtime": {
+    "device": "cpu_cache_replay",
+    "rankings_fixed_seconds": 10.897296980998362,
+    "wall_seconds": 11.042101680002816
+  },
+  "decision": {
+    "conclusion": "BM25-initialized Sliding-10 is a strong 20%-logical-cost ablation, but it misses the pre-registered 90% Allpair gain-retention gate and is highly sensitive to initial order.",
+    "next": "Retain Allpair as the formal teacher for R4 Instruction Distillation; keep BM25-initialized Sliding-10 only as a quality-cost control."
+  }
+}

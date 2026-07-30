@@ -18,6 +18,9 @@ from caged_ltr.teachers import (
 )
 from caged_ltr.teachers.prp import prompt_sha256
 from caged_ltr.teachers.prp_real import load_teacher_inputs, run_prp_r3_1b
+from caged_ltr.teachers.prp_sliding_replay import (
+    run_sliding10_cached_replay,
+)
 from caged_ltr.teachers.prp_truncation import run_truncation_sensitivity_audit
 
 
@@ -457,6 +460,60 @@ def test_truncation_audit_does_not_read_qrels_when_1024_is_insufficient(
     assert summary["remaining_truncated_inputs"] == 1
     assert summary["qrels_accessed"] is False
     assert "audited_evaluation" not in summary
+
+
+def test_sliding_replay_uses_allpair_cache_and_truncation_overlay(
+    tmp_path,
+) -> None:
+    teacher_input, qrels_path = _write_fixture(tmp_path)
+    baseline_output = tmp_path / "baseline"
+    run_prp_r3_1b(
+        _TruncationAuditTeacher(max_input_tokens=512),
+        teacher_input_path=teacher_input,
+        output_dir=baseline_output,
+        qrels_path=qrels_path,
+        query_limit=2,
+        batch_size=3,
+    )
+    audit_output = tmp_path / "audit"
+    run_truncation_sensitivity_audit(
+        _TruncationAuditTeacher(max_input_tokens=1024),
+        teacher_input_path=teacher_input,
+        baseline_output_dir=baseline_output,
+        output_dir=audit_output,
+        qrels_path=qrels_path,
+        batch_size=2,
+    )
+
+    summary = run_sliding10_cached_replay(
+        teacher_input_path=teacher_input,
+        qrels_path=qrels_path,
+        allpair_output_dir=baseline_output,
+        truncation_overlay_path=(
+            audit_output / "rescored_truncated_responses.jsonl"
+        ),
+        output_dir=tmp_path / "sliding",
+        passes=2,
+        random_seed=42,
+    )
+
+    assert summary["stage"] == "complete"
+    assert summary["protocol"]["truncation_overlay_records"] == 1
+    assert summary["protocol"]["new_gpu_calls"] == 0
+    assert set(summary["methods"]) == {
+        "bm25",
+        "reverse_bm25",
+        "random_seed_42",
+    }
+    assert summary["methods"]["bm25"]["logical_ordered_prompts"] == 16
+    assert summary["allpair"]["ordered_prompts"] == 12
+    assert (
+        summary["methods"]["reverse_bm25"]["evaluation"]["overall"][
+            "teacher_trec_eval_ndcg10"
+        ]
+        == pytest.approx(1.0)
+    )
+    assert summary["runtime"]["device"] == "cpu_cache_replay"
 
 
 def test_teacher_input_rejects_evaluation_fields(tmp_path) -> None:

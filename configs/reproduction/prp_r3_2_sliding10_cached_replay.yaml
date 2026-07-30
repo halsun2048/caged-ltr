@@ -1,0 +1,58 @@
+experiment:
+  name: prp_r3_2_sliding10_cached_replay
+  result_type: exact_cached_teacher_replay
+  output_dir: runs/prp_r3_2_sliding10_cached_replay
+  report: reports/experiments/prp_r3_2_sliding10_cached_replay.json
+
+data:
+  teacher_input: data/processed/prp_trec_dl_top100/teacher_inputs.jsonl
+  teacher_input_sha256: afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f
+  qrels: data/processed/prp_trec_dl_top100/qrels.parquet
+  qrels_sha256: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+  queries: 97
+  candidates_per_query: 100
+
+teacher_cache:
+  allpair_output_dir: runs/prp_r3_1c_flan_t5_xl_top100
+  allpair_manifest_identity_sha256: 6f632b5968b6b014f68c9edbac54006a3355b50275228593597a4412d7d70c76
+  truncation_overlay: runs/prp_r3_1d_truncation_audit/rescored_truncated_responses.jsonl
+  truncation_audit_manifest_identity_sha256: 947865f82ef67a0ec996165fbc14ab6e517ee6b19ec7fb0a87a162d9ba33d1b9
+  replay_equivalence: deterministic pair prompt and likelihood choice; every possible ordered pair is cached
+  new_gpu_calls: 0
+
+protocol:
+  method: bidirectional_sliding_10
+  backward_passes: 10
+  comparisons_per_query: 990
+  ordered_prompts_per_query: 1980
+  total_ordered_prompts_per_initial_order: 192060
+  allpair_ordered_prompts: 960300
+  logical_prompt_ratio_vs_allpair: 0.2
+  inconsistent_bidirectional_pair: no_swap
+  initial_orders:
+    - bm25
+    - reverse_bm25
+    - random_seed_42
+  random_seed: 42
+  qrels_access: only_after_all_rankings_and_cost_counts_are_fixed
+
+diagnostics:
+  - ndcg_at_10_by_year_and_overall
+  - gain_retention_relative_to_allpair
+  - top10_membership_overlap_with_allpair
+  - top10_order_stability
+  - initial_order_sensitivity
+  - logical_and_unique_ordered_prompt_counts
+  - swap_agreement_and_conflict_ratio
+
+acceptance:
+  bm25_order_positive_gain_each_year: true
+  bm25_order_minimum_overall_allpair_gain_retention: 0.9
+  maximum_logical_prompt_ratio_vs_allpair: 0.25
+  report_reverse_and_random_without_selection: true
+  zero_new_gpu_calls: true
+  qrels_delayed_until_all_rankings_complete: true
+
+stop_rule:
+  pass: proceed to R4 Instruction Distillation with Sliding-10 and Allpair teacher controls
+  fail: retain Allpair as the formal teacher and treat Sliding-10 only as a cost ablation
