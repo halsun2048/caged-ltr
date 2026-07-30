@@ -203,3 +203,9 @@ uv --cache-dir .uv-cache run --frozen \
 100 Query 正式 smoke 已完成，43,200 个有序 prompt 计数准确，swap agreement
 为 `0.988`，Allpair 在正序、逆序和随机初排下逐 Query 完全一致。以上仅为模拟
 教师管线验收；真实教师质量从 R3.1 开始评估。
+
+R3.1a 已用 Pyserini 2.3.0、`msmarco-v1-passage`、BM25
+`k1=0.9,b=0.4` 冻结官方 TREC-DL19/20 的 97 个 judged Query 与 970 条
+Top-10 输入。教师输入与 qrels 物理分离；DL19/20 的 `trec_eval` NDCG@10 为
+`0.505831/0.479637`，对齐公开基线 `0.5058/0.4796`。该结果只是数据基线，
+真实 FLAN-T5-XL 教师推理从 R3.1b 开始并需要 24 GB NVIDIA GPU。

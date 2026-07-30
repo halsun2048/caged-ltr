@@ -1,0 +1,60 @@
+dataset:
+  name: trec_dl_2019_2020_passage_top10
+  task: passage_reranking
+  source: official_msmarco_and_nist
+  prepared_on: "2026-07-30"
+  license_boundary: non_commercial_research
+
+selection:
+  query_set: all_queries_with_official_qrels
+  years:
+    "2019":
+      judged_queries: 43
+    "2020":
+      judged_queries: 54
+  candidate_source: pyserini_msmarco_v1_passage
+  candidate_limit: 10
+  binary_relevance_rule: grades_2_and_3_only
+  primary_metric: trec_eval_linear_graded_ndcg
+
+retrieval:
+  pyserini_version: 2.3.0
+  java_version: 21
+  index: msmarco-v1-passage
+  index_artifact: lucene-inverted.msmarco-v1-passage.20221004.252b5e
+  bm25:
+    k1: 0.9
+    b: 0.4
+  topics:
+    "2019": dl19-passage
+    "2020": dl20-passage
+  runs:
+    run.msmarco-v1-passage.bm25-default.dl19.txt:
+      sha256: 6a06594df12a97e7a62bc2630efc452e22a29907f626697ee9a233e98f8dc3c7
+    run.msmarco-v1-passage.bm25-default.dl20.txt:
+      sha256: fc8b3c1b629e85e6f44d6e324ebd523c50b2f9f3111d8582d26c2bf6e013725b
+  top10_text_snapshot:
+    sha256: e3ffe3a166beee7b70c7859a2af1ab0c8b0b7a1012bfe330ae1ed09545484f55
+
+sources:
+  msmarco-test2019-queries.tsv.gz:
+    url: https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2019-queries.tsv.gz
+    md5: eda71eccbe4d251af83150abe065368c
+    records: 200
+  2019qrels-pass.txt:
+    url: https://trec.nist.gov/data/deep/2019qrels-pass.txt
+    md5: 2f4be390198da108f6845c822e5ada14
+    records: 9260
+  msmarco-test2020-queries.tsv.gz:
+    url: https://msmarco.z22.web.core.windows.net/msmarcoranking/msmarco-test2020-queries.tsv.gz
+    md5: 00a406fb0d14ed3752d70d1e4eb98600
+    records: 200
+  2020qrels-pass.txt:
+    url: https://trec.nist.gov/data/deep/2020qrels-pass.txt
+    md5: 0355ccee7509ac0463e8278186cdd8d1
+    records: 11386
+
+outputs:
+  processed_dir: data/processed/prp_trec_dl_top10
+  report: reports/data/prp_trec_dl_summary.json
+  teacher_input_excludes_qrels: true
