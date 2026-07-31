@@ -26,6 +26,7 @@ def main() -> None:
     parser.add_argument("--teacher-inputs", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--query-limit", type=int, default=0)
+    parser.add_argument("--candidate-limit", type=int, default=10)
     args = parser.parse_args()
     tokenizer = AutoTokenizer.from_pretrained(FIRST_MODEL, revision=FIRST_MODEL_REVISION, token=False)
     queries = load_teacher_inputs(args.teacher_inputs)
@@ -33,7 +34,7 @@ def main() -> None:
         queries = queries[: args.query_limit]
     records = []
     for query in queries:
-        candidates = tuple(FirstCandidate(c.passage_id, c.passage, c.bm25_rank) for c in query.candidates)
+        candidates = tuple(FirstCandidate(c.passage_id, c.passage, c.bm25_rank) for c in query.candidates[: args.candidate_limit])
         for variant in VARIANTS:
             entries = build_prompt_entries(candidates, query_id=query.query_id, variant=variant, seed=42)
             prompt, token_count, word_budget = fit_first_prompt(tokenizer, query.query, entries, context_size=4096, initial_max_passage_words=300)
