@@ -285,10 +285,12 @@ def main() -> None:
             "cuda_used": not args.dry_run,
         },
     }
+    # Full generation is an optional protocol branch in R5.2.  Its absence
+    # must not make an otherwise complete first-token run fail admission.
     report["local_validation_pass"] = all(
         value
         for name, value in report["acceptance"].items()
-        if name != "cuda_used"
+        if name not in {"cuda_used", "full_generation_requested"}
     )
     report["gpu_admission_complete"] = bool(
         report["local_validation_pass"] and not args.dry_run
