@@ -44,8 +44,8 @@ def _load_inputs(path: Path) -> list[dict[str, object]]:
             if record.get("schema") != "first_prompt_input_v1":
                 raise ValueError("unexpected frozen FIRST prompt schema")
             mapping = record.get("candidate_mapping")
-            if not isinstance(mapping, list) or len(mapping) != 20:
-                raise ValueError("R5.1 admission requires exactly 20 candidates")
+            if not isinstance(mapping, list) or not 2 <= len(mapping) <= 26:
+                raise ValueError("FIRST inference requires 2-26 candidates")
             if not isinstance(record.get("prompt"), str):
                 raise ValueError("frozen prompt is missing prompt text")
             if not isinstance(record.get("first_token_prompt"), str):
