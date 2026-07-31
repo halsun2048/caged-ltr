@@ -32,3 +32,9 @@ For context, the existing frozen FLAN-T5 PRP top-10 control reports
 NDCG@10 `0.532276` on the same 97-query snapshot; FIRST baseline is higher by
 `0.009539`. This is a cross-protocol comparison, so it should be treated as a
 descriptive control rather than a matched-significance claim.
+
+Using the R4.2 per-candidate PRP freeze and filtering its ranking to the exact
+same ten BM25 candidates, PRP scores `0.533274` versus FIRST `0.541815`.
+The paired FIRST−PRP difference is `+0.008541`, but its 95% bootstrap CI is
+`[-0.00318, 0.02050]`; the advantage is therefore not statistically
+conclusive on this 97-query sample.
