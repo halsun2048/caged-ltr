@@ -22,11 +22,12 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--split", choices=("train", "dev", "test"), default="test")
     args = p.parse_args()
     root = args.root
     corpus = [json.loads(x) for x in (root / "corpus.jsonl").open()]
     queries = [json.loads(x) for x in (root / "queries.jsonl").open()]
-    qrels = pd.read_csv(root / "qrels/test.tsv", sep="\t")
+    qrels = pd.read_csv(root / "qrels" / f"{args.split}.tsv", sep="\t")
     qrels = qrels.rename(columns={"query-id": "query_id", "corpus-id": "corpus_id"})
     docs = [(str(d["_id"]), f"{d.get('title', '')} {d.get('text', '')}") for d in corpus]
     df = Counter()
