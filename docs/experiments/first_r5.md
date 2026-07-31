@@ -92,3 +92,25 @@ R5.0 只能说明协议可执行，不能说明 FIRST 的排序质量、概率�
 
 8 Query 全部通过后，才运行 100 Query 的首 token 四扰动推理，以及固定 20
 Query 的完整生成对照。
+
+## R5.1 runner
+
+本地可先验证缓存与输出协议（不使用 GPU）：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_first_r5_1_gpu_admission.py \
+  --dry-run --query-limit 8 --progress
+```
+
+真正执行以下命令时明确需要 CUDA GPU；它会加载 7B BF16 checkpoint：
+
+```bash
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_first_r5_1_gpu_admission.py \
+  --query-limit 8 --variant baseline --full-generation --progress
+```
+
+输出写入 `runs/r5_1_first_gpu_admission/`，按 prompt fingerprint 断点续跑。
+只有 `gpu_admission_complete=true` 才表示真实模型准入完成；dry-run 的
+`all_acceptance_pass=true` 仅表示本地协议通过。

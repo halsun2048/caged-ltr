@@ -6,10 +6,13 @@ from caged_ltr.teachers.first import (
     FIRST_PROMPT_VERSION,
     FirstCandidate,
     FirstPromptEntry,
+    JsonlResultCache,
     build_prompt_entries,
+    normalized_entropy,
     pair_agreement,
     parse_generated_ranking,
     rank_identifiers_from_logits,
+    top1_top2_margin,
 )
 from caged_ltr.teachers.flan_t5 import (
     AUTHOR_PRP_PROMPT,
@@ -49,6 +52,7 @@ __all__ = [
     "FirstCandidate",
     "FirstPromptEntry",
     "FlanT5PairwiseTeacher",
+    "JsonlResultCache",
     "OrderedPairRequest",
     "PRPCandidate",
     "PRPQuery",
@@ -61,6 +65,7 @@ __all__ = [
     "build_prompt_entries",
     "compare_bidirectional",
     "likelihood_margin",
+    "normalized_entropy",
     "pair_agreement",
     "pair_diagnostics",
     "parse_generated_ranking",
@@ -70,4 +75,5 @@ __all__ = [
     "rank_identifiers_from_logits",
     "render_pair_prompt",
     "sliding_k",
+    "top1_top2_margin",
 ]

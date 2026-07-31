@@ -10,10 +10,12 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import random
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 FIRST_MODEL = "rryisthebest/First_Model"
 FIRST_MODEL_REVISION = "64eba9b83c174439d2b6f5d333fbb822b38d73a7"
@@ -357,6 +359,73 @@ def pair_agreement(
                 right_position[left] < right_position[right]
             )
     return agreements / pairs
+
+
+def normalized_entropy(logits: Mapping[str, float], temperature: float = 1.0) -> float:
+    """Return entropy normalized to [0, 1] over an identifier-logit map."""
+    if len(logits) < 2 or temperature <= 0:
+        raise ValueError("at least two logits and a positive temperature are required")
+    values = [float(value) / temperature for value in logits.values()]
+    if not all(math.isfinite(value) for value in values):
+        raise ValueError("identifier logits must be finite")
+    maximum = max(values)
+    exponentials = [math.exp(value - maximum) for value in values]
+    denominator = sum(exponentials)
+    entropy = -sum(
+        (value / denominator) * math.log(value / denominator)
+        for value in exponentials
+    )
+    return entropy / math.log(len(values))
+
+
+def top1_top2_margin(logits: Mapping[str, float]) -> float:
+    """Return the raw logit gap between the top two identifiers."""
+    if len(logits) < 2:
+        raise ValueError("at least two logits are required")
+    values = sorted((float(value) for value in logits.values()), reverse=True)
+    if not all(math.isfinite(value) for value in values):
+        raise ValueError("identifier logits must be finite")
+    return values[0] - values[1]
+
+
+class JsonlResultCache:
+    """Append-only, identity-checked cache for resumable FIRST inference."""
+
+    def __init__(self, path: Path, *, protocol_fingerprint: str) -> None:
+        self.path = path
+        self.protocol_fingerprint = protocol_fingerprint
+        self.records: dict[str, dict[str, object]] = {}
+        if path.is_file():
+            with path.open(encoding="utf-8") as input_file:
+                for line_number, line in enumerate(input_file, start=1):
+                    try:
+                        record = json.loads(line)
+                    except json.JSONDecodeError as error:
+                        raise ValueError(f"invalid FIRST cache line {line_number}") from error
+                    key = str(record.get("key", ""))
+                    if not key or key in self.records:
+                        raise ValueError("FIRST cache keys must be unique and non-empty")
+                    if record.get("protocol_fingerprint") != protocol_fingerprint:
+                        raise ValueError("FIRST cache protocol fingerprint mismatch")
+                    payload = record.get("payload")
+                    if not isinstance(payload, dict):
+                        raise ValueError("FIRST cache payload must be an object")
+                    self.records[key] = record
+
+    def append(self, key: str, payload: Mapping[str, object]) -> None:
+        if not key or key in self.records:
+            raise ValueError(f"duplicate or empty FIRST cache key: {key!r}")
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "key": key,
+            "protocol_fingerprint": self.protocol_fingerprint,
+            "payload": dict(payload),
+        }
+        with self.path.open("a", encoding="utf-8") as output:
+            output.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+            output.flush()
+            os.fsync(output.fileno())
+        self.records[key] = record
 
 
 def sliding_window_ranges(

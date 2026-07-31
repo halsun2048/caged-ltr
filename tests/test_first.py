@@ -4,14 +4,17 @@ import pytest
 
 from caged_ltr.teachers.first import (
     FirstCandidate,
+    JsonlResultCache,
     alphabetic_identifiers,
     audit_identifier_tokens,
     build_prompt_entries,
+    normalized_entropy,
     pair_agreement,
     parse_generated_ranking,
     rank_identifiers_from_logits,
     render_first_user_prompt,
     sliding_window_ranges,
+    top1_top2_margin,
 )
 
 
@@ -141,3 +144,19 @@ def test_window_plans_cover_edges_and_shift_internal_boundaries() -> None:
     )
     with pytest.raises(ValueError, match="between 2"):
         alphabetic_identifiers(1)
+
+
+def test_first_confidence_metrics_and_resumable_cache(tmp_path) -> None:
+    logits = {"A": 4.0, "B": 2.0, "C": 1.0}
+    assert 0.0 < normalized_entropy(logits) < 1.0
+    assert top1_top2_margin(logits) == pytest.approx(2.0)
+
+    path = tmp_path / "results.jsonl"
+    cache = JsonlResultCache(path, protocol_fingerprint="protocol")
+    cache.append("one", {"status": "complete"})
+    resumed = JsonlResultCache(path, protocol_fingerprint="protocol")
+    assert set(resumed.records) == {"one"}
+    with pytest.raises(ValueError, match="duplicate"):
+        resumed.append("one", {"status": "complete"})
+    with pytest.raises(ValueError, match="fingerprint mismatch"):
+        JsonlResultCache(path, protocol_fingerprint="other")
