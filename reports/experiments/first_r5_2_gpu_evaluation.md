@@ -8,3 +8,12 @@
 - **Acceptance:** CUDA used, model identity locked, cache resumable, all selected records complete
 
 These results establish that the R5.2 bounded inference protocol executes at the registered scale. They are not relevance or ranking-quality gains: no qrels are read and no causal/effectiveness claim follows from entropy, margins, or pair agreement alone.
+
+## Perturbation audit
+
+Candidate-identity Kendall tau against the baseline ranking was `0.593` for
+reverse, `0.706` for random permutation, and `0.669` for identifier remapping
+(100 paired queries each). This is substantial sensitivity to presentation and
+identifier perturbations, so the current FIRST output does **not** pass a
+permutation-invariance gate for direct fusion. It should remain a diagnostic
+teacher until a position/identifier debiasing protocol is tested.
