@@ -27,3 +27,8 @@ Paired bootstrap (10,000 resamples, seed 42) 95% CIs:
 The improvement over BM25 is therefore robust on this sample, while the
 debiased post-process is statistically indistinguishable from the raw FIRST
 baseline.
+
+For context, the existing frozen FLAN-T5 PRP top-10 control reports
+NDCG@10 `0.532276` on the same 97-query snapshot; FIRST baseline is higher by
+`0.009539`. This is a cross-protocol comparison, so it should be treated as a
+descriptive control rather than a matched-significance claim.
