@@ -1,0 +1,31 @@
+{
+  "queries": 323,
+  "metrics": {
+    "bm25": 0.3069350031422461,
+    "first_baseline": 0.3435433528844873,
+    "first_debiased": 0.334446671691924
+  },
+  "by_year": {
+    "0": {
+      "bm25": 0.3069350031422461,
+      "first_baseline": 0.3435433528844873,
+      "first_debiased": 0.334446671691924
+    }
+  },
+  "paired_bootstrap_95ci": {
+    "first_baseline_minus_bm25": [
+      0.02492879962965628,
+      0.048988284106138695
+    ],
+    "first_debiased_minus_bm25": [
+      0.013658815355878115,
+      0.042231858956131435
+    ],
+    "first_debiased_minus_baseline": [
+      -0.01523032539071178,
+      -0.003334365697932284
+    ]
+  },
+  "metric": "linear graded NDCG@10 with complete official qrels",
+  "qrels_accessed_after_inference_freeze": true
+}
