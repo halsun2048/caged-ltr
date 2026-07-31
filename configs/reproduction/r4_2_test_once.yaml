@@ -1,0 +1,94 @@
+experiment:
+  name: r4_2_locked_test_once
+  seed: 42
+  status_before_scoring: preregistered
+
+test_candidates:
+  dataset: TREC-DL 2019/2020 passage reranking
+  source: data/processed/prp_trec_dl_top100/teacher_inputs.jsonl
+  source_sha256: afc09d070a7840e5b504db9c7dce459e1daebf2f6ca49366393c26735b7b6a5f
+  queries: 97
+  dl2019_queries: 43
+  dl2020_queries: 54
+  candidates_per_query: 100
+  qrels_free_prediction_input: true
+
+student:
+  model: microsoft/deberta-v3-base
+  revision: 8ccc9b6f36199bec6961081d44eb72fb3f7353f3
+  max_length: 500
+  precision: float16
+  inference_batch_size: 16
+  controls:
+    vanilla:
+      checkpoint: null
+      initialization_seed: 42
+      trained: false
+    bm25:
+      checkpoint: runs/r4_students/bm25_ddp8/best_model.pt
+      sha256: ac1226110a5c565570031ce03b5efd55ebc40e319ec490a8fb6901751f857053
+    random:
+      checkpoint: runs/r4_students/random_ddp8/best_model.pt
+      sha256: 02a63878dcb063d1666d29148f96e55f90feaddb4e9ae42a95c739095c21fe87
+    prp:
+      checkpoint: runs/r4_students/prp_ddp8/best_model.pt
+      sha256: 0459f1742f27140bcf2fdf3a1d1f120943dd2057404ad4591c1004752e533c0c
+
+execution:
+  gpu_count: 8
+  controls_in_parallel: 4
+  shards_per_control: 2
+  gpu_mapping:
+    - vanilla_shard_0
+    - vanilla_shard_1
+    - bm25_shard_0
+    - bm25_shard_1
+    - random_shard_0
+    - random_shard_1
+    - prp_shard_0
+    - prp_shard_1
+  prediction_stage_reads_qrels: false
+  freeze_prediction_hashes_before_evaluation: true
+  no_training_or_checkpoint_selection: true
+
+evaluation:
+  explicit_access_flag_required: true
+  primary_metric: linear_graded_trec_eval_ndcg_at_10
+  report_by_year: true
+  calibration:
+    binary_positive_rule: NIST grade >= 2
+    unjudged_rule: non_relevant
+    probability: raw_sigmoid_without_test_calibration
+    metrics:
+      - ECE_15_equal_width_bins
+      - Brier
+      - AUC
+      - LogLoss
+  efficiency:
+    - mean_seconds_per_query
+    - p50_seconds_per_query
+    - p95_seconds_per_query
+    - candidates_per_second
+  paired_bootstrap:
+    iterations: 10000
+    seed: 42
+  qrels_sha256_from_frozen_r3_data_report: 64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32
+
+references:
+  bm25_initial_overall_ndcg_at_10: 0.49124859191629333
+  allpair_teacher_overall_ndcg_at_10: 0.6937468893452119
+  allpair_teacher_dl2019_ndcg_at_10: 0.7094306828597035
+  allpair_teacher_dl2020_ndcg_at_10: 0.6812579426577464
+  allpair_observed_mean_single_gpu_seconds_per_query: 165.07049662510323
+
+acceptance:
+  required:
+    - prp_beats_vanilla_overall
+    - prp_beats_random_overall
+    - prp_beats_bm25_ranknet_overall
+    - prp_direction_positive_vs_all_controls_both_years
+    - prp_at_least_10x_faster_than_allpair_single_gpu_reference
+  report_without_posthoc_threshold:
+    - prp_student_teacher_gain_retention
+    - prp_student_vs_teacher_absolute_ndcg
+  negative_result_rule: do_not_retrain_or_retune_on_test

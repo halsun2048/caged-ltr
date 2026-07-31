@@ -67,3 +67,40 @@ TREC-DL19/20 test-once 评价决定。
 正式报告为
 `reports/experiments/r4_1_teacher_student_training.json`。教师、学生训练和
 checkpoint 选择阶段均保持 `qrels_accessed=false`、`test_accessed=false`。
+
+## R4.2 锁定 test-once 评价
+
+正式评价使用 TREC-DL19/20 的 97 个 Query 和固定 BM25 Top-100。四组 checkpoint
+在读取 qrels 前已经锁定；GPU 预测只读取
+`data/processed/prp_trec_dl_top100/teacher_inputs.jsonl`，其结构不含 judged、
+relevance 或 qrels 字段。四组各 9,700 条预测先合并、校验并冻结 SHA-256，随后
+评价子命令显式授权并读取 qrels 一次。访问回执阻止后续重复读取。
+
+四模型使用 8 张 RTX 4090 并行推理，每个模型两个独立分片；全部推理墙钟时间
+24.03 秒，8 个 worker 零失败。主结果采用完整官方 qrels 的线性增益
+trec_eval NDCG@10：
+
+| 方法 | 整体 | DL19 | DL20 | 平均秒/Query |
+| --- | ---: | ---: | ---: | ---: |
+| 初始 BM25 | 0.491249 | 0.505831 | 0.479637 | — |
+| vanilla Pointwise | 0.136074 | 0.164292 | 0.113604 | 0.1918 |
+| random RankNet | 0.162119 | 0.182632 | 0.145785 | 0.1876 |
+| BM25 RankNet | 0.476489 | 0.502845 | 0.455502 | 0.1824 |
+| PRP Allpair RankNet | **0.639791** | **0.673911** | **0.612621** | 0.1840 |
+| FLAN-T5-XL Allpair 教师 | 0.693747 | 0.709431 | 0.681258 | 165.07 |
+
+PRP 相对 BM25 RankNet 的绝对增益为 0.163302；10,000 次 paired bootstrap 的
+95% CI 为 `[0.124484, 0.202811]`，双侧 `p=0.000200`。相对 vanilla 与 random
+的增益分别为 0.503717 与 0.477672，三个对照在 DL19、DL20 上均保持同方向。
+
+PRP 学生保留教师相对初始 BM25 增益的 73.35%，与教师仍相差 0.053956 NDCG@10。
+因此结论是“高效伪标签适配”，不是无训练能力，也不是完全替代教师。PRP 的
+Top-100 推理为 100 次 Pointwise 打分，而双向 Allpair 为 9,900 个逻辑 prompt，
+复杂度从 \(O(N^2)\) 降为 \(O(N)\)，并非参数量默认缩小；在当前 RTX 4090 worker
+参考下实测约加速 897 倍。
+
+未经测试集校准的 raw sigmoid 校准结果同样支持 PRP 信号有效：PRP AUC 为
+0.870301、Brier 为 0.170450、ECE 为 0.182147，均优于其他三个 Pointwise
+对照。机器可读报告与唯一访问回执分别为
+`reports/experiments/r4_2_test_once.json` 和
+`reports/experiments/r4_2_test_once_access_receipt.json`。

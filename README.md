@@ -240,5 +240,12 @@ R4.0 已冻结 MS MARCO 训练查询中的 1,000 Query：900 train / 100 validat
 
 作者公开实现采用 DeBERTa-v3-base 单 logit Pointwise cross-encoder，当前工程已
 按该实现补齐 grouped RankNet、BM25/random/PRP 三类训练标签、验证集 checkpoint
-选择和可恢复训练。下一步生成 90,000 个双向 Allpair FLAN-T5-XL 教师 prompt，
-随后训练三组 RankNet 学生；vanilla Pointwise 保持未训练作为第四组对照。
+选择和可恢复 8 卡训练。R4.1 完成了 90,000 个双向 Allpair FLAN-T5-XL 教师
+prompt 和三组学生训练；R4.2 在冻结预测后一次性评价 TREC-DL19/20 Top-100。
+
+PRP 学生整体 NDCG@10 为 `0.639791`，高于 BM25 RankNet `0.476489`、random
+`0.162119` 和 vanilla `0.136074`，DL19/20 均方向一致。相对 BM25 RankNet 的
+绝对增益为 `0.163302`，paired bootstrap 95% CI 为
+`[0.124484, 0.202811]`。PRP 学生保留 Allpair 教师相对初始 BM25 增益的
+`73.35%`，Top-100 平均耗时 `0.1840s/Query`；逻辑打分调用由 9,900 降为 100，
+实测相对 Allpair 单 GPU worker 参考加速约 `897×`。

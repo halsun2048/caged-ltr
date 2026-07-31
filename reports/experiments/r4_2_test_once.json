@@ -1,0 +1,296 @@
+{
+  "acceptance": {
+    "predictions_frozen_before_qrels": true,
+    "prp_at_least_10x_faster_than_allpair_single_gpu_reference": true,
+    "prp_beats_bm25_ranknet_overall": true,
+    "prp_beats_random_overall": true,
+    "prp_beats_vanilla_overall": true,
+    "prp_direction_positive_vs_all_controls_both_years": true,
+    "qrels_accessed_exactly_once": true
+  },
+  "comparison": {
+    "logical_scoring_calls_per_query": {
+      "bidirectional_allpair_teacher": 9900,
+      "complexity": "O(N^2) to O(N)",
+      "pointwise_student": 100,
+      "reduction_factor": 99.0
+    },
+    "prp_student_single_gpu_speedup_vs_allpair_reference": 896.9826903701405,
+    "prp_student_teacher_gain_retention": 0.733549458450409,
+    "prp_student_vs_teacher_absolute_ndcg": -0.053955781012805515
+  },
+  "eight_gpu_launch": {
+    "failures": [],
+    "gpus": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "num_shards_per_control": 2,
+    "qrels_accessed": false,
+    "stage": "complete",
+    "wall_seconds": 24.025748511776328,
+    "workers": 8
+  },
+  "frozen_predictions": {
+    "identity_sha256": "cfcdb09601d9d43c3d73df066958e32fba16021332142d824887a9f71633cf24",
+    "manifest": "runs/r4_2_test_once/frozen/manifest.json",
+    "manifest_sha256": "98d02e62dec1d90431d4d78637f7367c6323d1a88f2480e0b899ec7f72f5a061"
+  },
+  "metrics": {
+    "calibration_rule": "unjudged candidates are non-relevant; only NIST grades 2 and 3 are binary positives; probabilities are raw sigmoid scores without test-set calibration",
+    "controls": {
+      "bm25": {
+        "by_year": {
+          "2019": {
+            "queries": 43,
+            "trec_eval_ndcg_at_10": 0.5028446928323961
+          },
+          "2020": {
+            "queries": 54,
+            "trec_eval_ndcg_at_10": 0.4555019722361749
+          }
+        },
+        "calibration_binary_grade_at_least_2": {
+          "AUC": 0.7103678601259737,
+          "Brier": 0.19918746716887825,
+          "ECE": 0.19197244409001288,
+          "LogLoss": 0.6557810072189123
+        },
+        "efficiency": {
+          "candidates": 9700,
+          "candidates_per_second": 548.1333894843025,
+          "mean_seconds_per_query": 0.18243734448303267,
+          "p50_seconds_per_query": 0.17346418928354979,
+          "p95_seconds_per_query": 0.19712480194866644,
+          "queries": 97,
+          "total_single_worker_seconds": 17.69642241485417
+        },
+        "overall": {
+          "queries": 97,
+          "trec_eval_ndcg_at_10": 0.4764889514695512
+        }
+      },
+      "bm25_initial": {
+        "by_year": {
+          "2019": {
+            "queries": 43,
+            "trec_eval_ndcg_at_10": 0.5058310024399073
+          },
+          "2020": {
+            "queries": 54,
+            "trec_eval_ndcg_at_10": 0.4796366724252675
+          }
+        },
+        "overall": {
+          "queries": 97,
+          "trec_eval_ndcg_at_10": 0.49124859191629333
+        }
+      },
+      "prp": {
+        "by_year": {
+          "2019": {
+            "queries": 43,
+            "trec_eval_ndcg_at_10": 0.6739113460843629
+          },
+          "2020": {
+            "queries": 54,
+            "trec_eval_ndcg_at_10": 0.6126212893817742
+          }
+        },
+        "calibration_binary_grade_at_least_2": {
+          "AUC": 0.8703014042610631,
+          "Brier": 0.17045012728628053,
+          "ECE": 0.18214715937893755,
+          "LogLoss": 0.6570780864560738
+        },
+        "efficiency": {
+          "candidates": 9700,
+          "candidates_per_second": 543.3937067550635,
+          "mean_seconds_per_query": 0.18402863109541923,
+          "p50_seconds_per_query": 0.17461439687758684,
+          "p95_seconds_per_query": 0.20147233493626104,
+          "queries": 97,
+          "total_single_worker_seconds": 17.850777216255665
+        },
+        "overall": {
+          "queries": 97,
+          "trec_eval_ndcg_at_10": 0.6397911083324064
+        }
+      },
+      "random": {
+        "by_year": {
+          "2019": {
+            "queries": 43,
+            "trec_eval_ndcg_at_10": 0.18263209203343822
+          },
+          "2020": {
+            "queries": 54,
+            "trec_eval_ndcg_at_10": 0.1457852492132426
+          }
+        },
+        "calibration_binary_grade_at_least_2": {
+          "AUC": 0.40447597349849496,
+          "Brier": 0.23510178850545446,
+          "ECE": 0.3211317781904309,
+          "LogLoss": 0.6632193830209886
+        },
+        "efficiency": {
+          "candidates": 9700,
+          "candidates_per_second": 532.9775003160186,
+          "mean_seconds_per_query": 0.18762518106431691,
+          "p50_seconds_per_query": 0.1752779707312584,
+          "p95_seconds_per_query": 0.20917042829096316,
+          "queries": 97,
+          "total_single_worker_seconds": 18.19964256323874
+        },
+        "overall": {
+          "queries": 97,
+          "trec_eval_ndcg_at_10": 0.1621194166489994
+        }
+      },
+      "vanilla": {
+        "by_year": {
+          "2019": {
+            "queries": 43,
+            "trec_eval_ndcg_at_10": 0.16429201438990462
+          },
+          "2020": {
+            "queries": 54,
+            "trec_eval_ndcg_at_10": 0.11360358524287806
+          }
+        },
+        "calibration_binary_grade_at_least_2": {
+          "AUC": 0.4542280905607538,
+          "Brier": 0.22837996538799368,
+          "ECE": 0.31707316236704897,
+          "LogLoss": 0.6498474814168327
+        },
+        "efficiency": {
+          "candidates": 9700,
+          "candidates_per_second": 521.3265711839092,
+          "mean_seconds_per_query": 0.19181834482923918,
+          "p50_seconds_per_query": 0.1825010683387518,
+          "p95_seconds_per_query": 0.2014143044129014,
+          "queries": 97,
+          "total_single_worker_seconds": 18.6063794484362
+        },
+        "overall": {
+          "queries": 97,
+          "trec_eval_ndcg_at_10": 0.13607371362764242
+        }
+      }
+    },
+    "metric": "linear graded NDCG@10 over complete official qrels",
+    "paired_bootstrap": {
+      "prp_minus_bm25": {
+        "bootstrap_standard_error": [
+          0.020086263464085864
+        ],
+        "ci95_percentile": {
+          "lower": [
+            0.12448352009277847
+          ],
+          "upper": [
+            0.20281142793101908
+          ]
+        },
+        "iterations": 10000,
+        "mean": [
+          0.1633021568628551
+        ],
+        "probability_negative": [
+          0.0
+        ],
+        "probability_positive": [
+          1.0
+        ],
+        "rows": 97,
+        "seed": 42,
+        "two_sided_p": [
+          0.00019998000199980003
+        ]
+      },
+      "prp_minus_random": {
+        "bootstrap_standard_error": [
+          0.025595815496204852
+        ],
+        "ci95_percentile": {
+          "lower": [
+            0.42736146089826477
+          ],
+          "upper": [
+            0.5274367190150044
+          ]
+        },
+        "iterations": 10000,
+        "mean": [
+          0.47767169168340695
+        ],
+        "probability_negative": [
+          0.0
+        ],
+        "probability_positive": [
+          1.0
+        ],
+        "rows": 97,
+        "seed": 42,
+        "two_sided_p": [
+          0.00019998000199980003
+        ]
+      },
+      "prp_minus_vanilla": {
+        "bootstrap_standard_error": [
+          0.025478547735753754
+        ],
+        "ci95_percentile": {
+          "lower": [
+            0.4547249878083379
+          ],
+          "upper": [
+            0.5534758246192112
+          ]
+        },
+        "iterations": 10000,
+        "mean": [
+          0.5037173947047638
+        ],
+        "probability_negative": [
+          0.0
+        ],
+        "probability_positive": [
+          1.0
+        ],
+        "rows": 97,
+        "seed": 42,
+        "two_sided_p": [
+          0.00019998000199980003
+        ]
+      }
+    }
+  },
+  "qrels_accessed": true,
+  "result_type": "R4.2 locked TREC-DL19/20 test-once evaluation",
+  "stage": "complete",
+  "teacher_reference": {
+    "dl2019_trec_eval_ndcg_at_10": 0.7094306828597035,
+    "dl2020_trec_eval_ndcg_at_10": 0.6812579426577464,
+    "mean_single_gpu_seconds_per_query": 165.07049662510323,
+    "overall_trec_eval_ndcg_at_10": 0.6937468893452119,
+    "report": "reports/experiments/prp_r3_1c_flan_t5_xl_top100.json",
+    "timing_note": "observed mean over 91 non-admission R3.1c Allpair worker queries"
+  },
+  "test_access": {
+    "no_test_set_model_or_hyperparameter_selection": true,
+    "predictions_frozen_before_access": true,
+    "qrels": "data/processed/prp_trec_dl_top100/qrels.parquet",
+    "qrels_access_count": 1,
+    "qrels_sha256": "64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32"
+  },
+  "test_accessed": true
+}

@@ -1,0 +1,9 @@
+{
+  "completed_at_utc": "2026-07-31T06:52:50.841872+00:00",
+  "frozen_manifest_sha256": "98d02e62dec1d90431d4d78637f7367c6323d1a88f2480e0b899ec7f72f5a061",
+  "qrels_access_count": 1,
+  "qrels_sha256": "64c899af102885d36b24f3ec4a84f186b8c621278828f73a42c67e6d5de96b32",
+  "report": "reports/experiments/r4_2_test_once.json",
+  "report_sha256": "37875971086dc1d1c7e3268560c4d898deb3e4714b5fda19c75df0a6f75d4075",
+  "stage": "complete"
+}
