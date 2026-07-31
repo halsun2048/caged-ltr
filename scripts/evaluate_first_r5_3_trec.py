@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import random
 from collections import defaultdict
 from pathlib import Path
 
@@ -63,6 +64,15 @@ def main() -> None:
         scores[request_id]["first_baseline"].append(ndcg(baseline_rank, relevance[request_id]))
         scores[request_id]["first_debiased"].append(ndcg(debiased_rank, relevance[request_id]))
     report = {"queries": len(scores), "metrics": {metric: sum(row[metric][0] for row in scores.values()) / len(scores) for metric in ("bm25", "first_baseline", "first_debiased")}, "by_year": {}}
+    ordered = list(scores.values())
+    rng = random.Random(42)
+    bootstrap = {"first_baseline_minus_bm25": [], "first_debiased_minus_bm25": [], "first_debiased_minus_baseline": []}
+    for _ in range(10000):
+        sample = [ordered[rng.randrange(len(ordered))] for _ in ordered]
+        bootstrap["first_baseline_minus_bm25"].append(sum(x["first_baseline"][0] - x["bm25"][0] for x in sample) / len(sample))
+        bootstrap["first_debiased_minus_bm25"].append(sum(x["first_debiased"][0] - x["bm25"][0] for x in sample) / len(sample))
+        bootstrap["first_debiased_minus_baseline"].append(sum(x["first_debiased"][0] - x["first_baseline"][0] for x in sample) / len(sample))
+    report["paired_bootstrap_95ci"] = {key: [sorted(values)[250], sorted(values)[9749]] for key, values in bootstrap.items()}
     request_year = dict(zip(queries["request_id"].astype(str), queries["year"].astype(int), strict=True))
     for year in sorted(set(request_year.values())):
         subset = [scores[r] for r, y in request_year.items() if y == year]
