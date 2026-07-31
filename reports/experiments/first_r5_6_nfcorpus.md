@@ -20,10 +20,22 @@ Paired bootstrap 95% CIs:
 FIRST baseline therefore improves over the independently prepared BM25 pool;
 the identity/z-score debiasing post-process is significantly worse on this
 dataset. This is the first external replication beyond TREC-DL, but the BM25
-retrieval is a frozen in-project lexical implementation rather than Pyserini;
-an official BEIR BM25 control and matched PRP run remain follow-up controls.
+retrieval is a frozen in-project lexical implementation rather than Pyserini.
 
-The matched PRP smoke run was started but is currently blocked by the GPU
-environment lacking `sentencepiece`; pip cannot build it under Python 3.13 and
-the conda channel is unavailable due a transient TLS/network failure. No PRP
-effect claim is made for NFCorpus until that dependency is installed.
+## Matched PRP control
+
+The real FLAN-T5-XL PRP teacher was run on all 323 queries (122,740 ordered-pair
+prompts) using eight RTX 4090 GPUs. PRP was evaluated only after prediction
+freeze and was restricted to the identical BM25 top-20 candidate pool used by
+FIRST:
+
+| Method | Linear graded NDCG@10 |
+|---|---:|
+| FIRST baseline | 0.343543 |
+| Matched PRP | 0.327937 |
+
+The paired difference FIRST − PRP is `0.015606`, with a paired bootstrap 95% CI
+of `[0.00530, 0.02586]`. Thus FIRST is significantly better than this matched
+PRP control on NFCorpus. This is an outcome comparison, not evidence that the
+two teachers optimize the same objective: PRP is a real FLAN-T5-XL pairwise
+teacher, while FIRST is the frozen four-perturbation aggregation.
