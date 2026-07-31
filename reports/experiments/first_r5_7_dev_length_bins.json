@@ -1,0 +1,20 @@
+{
+  "queries": 324,
+  "bins": {
+    "1-2": {
+      "queries": 169,
+      "mean_gain": 0.012682909138166169,
+      "positive_fraction": 0.25443786982248523
+    },
+    "3-4": {
+      "queries": 53,
+      "mean_gain": 0.03263852750177206,
+      "positive_fraction": 0.41509433962264153
+    },
+    "5+": {
+      "queries": 102,
+      "mean_gain": 0.08128858550931592,
+      "positive_fraction": 0.5098039215686274
+    }
+  }
+}
