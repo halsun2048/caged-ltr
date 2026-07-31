@@ -29,5 +29,20 @@ ambiguous queries are the main failure bucket and should be targeted by a
 future query-length-aware fallback or calibration study. This is a hypothesis
 for a held-out follow-up, not a tuned result.
 
+## Length-bin robustness
+
+Without fitting any threshold, the frozen queries were split into bins:
+
+| Query length | Queries | Mean FIRST−BM25 | Bootstrap 95% CI | Positive fraction |
+|---|---:|---:|---:|---:|
+| 1–2 words | 172 | +0.0085 | [-0.0026, 0.0208] | 19.8% |
+| 3–4 words | 55 | +0.0465 | [0.0120, 0.0862] | 38.2% |
+| 5+ words | 96 | +0.0801 | [0.0574, 0.1053] | 61.5% |
+
+The length pattern is therefore not driven only by a few outliers: the 5+
+word bin has a clearly positive interval, while the 1–2 word bin is not
+significantly different from zero. A fallback policy must be validated on a
+separate split before being used in a headline result.
+
 Machine-readable per-query rows and the top gain/loss lists are in
 `first_r5_6_error_analysis.json` and `.csv`.
