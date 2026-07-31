@@ -1,0 +1,204 @@
+{
+  "acceptance": {
+    "all_four_perturbations_frozen": true,
+    "all_prompts_fit_context": true,
+    "author_code_revision_is_full_and_pinned": true,
+    "boundary_perturbation_registered": true,
+    "complete_generation_comparison_registered": true,
+    "evaluation_query_id_overlap_zero": true,
+    "evaluation_query_text_overlap_zero": true,
+    "identifiers_A_to_T_are_distinct_single_tokens": true,
+    "model_revision_is_full_and_pinned": true,
+    "model_weights_not_loaded": true,
+    "no_gpu_or_training_used": true,
+    "prefill_and_decoding_latency_separated": true,
+    "qrels_not_accessed": true,
+    "query_and_candidate_shape_is_100_by_20": true,
+    "source_artifact_hashes_match": true
+  },
+  "all_acceptance_pass": true,
+  "author_code": {
+    "repository": "https://github.com/gangiswag/llm-reranker",
+    "revision": "2d7cba423ad555064bdfc719313570b5f9525887"
+  },
+  "frozen_prompts": {
+    "max_token_count": 3638,
+    "min_passage_word_budget": 300,
+    "min_token_count": 1528,
+    "path": "runs/r5_0_first_local_admission/prompt_inputs.jsonl",
+    "records": 400,
+    "sha256": "57a6da4fdde09dff6687b60a4c28d7ae591229b6a02ecd5a061ab22d92c19d0e",
+    "variants": [
+      "baseline",
+      "reverse",
+      "random_permutation",
+      "identifier_remap"
+    ]
+  },
+  "input": {
+    "candidates_per_query": 20,
+    "path": "data/processed/r5_first_msmarco_100/teacher_inputs.jsonl",
+    "qrels_accessed": false,
+    "queries": 100,
+    "sha256": "9f963c70a1255f464ca76bf64366372ad0afd907cc81c9bd2a93baa8d5e9a1f5",
+    "source_manifest": "data/processed/r5_first_msmarco_100/manifest.json",
+    "source_manifest_sha256": "c37e8a3313cf12dff7aa4ad293424f4b0abfc09728f20f9ca434d1e50021af63"
+  },
+  "model": {
+    "name": "rryisthebest/First_Model",
+    "revision": "64eba9b83c174439d2b6f5d333fbb822b38d73a7",
+    "tokenizer_revision": "64eba9b83c174439d2b6f5d333fbb822b38d73a7",
+    "training": false,
+    "weights_loaded": false
+  },
+  "next": "Run an 8-query single-GPU admission with the pinned 7B BF16 checkpoint; then freeze first-token logits for all 100 queries and full generations for the registered 20-query audit subset.",
+  "prompt": {
+    "first_generation_prefix": "[",
+    "identifier_token_ids": {
+      "A": 28741,
+      "B": 28760,
+      "C": 28743,
+      "D": 28757,
+      "E": 28749,
+      "F": 28765,
+      "G": 28777,
+      "H": 28769,
+      "I": 28737,
+      "J": 28798,
+      "K": 28796,
+      "L": 28758,
+      "M": 28755,
+      "N": 28759,
+      "O": 28762,
+      "P": 28753,
+      "Q": 28824,
+      "R": 28754,
+      "S": 28735,
+      "T": 28738
+    },
+    "identifiers": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K",
+      "L",
+      "M",
+      "N",
+      "O",
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T"
+    ],
+    "template_sha256": "e992a34693d2f0a8ea9c5f6e20b1263e860d7d2a5340c2edf27980c22abd6f4e",
+    "version": "first-author-alpha-v1"
+  },
+  "registered_gpu_audit": {
+    "complete_generation_subset_queries": 20,
+    "metrics": [
+      "pair_agreement",
+      "kendall_tau",
+      "normalized_entropy",
+      "top1_top2_margin",
+      "permutation_consistency",
+      "identifier_remap_consistency",
+      "window_boundary_consistency",
+      "prefill_seconds",
+      "decoding_seconds"
+    ],
+    "prefill_and_decoding_timed_separately": true,
+    "window_plans_top100": {
+      "0": [
+        [
+          80,
+          100
+        ],
+        [
+          70,
+          90
+        ],
+        [
+          60,
+          80
+        ],
+        [
+          50,
+          70
+        ],
+        [
+          40,
+          60
+        ],
+        [
+          30,
+          50
+        ],
+        [
+          20,
+          40
+        ],
+        [
+          10,
+          30
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "5": [
+        [
+          80,
+          100
+        ],
+        [
+          75,
+          95
+        ],
+        [
+          65,
+          85
+        ],
+        [
+          55,
+          75
+        ],
+        [
+          45,
+          65
+        ],
+        [
+          35,
+          55
+        ],
+        [
+          25,
+          45
+        ],
+        [
+          15,
+          35
+        ],
+        [
+          5,
+          25
+        ],
+        [
+          0,
+          15
+        ]
+      ]
+    }
+  },
+  "result_type": "qrels-free prompt/token/protocol admission; no model inference",
+  "schema": "first_r5_local_admission_v1",
+  "stage": "complete"
+}

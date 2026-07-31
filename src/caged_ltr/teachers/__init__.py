@@ -1,5 +1,16 @@
 """Offline ranking teacher integrations."""
 
+from caged_ltr.teachers.first import (
+    FIRST_MODEL,
+    FIRST_MODEL_REVISION,
+    FIRST_PROMPT_VERSION,
+    FirstCandidate,
+    FirstPromptEntry,
+    build_prompt_entries,
+    pair_agreement,
+    parse_generated_ranking,
+    rank_identifiers_from_logits,
+)
 from caged_ltr.teachers.flan_t5 import (
     AUTHOR_PRP_PROMPT,
     DEFAULT_FLAN_T5_XL_REVISION,
@@ -31,7 +42,12 @@ __all__ = [
     "AUTHOR_PRP_PROMPT",
     "DEFAULT_FLAN_T5_XL_REVISION",
     "DEFAULT_PRP_PROMPT",
+    "FIRST_MODEL",
+    "FIRST_MODEL_REVISION",
+    "FIRST_PROMPT_VERSION",
     "DeterministicMockTeacher",
+    "FirstCandidate",
+    "FirstPromptEntry",
     "FlanT5PairwiseTeacher",
     "OrderedPairRequest",
     "PRPCandidate",
@@ -42,12 +58,16 @@ __all__ = [
     "TeacherMetadata",
     "TeacherResponse",
     "allpair_borda",
+    "build_prompt_entries",
     "compare_bidirectional",
     "likelihood_margin",
+    "pair_agreement",
     "pair_diagnostics",
+    "parse_generated_ranking",
     "parse_prp_generation",
     "prompt_sha256",
     "query_fingerprint",
+    "rank_identifiers_from_logits",
     "render_pair_prompt",
     "sliding_k",
 ]

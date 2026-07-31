@@ -249,3 +249,21 @@ PRP 学生整体 NDCG@10 为 `0.639791`，高于 BM25 RankNet `0.476489`、rando
 `[0.124484, 0.202811]`。PRP 学生保留 Allpair 教师相对初始 BM25 增益的
 `73.35%`，Top-100 平均耗时 `0.1840s/Query`；逻辑打分调用由 9,900 降为 100，
 实测相对 Allpair 单 GPU worker 参考加速约 `897×`。
+
+## FIRST R5
+
+R5.0 已完成无需 GPU 的本地准入。工程固定作者公开
+`rryisthebest/First_Model` 的完整 revision 和作者代码 revision，从 MS MARCO
+train 冻结 100 Query × Top-20 的 qrels-free 输入，并为正序、逆序、随机顺序和
+标识符重映射生成 400 条 prompt。A–T 均已验证为 `[` 后的不同单 token；最长
+prompt 为 3,638 tokens，未超过 4,096 上下文预留线。
+
+```bash
+HF_HUB_DISABLE_IMPLICIT_TOKEN=1 \
+uv --cache-dir .uv-cache run --frozen \
+  python scripts/run_first_r5_0_local_admission.py --local-files-only
+```
+
+该结果不包含 7B 推理，也不构成排序质量或概率校准结论。协议、数据准备命令、
+扰动指标和解释边界见 [`docs/experiments/first_r5.md`](docs/experiments/first_r5.md)。
+下一步是在单张 24GB GPU 上执行固定的 8 Query R5.1 准入。

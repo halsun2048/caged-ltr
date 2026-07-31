@@ -1,0 +1,51 @@
+experiment:
+  name: first_r5
+  stage: reproduction
+  seed: 42
+
+data:
+  source: msmarco_train
+  teacher_inputs: data/processed/r5_first_msmarco_100/teacher_inputs.jsonl
+  manifest: data/processed/r5_first_msmarco_100/manifest.json
+  query_count: 100
+  candidates_per_query: 20
+  qrels_accessed: false
+  evaluation_query_identity_exclusion:
+    - data/processed/prp_trec_dl_top100/queries.parquet
+
+teacher:
+  model: rryisthebest/First_Model
+  revision: 64eba9b83c174439d2b6f5d333fbb822b38d73a7
+  tokenizer_revision: 64eba9b83c174439d2b6f5d333fbb822b38d73a7
+  dtype: bfloat16
+  training: false
+  author_code:
+    repository: https://github.com/gangiswag/llm-reranker
+    revision: 2d7cba423ad555064bdfc719313570b5f9525887
+  prompt_version: first-author-alpha-v1
+  identifiers: alphabetic_A_to_T
+  context_size: 4096
+  initial_max_passage_words: 300
+  window_size: 20
+  window_step: 10
+
+audit:
+  perturbations:
+    - baseline
+    - reverse
+    - random_permutation
+    - identifier_remap
+  window_boundary_offsets:
+    - 0
+    - 5
+  complete_generation_subset_queries: 20
+  metrics:
+    - pair_agreement
+    - kendall_tau
+    - normalized_entropy
+    - top1_top2_margin
+    - permutation_consistency
+    - identifier_remap_consistency
+    - window_boundary_consistency
+    - prefill_seconds
+    - decoding_seconds
