@@ -1,4 +1,5 @@
 """Evaluate a deterministic candidate-identity debiasing post-process for R5.2."""
+
 from __future__ import annotations
 
 import argparse
@@ -6,7 +7,6 @@ import json
 import math
 from collections import defaultdict
 from pathlib import Path
-
 
 VARIANTS = ("baseline", "reverse", "random_permutation", "identifier_remap")
 
@@ -45,7 +45,12 @@ def main() -> None:
     args = parser.parse_args()
 
     prompts = [json.loads(line) for line in args.prompt_inputs.open()]
-    mappings = {(row["query_id"], row["variant"]): {x["identifier"]: x["candidate_id"] for x in row["candidate_mapping"]} for row in prompts}
+    mappings = {
+        (row["query_id"], row["variant"]): {
+            x["identifier"]: x["candidate_id"] for x in row["candidate_mapping"]
+        }
+        for row in prompts
+    }
     grouped: dict[str, dict[str, dict]] = defaultdict(dict)
     for line in args.first_token.open():
         payload = json.loads(line)["payload"]
@@ -60,21 +65,34 @@ def main() -> None:
     aggregate_taus: list[float] = []
     for query in grouped.values():
         normalized = {variant: zscore(query[variant]["scores"]) for variant in VARIANTS}
-        aggregate = {candidate: sum(normalized[v][candidate] for v in VARIANTS) / len(VARIANTS) for candidate in normalized[VARIANTS[0]]}
+        aggregate = {
+            candidate: sum(normalized[v][candidate] for v in VARIANTS) / len(VARIANTS)
+            for candidate in normalized[VARIANTS[0]]
+        }
         aggregate_rank = rank(aggregate)
-        aggregate_taus.append(sum(tau(aggregate_rank, query[v]["raw_rank"]) for v in VARIANTS) / len(VARIANTS))
+        aggregate_taus.append(
+            sum(tau(aggregate_rank, query[v]["raw_rank"]) for v in VARIANTS) / len(VARIANTS)
+        )
         for variant in VARIANTS:
             per_variant[variant].append(tau(aggregate_rank, query[variant]["raw_rank"]))
-            held_out = {candidate: sum(normalized[v][candidate] for v in VARIANTS if v != variant) / 3 for candidate in aggregate}
+            held_out = {
+                candidate: sum(normalized[v][candidate] for v in VARIANTS if v != variant) / 3
+                for candidate in aggregate
+            }
             loo[variant].append(tau(rank(held_out), query[variant]["raw_rank"]))
 
     report = {
         "query_count": len(grouped),
         "method": "candidate-identity alignment; per-variant z-score; mean ensemble",
         "mean_tau_to_debiased_ensemble": sum(aggregate_taus) / len(aggregate_taus),
-        "per_variant_tau_to_ensemble": {v: sum(per_variant[v]) / len(per_variant[v]) for v in VARIANTS},
+        "per_variant_tau_to_ensemble": {
+            v: sum(per_variant[v]) / len(per_variant[v]) for v in VARIANTS
+        },
         "leave_one_variant_out_tau": {v: sum(loo[v]) / len(loo[v]) for v in VARIANTS},
-        "acceptance": {"all_queries_have_four_variants": all(len(q) == 4 for q in grouped.values()), "no_model_training": True},
+        "acceptance": {
+            "all_queries_have_four_variants": all(len(q) == 4 for q in grouped.values()),
+            "no_model_training": True,
+        },
     }
     report["all_acceptance_pass"] = all(report["acceptance"].values())
     args.output.parent.mkdir(parents=True, exist_ok=True)
