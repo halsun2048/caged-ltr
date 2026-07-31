@@ -22,3 +22,8 @@ the identity/z-score debiasing post-process is significantly worse on this
 dataset. This is the first external replication beyond TREC-DL, but the BM25
 retrieval is a frozen in-project lexical implementation rather than Pyserini;
 an official BEIR BM25 control and matched PRP run remain follow-up controls.
+
+The matched PRP smoke run was started but is currently blocked by the GPU
+environment lacking `sentencepiece`; pip cannot build it under Python 3.13 and
+the conda channel is unavailable due a transient TLS/network failure. No PRP
+effect claim is made for NFCorpus until that dependency is installed.
