@@ -18,4 +18,10 @@ Paired bootstrap 95% CIs:
 
 The top-20 run shows a large, robust gain over BM25. Debiasing trends slightly
 positive (`+0.00287`) but remains statistically indistinguishable from raw
-FIRST. A matched top-20 PRP comparison is the next required control.
+FIRST.
+
+The matched PRP control is now complete: PRP filtered to the identical top-20
+candidate pool scores `0.602779`, versus FIRST `0.630504`. FIRST−PRP is
+`+0.027725` with paired bootstrap 95% CI `[0.01154, 0.04473]`, excluding zero.
+This supports a statistically significant FIRST advantage over the frozen PRP
+control on this top-20 candidate pool.

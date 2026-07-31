@@ -54,7 +54,7 @@ def main():
     for _ in range(10000):
         sample = [values[rng.randrange(len(values))] for _ in values]
         diffs.append(sum(x["first"] - x["prp"] for x in sample) / len(sample))
-    report = {"queries": len(values), "first_ndcg": sum(x["first"] for x in values) / len(values), "prp_ndcg_same_top10_candidates": sum(x["prp"] for x in values) / len(values), "first_minus_prp": sum(x["first"] - x["prp"] for x in values) / len(values), "paired_bootstrap_95ci_first_minus_prp": [sorted(diffs)[250], sorted(diffs)[9749]], "candidate_protocol": "PRP ranking filtered to the same 10 BM25 candidates used by FIRST", "qrels_accessed_after_prediction_freeze": True}
+    report = {"queries": len(values), "first_ndcg": sum(x["first"] for x in values) / len(values), "prp_ndcg_same_candidate_pool": sum(x["prp"] for x in values) / len(values), "first_minus_prp": sum(x["first"] - x["prp"] for x in values) / len(values), "paired_bootstrap_95ci_first_minus_prp": [sorted(diffs)[250], sorted(diffs)[9749]], "candidate_protocol": "PRP ranking filtered to the same top-20 BM25 candidate pool used by FIRST", "qrels_accessed_after_prediction_freeze": True}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
