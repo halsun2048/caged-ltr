@@ -1,0 +1,47 @@
+{
+  "protocol": {
+    "split": "NFCorpus dev only",
+    "candidate_thresholds": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "rule": "words < threshold => BM25, otherwise FIRST",
+    "tie_break": "smaller threshold",
+    "test_accessed": false
+  },
+  "queries": 324,
+  "candidates": {
+    "always_first": {
+      "threshold": 0,
+      "ndcg10": 0.3056080618540268,
+      "fallback_queries": 0
+    },
+    "fallback_1_or_less": {
+      "threshold": 1,
+      "ndcg10": 0.3056080618540268,
+      "fallback_queries": 0
+    },
+    "fallback_below_2": {
+      "threshold": 2,
+      "ndcg10": 0.30431940909405547,
+      "fallback_queries": 105
+    },
+    "fallback_below_3": {
+      "threshold": 3,
+      "ndcg10": 0.2989925938159092,
+      "fallback_queries": 169
+    },
+    "fallback_below_4": {
+      "threshold": 4,
+      "ndcg10": 0.29631298615145146,
+      "fallback_queries": 196
+    }
+  },
+  "selected": {
+    "threshold": 0,
+    "ndcg10": 0.3056080618540268,
+    "fallback_queries": 0
+  }
+}
