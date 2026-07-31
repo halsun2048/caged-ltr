@@ -1,0 +1,74 @@
+{
+  "stage": "complete",
+  "result_type": "R4.1 qrels-free teacher and student training",
+  "seed": 42,
+  "data": {
+    "queries": 1000,
+    "train_queries": 900,
+    "validation_queries": 100,
+    "candidates": 10000,
+    "candidates_sha256": "31cada07a22ae7de00f2b29329bdcb25bc6ea0d72245fd728daf0c50bc8d7725"
+  },
+  "teacher": {
+    "model": "google/flan-t5-xl",
+    "revision": "7d6315df2c2fb742f0f5b556879d730926ca9001",
+    "protocol": "bidirectional_allpair_borda",
+    "expected_ordered_prompts": 90000,
+    "cached_ordered_prompts": 90000,
+    "truncated_inputs": 0,
+    "invalid_outputs": 0,
+    "exact_likelihood_ties": 1,
+    "mean_swap_agreement": 0.8066888888888889,
+    "mean_tie_ratio": 0.1933111111111111,
+    "summary_sha256": "edaea65a6ae39f83c63eeff6c0fcdde3f589c4cd9791beee80b139e56d76b0dd",
+    "labels_sha256": "fdfc45b0cea21829d936d98ecae967cf7cd34478ecc26c67f1bcbc4145f27b49"
+  },
+  "student": {
+    "model": "microsoft/deberta-v3-base",
+    "revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+    "architecture": "scalar_pointwise_cross_encoder",
+    "loss": "ranknet",
+    "world_size": 8,
+    "query_batch_size_per_rank": 1,
+    "gradient_accumulation_steps": 1,
+    "effective_global_query_batch": 8,
+    "learning_rate": 5e-05,
+    "max_epochs": 3,
+    "selection_metric": "validation_teacher_ndcg_at_10",
+    "controls": {
+      "bm25": {
+        "best_epoch_one_based": 3,
+        "best_validation_teacher_ndcg_at_10": 0.9365207637349116,
+        "summary_sha256": "b39c3ae3f088bf418e2db1e22fb6b654c4b790fe7888ffdfead374294b0df5b6",
+        "best_model_sha256": "ac1226110a5c565570031ce03b5efd55ebc40e319ec490a8fb6901751f857053"
+      },
+      "random": {
+        "best_epoch_one_based": 3,
+        "best_validation_teacher_ndcg_at_10": 0.8354423639664377,
+        "summary_sha256": "b2d75f6967fdc80cc3abca980e9a91a0ce72781ee04eceed08a770cc00994187",
+        "best_model_sha256": "02a63878dcb063d1666d29148f96e55f90feaddb4e9ae42a95c739095c21fe87"
+      },
+      "prp": {
+        "best_epoch_one_based": 3,
+        "best_validation_teacher_ndcg_at_10": 0.9490940875765187,
+        "summary_sha256": "29e76ec9922816ddcf93e5fe88422f1d3277a641d2e430d7cd1055269b045ef1",
+        "best_model_sha256": "0459f1742f27140bcf2fdf3a1d1f120943dd2057404ad4591c1004752e533c0c"
+      }
+    }
+  },
+  "acceptance": {
+    "teacher_prompt_count_exact": true,
+    "teacher_zero_truncation": true,
+    "teacher_zero_invalid_outputs": true,
+    "all_student_controls_complete": true,
+    "all_training_used_eight_gpus": true,
+    "all_effective_global_query_batches_equal_eight": true,
+    "qrels_not_accessed": true,
+    "test_not_accessed": true,
+    "checkpoints_selected_only_on_validation": true,
+    "ready_for_locked_test_once_evaluation": true
+  },
+  "interpretation_guardrail": "Validation teacher-NDCG measures fit to each control's own pseudo-teacher. Values across BM25, random, and PRP do not by themselves establish downstream retrieval superiority; that requires the locked TREC-DL19/20 test-once evaluation.",
+  "qrels_accessed": false,
+  "test_accessed": false
+}

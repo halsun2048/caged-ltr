@@ -38,6 +38,17 @@ def test_ranknet_rewards_correct_ordering() -> None:
     assert correct < reversed_order
 
 
+def test_ranknet_gradient_pushes_the_teacher_preferred_item_up() -> None:
+    scores = torch.zeros(2, requires_grad=True)
+    loss = ranknet_loss(scores, torch.tensor([2.0, 1.0]), torch.tensor([2]))
+
+    loss.backward()
+
+    assert scores.grad is not None
+    assert scores.grad[0] < 0
+    assert scores.grad[1] > 0
+
+
 def test_ranknet_handles_groups_without_pairs() -> None:
     scores = torch.tensor([0.1, 0.2], requires_grad=True)
     loss = ranknet_loss(scores, torch.ones(2), torch.tensor([2]))

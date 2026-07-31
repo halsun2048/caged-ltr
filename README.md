@@ -230,3 +230,15 @@ R3.2 已基于完整教师缓存精确回放真实 Sliding-10，无需新增 GPU
 `87.44%` 的增益，但低于预注册的 90% 门槛；随机和逆序初排分别降至
 `0.610654/0.557531`，暴露明显初始顺序敏感性。因此 R4 正式教师继续采用
 Allpair，Sliding-10 仅作为质量—成本对照。
+
+## Instruction Distillation R4
+
+R4.0 已冻结 MS MARCO 训练查询中的 1,000 Query：900 train / 100 validation，
+每个查询使用固定 Pyserini BM25 Top-10。TREC-DL19/20 的 Query ID 与规范化文本
+重叠均为零，qrels 未参与抽样、检索或教师输入。数据身份和本地准入见
+[`docs/experiments/instruction_distillation_r4.md`](docs/experiments/instruction_distillation_r4.md)。
+
+作者公开实现采用 DeBERTa-v3-base 单 logit Pointwise cross-encoder，当前工程已
+按该实现补齐 grouped RankNet、BM25/random/PRP 三类训练标签、验证集 checkpoint
+选择和可恢复训练。下一步生成 90,000 个双向 Allpair FLAN-T5-XL 教师 prompt，
+随后训练三组 RankNet 学生；vanilla Pointwise 保持未训练作为第四组对照。

@@ -242,6 +242,32 @@ def _write_fixture(root: Path) -> tuple[Path, Path]:
     return teacher_input, qrels_path
 
 
+def test_teacher_inputs_allow_qrels_free_training_queries_without_year(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "teacher_inputs.jsonl"
+    path.write_text(
+        json.dumps(
+            {
+                "request_id": "r4-1",
+                "query_id": "1",
+                "query": "training query",
+                "split": "train",
+                "candidates": [
+                    {"passage_id": "a", "bm25_rank": 1, "passage": "first"},
+                    {"passage_id": "b", "bm25_rank": 2, "passage": "second"},
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    loaded = load_teacher_inputs(path)
+
+    assert loaded[0].year is None
+
+
 def test_author_prompt_and_strict_generation_parser() -> None:
     request = OrderedPairRequest(
         request_id="r1",

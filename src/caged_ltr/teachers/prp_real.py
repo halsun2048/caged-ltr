@@ -43,7 +43,7 @@ class TRECInputCandidate:
 @dataclass(frozen=True, slots=True)
 class TRECInputQuery:
     request_id: str
-    year: int
+    year: int | None
     query_id: str
     query: str
     candidates: tuple[TRECInputCandidate, ...]
@@ -110,7 +110,11 @@ def load_teacher_inputs(path: Path) -> list[TRECInputQuery]:
             queries.append(
                 TRECInputQuery(
                     request_id=request_id,
-                    year=int(payload["year"]),
+                    year=(
+                        int(payload["year"])
+                        if payload.get("year") is not None
+                        else None
+                    ),
                     query_id=str(payload["query_id"]),
                     query=str(payload["query"]),
                     candidates=candidates,
@@ -317,6 +321,8 @@ def evaluate_complete_rankings(
     qrels_path: Path,
 ) -> dict[str, object]:
     """Evaluate only after teacher inference has completed, never inside it."""
+    if any(query.year is None for query in queries):
+        raise ValueError("evaluation requires a year for every query")
     qrels = pd.read_parquet(qrels_path)
     relevance = {
         (str(row.request_id), str(row.passage_id)): int(row.graded_relevance)
@@ -362,7 +368,7 @@ def evaluate_complete_rankings(
             "absolute_gain": teacher - bm25,
         }
 
-    years = sorted({query.year for query in queries})
+    years = sorted({int(query.year) for query in queries if query.year is not None})
     return {
         "metric": "linear graded NDCG@10 over complete official qrels",
         "overall": summary(per_query),

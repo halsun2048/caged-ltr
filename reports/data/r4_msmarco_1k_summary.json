@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "candidates": {
+      "bytes": 2123131,
+      "path": "data/processed/r4_msmarco_1k/candidates.parquet",
+      "sha256": "31cada07a22ae7de00f2b29329bdcb25bc6ea0d72245fd728daf0c50bc8d7725"
+    },
+    "controls": {
+      "bytes": 108240,
+      "path": "data/processed/r4_msmarco_1k/control_labels.parquet",
+      "sha256": "83627e7dd87a40106289ba6b1af31733c9382cad26a72e6f93f0392300c0d659"
+    },
+    "queries": {
+      "bytes": 101217,
+      "path": "data/processed/r4_msmarco_1k/queries.parquet",
+      "sha256": "0be802039a48a526b9585cbad18b296ff328429f41205174d3d55a811e755bf7"
+    },
+    "teacher_inputs": {
+      "bytes": 5135033,
+      "path": "data/processed/r4_msmarco_1k/teacher_inputs.jsonl",
+      "sha256": "0501762f889710e38b2f82c753c4a59d388f64460b19aa010a852f95bce6788d"
+    }
+  },
+  "controls": {
+    "bm25": "descending BM25 rank",
+    "prp_allpair": "deferred until frozen teacher inference",
+    "random": "deterministic per-query random permutation",
+    "vanilla_pointwise": "untrained pretrained checkpoint; no pseudo-label file"
+  },
+  "retrieval": {
+    "bm25": {
+      "b": 0.4,
+      "k1": 0.9
+    },
+    "index": "msmarco-v1-passage",
+    "index_path": "data/raw/prp_trec_dl/pyserini_cache/indexes/lucene-inverted.msmarco-v1-passage.20221004.252b5e.678876e8c99a89933d553609a0fd8793",
+    "pyserini_version": "2.3.0"
+  },
+  "schema": "r4_instruction_distillation_v1",
+  "selection": {
+    "deduplicated_train_query_text": 84,
+    "eligible_unique_queries": 808647,
+    "excluded_test_query_id": 0,
+    "excluded_test_query_text": 0,
+    "seed": 42,
+    "selected_queries": 1000,
+    "source_queries": 808731,
+    "split_query_ids_sha256": {
+      "train": "edfdd55f46f4c581700391258bca0c04045aecf9aba93c5e46c2a04b2e4a2f8c",
+      "validation": "87442dd30a6fac3b69a66a9d7dbb20163541dec651ce0605dbda43fcbb271f11"
+    },
+    "top_k": 10,
+    "train_queries": 900,
+    "validation_queries": 100
+  },
+  "source": {
+    "archive": "data/raw/prp_trec_dl/queries.tar.gz",
+    "archive_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "license_boundary": "MS MARCO non-commercial research use",
+    "member": "queries.train.tsv"
+  },
+  "stage": "complete",
+  "test_isolation": {
+    "evaluation_normalized_text_overlap": 0,
+    "evaluation_query_id_overlap": 0,
+    "qrels_accessed": false,
+    "query_only_sources": [
+      "data/processed/prp_trec_dl_top100/queries.parquet"
+    ]
+  }
+}

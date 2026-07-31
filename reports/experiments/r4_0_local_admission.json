@@ -1,0 +1,31 @@
+{
+  "acceptance": {
+    "all_candidate_groups_are_top10": true,
+    "artifact_hashes_match": true,
+    "author_pointwise_model_is_deberta": true,
+    "bm25_label_direction_correct": true,
+    "control_labels_cover_every_candidate": true,
+    "qrels_not_accessed": true,
+    "query_count_is_1000": true,
+    "random_control_is_nonidentity": true,
+    "ranknet_gradient_direction_correct": true,
+    "split_is_900_train_100_validation": true,
+    "teacher_inputs_are_qrels_free_and_loadable": true,
+    "train_validation_ids_disjoint": true,
+    "trec_query_id_overlap_zero": true,
+    "trec_query_text_overlap_zero": true
+  },
+  "all_acceptance_pass": true,
+  "data_manifest": "data/processed/r4_msmarco_1k/manifest.json",
+  "next": "Generate the frozen 90,000 ordered FLAN-T5-XL Allpair prompts, export PRP ranks, then train the three RankNet controls.",
+  "result_type": "R4.0 local admission; no teacher or student model inference",
+  "stage": "complete",
+  "summary": {
+    "candidates": 10000,
+    "queries": 1000,
+    "random_groups_different_from_bm25": 1000,
+    "teacher_ordered_prompts_expected": 90000,
+    "train_queries": 900,
+    "validation_queries": 100
+  }
+}

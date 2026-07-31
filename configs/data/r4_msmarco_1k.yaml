@@ -1,0 +1,40 @@
+dataset:
+  name: r4_msmarco_instruction_distillation_1k
+  task: passage_reranking_distillation
+  source: official_msmarco_train_queries_and_pyserini_index
+  prepared_on: "2026-07-31"
+  license_boundary: non_commercial_research
+
+queries:
+  archive_url: https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz
+  archive_sha256: 05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8
+  archive_member: queries.train.tsv
+  source_records: 808731
+  selection_seed: 42
+  selected: 1000
+  train: 900
+  validation: 100
+  selection: sha256_ordered_without_replacement
+  exclusion:
+    query_id: trec_dl_2019_2020
+    normalized_exact_text: trec_dl_2019_2020
+    qrels_accessed: false
+
+retrieval:
+  pyserini_version: 2.3.0
+  index: msmarco-v1-passage
+  index_artifact: lucene-inverted.msmarco-v1-passage.20221004.252b5e
+  top_k: 10
+  bm25:
+    k1: 0.9
+    b: 0.4
+
+controls:
+  vanilla_pointwise: untrained microsoft/deberta-v3-base checkpoint
+  bm25: descending_bm25_rank
+  random: deterministic_per_query_permutation_seed_42
+  prp_teacher: frozen_bidirectional_allpair_flan_t5_xl
+
+outputs:
+  processed_dir: data/processed/r4_msmarco_1k
+  report: reports/data/r4_msmarco_1k_summary.json

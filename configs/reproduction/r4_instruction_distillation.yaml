@@ -1,0 +1,60 @@
+experiment:
+  name: r4_instruction_distillation_1k
+  stage: reproduction
+  seed: 42
+
+data:
+  config: configs/data/r4_msmarco_1k.yaml
+  candidates: data/processed/r4_msmarco_1k/candidates.parquet
+  query_count: 1000
+  train_queries: 900
+  validation_queries: 100
+  candidates_per_query: 10
+  test:
+    datasets:
+      - trec_dl_2019
+      - trec_dl_2020
+    used_for_selection: false
+    accessed_during_teacher_or_student_training: false
+
+teacher:
+  model: google/flan-t5-xl
+  revision: 7d6315df2c2fb742f0f5b556879d730926ca9001
+  protocol: bidirectional_allpair_borda
+  scoring: likelihood
+  max_input_tokens: 1024
+  ordered_prompts: 90000
+  qrels_accessed: false
+
+student:
+  model: microsoft/deberta-v3-base
+  revision: 8ccc9b6f36199bec6961081d44eb72fb3f7353f3
+  author_code:
+    repository: https://github.com/sunnweiwei/RankGPT
+    revision: 0d62bc3855c7c118048a7c47c18e719b938e291a
+  architecture: scalar_pointwise_cross_encoder
+  loss: ranknet
+  max_length: 500
+  optimizer: adamw
+  learning_rate: 0.00005
+  query_batch_size: 1
+  # Eight-way DDP: 1 query/GPU/update gives the author's effective batch of 8.
+  world_size: 8
+  gradient_accumulation_steps: 1
+  epochs: 3
+  gradient_clip_norm: 1.0
+  selection_metric: validation_teacher_ndcg_at_10
+
+controls:
+  - vanilla_pointwise
+  - bm25_ranknet
+  - random_ranknet
+  - prp_allpair_ranknet
+
+reporting:
+  metrics:
+    - trec_eval_ndcg_at_10
+    - seconds_per_query
+    - ece
+    - brier
+  test_once_after_checkpoint_selection: true

@@ -201,6 +201,8 @@ def launch(args: argparse.Namespace) -> None:
             "0",
             "--scoring-mode",
             "likelihood",
+            "--max-input-tokens",
+            str(args.max_input_tokens),
             "--output-dir",
             str(output_dir),
             "--cache-dir",
@@ -365,8 +367,26 @@ class _CachedTeacher:
 def finalize(args: argparse.Namespace) -> None:
     plan = _load_plan(args.work_dir)
     output_dir = Path(str(plan["source_output"]))
-    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
-    teacher = _CachedTeacher(TeacherMetadata(**manifest["teacher"]))
+    manifest_path = output_dir / "manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        teacher_payload = manifest["teacher"]
+    else:
+        teacher_payloads = []
+        for shard in plan["shards"]:
+            if not shard["request_ids"]:
+                continue
+            shard_manifest_path = Path(str(shard["output"])) / "manifest.json"
+            shard_manifest = json.loads(
+                shard_manifest_path.read_text(encoding="utf-8")
+            )
+            teacher_payloads.append(shard_manifest["teacher"])
+        if not teacher_payloads or any(
+            payload != teacher_payloads[0] for payload in teacher_payloads[1:]
+        ):
+            raise ValueError("GPU shard teacher identities are missing or inconsistent")
+        teacher_payload = teacher_payloads[0]
+    teacher = _CachedTeacher(TeacherMetadata(**teacher_payload))
     summary = run_prp_r3_1b(
         teacher,
         teacher_input_path=Path(str(plan["teacher_input"])),
@@ -374,6 +394,7 @@ def finalize(args: argparse.Namespace) -> None:
         qrels_path=Path(str(plan["qrels"])),
         query_limit=len(_teacher_rows(Path(str(plan["teacher_input"])))),
         batch_size=8,
+        evaluate_when_complete=not args.defer_evaluation,
     )
     print(
         json.dumps(
@@ -381,7 +402,7 @@ def finalize(args: argparse.Namespace) -> None:
                 "stage": summary["stage"],
                 "cached_ordered_prompts": summary["cached_ordered_prompts"],
                 "qrels_accessed": summary["qrels_accessed"],
-                "evaluation": summary["evaluation"],
+                "evaluation": summary.get("evaluation"),
             },
             ensure_ascii=False,
         )
@@ -410,6 +431,7 @@ def main() -> None:
     launch_parser.add_argument("--source-dir", type=Path, default=Path("src"))
     launch_parser.add_argument("--cache-dir", type=Path, default=Path(".hf-cache"))
     launch_parser.add_argument("--batch-size", type=int, default=8)
+    launch_parser.add_argument("--max-input-tokens", type=int, default=512)
     launch_parser.set_defaults(handler=launch)
 
     status_parser = subparsers.add_parser("status")
@@ -422,6 +444,11 @@ def main() -> None:
 
     finalize_parser = subparsers.add_parser("finalize")
     finalize_parser.add_argument("--work-dir", type=Path, required=True)
+    finalize_parser.add_argument(
+        "--defer-evaluation",
+        action="store_true",
+        help="Finalize rankings without reading qrels.",
+    )
     finalize_parser.set_defaults(handler=finalize)
 
     args = parser.parse_args()
@@ -429,6 +456,8 @@ def main() -> None:
         parser.error("--shards must be positive")
     if getattr(args, "batch_size", 1) <= 0:
         parser.error("--batch-size must be positive")
+    if getattr(args, "max_input_tokens", 1) <= 0:
+        parser.error("--max-input-tokens must be positive")
     args.handler(args)
 
 
