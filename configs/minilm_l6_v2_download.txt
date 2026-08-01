@@ -1,0 +1,27 @@
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=config.json
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/model.safetensors?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=model.safetensors
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/special_tokens_map.json?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=special_tokens_map.json
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer.json?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=tokenizer.json
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=tokenizer_config.json
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/vocab.txt?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=vocab.txt
+
+https://hf-mirror.com/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json?download=true
+  dir=artifacts/models/all-MiniLM-L6-v2
+  out=sentence_bert_config.json
