@@ -1,0 +1,40 @@
+# R7.3 English behavior-data admission
+
+All model inputs and external behavior data are frozen to **English**. Non-English and translated MIND variants are rejected.
+
+```json
+{
+  "schema": "mind_r7_3_english_admission_v1",
+  "language_policy": {
+    "required_language": "English",
+    "reason": "NFCorpus, FIRST prompts, and the MiniLM distillation/evaluation pipeline are English.",
+    "translated_or_non_english_data_allowed": false
+  },
+  "preferred_source": {
+    "dataset": "mteb/MindSmallReranking",
+    "provenance": "English MIND-small reranking derivative",
+    "use": "external behavior pretraining/evaluation only; never NFCorpus final evidence"
+  },
+  "official_candidates": [
+    {
+      "path": "data/external/mind/official_small/mindsmall_top_ranked_00001.parquet",
+      "bytes": 159744,
+      "valid_parquet": false,
+      "admitted": false,
+      "error": "Could not open Parquet input source '<Buffer>': Parquet magic bytes not found in footer. Either the file is corrupted or this is not a parquet file."
+    }
+  ],
+  "explicitly_rejected_non_official_files": [
+    "data/external/mind/sproos_mindsmall_tr/README.md",
+    "data/external/mind/sproos_mindsmall_tr/train.parquet"
+  ],
+  "download_status": "blocked",
+  "blocker": "No complete English behavior shard is locally available; direct Microsoft returned HTTP 409 and the public mirror transfer did not complete.",
+  "acceptance": {
+    "english_only_policy_frozen": true,
+    "at_least_one_complete_english_behavior_shard": false,
+    "non_english_data_used": false,
+    "nfcorpus_test_accessed": false
+  }
+}
+```
