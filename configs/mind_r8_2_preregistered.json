@@ -1,0 +1,40 @@
+{
+  "schema": "mind_r8_2_preregistered_v1",
+  "frozen_before_large_dev_scoring": true,
+  "source": "mteb/MindSmallReranking English derivative; R8.1 v2",
+  "selection_metric": "large-dev NDCG@10",
+  "seed": 42,
+  "shared": {
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "epochs": 5,
+    "patience": 2,
+    "batch_size": 256,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "max_length": 96,
+    "precision": "bf16"
+  },
+  "variants": [
+    {"name": "hard_only", "negative_type": "rank_hard", "objective": "pairwise"},
+    {"name": "random_only", "negative_type": "random", "objective": "pairwise"},
+    {"name": "hard_random", "negative_type": "all", "objective": "pairwise"},
+    {
+      "name": "hard_random_inbatch",
+      "negative_type": "all",
+      "objective": "pairwise_inbatch",
+      "inbatch_weight": 0.25,
+      "temperature": 0.05
+    }
+  ],
+  "promotion": {
+    "large_dev_ndcg10_exceeds_pretrained": true,
+    "large_dev_ndcg10_exceeds_r7_9_mean": 0.38963434059402285,
+    "tail_must_not_regress_against_r7_9_mean_delta": true,
+    "winning_variant_then_runs_seeds": [2024, 3407]
+  },
+  "boundaries": {
+    "large_test_locked": true,
+    "large_test_evaluation_allowed_only_after_r8_8": true,
+    "original_mind_large_is_a_separate_evidence_route": true
+  }
+}
