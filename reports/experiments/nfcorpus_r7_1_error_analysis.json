@@ -1,0 +1,570 @@
+{
+  "schema": "nfcorpus_r7_error_analysis_v1",
+  "split": "independent_dev_only",
+  "queries": 476,
+  "overall": {
+    "minilm_ndcg10": 0.502476858514648,
+    "gain_vs_bm25": -0.03768394535578044,
+    "gain_vs_tfidf": 0.11774929963322496,
+    "gap_to_first": -0.06391230359161548,
+    "minilm_beats_bm25_rate": 0.27521008403361347,
+    "minilm_beats_first_rate": 0.22058823529411764,
+    "gain_vs_bm25_bootstrap_95ci": [
+      -0.05983142133598115,
+      -0.016405803400067268
+    ]
+  },
+  "slices": {
+    "query_length": {
+      "short": {
+        "queries": 232,
+        "minilm_ndcg10": 0.5573653966328012,
+        "bm25_ndcg10": 0.6018575725186973,
+        "first_ndcg10": 0.6135784999935194,
+        "gain_vs_bm25": -0.04449217588589622,
+        "gap_to_first": -0.056213103360718365
+      },
+      "medium": {
+        "queries": 94,
+        "minilm_ndcg10": 0.4290665641052768,
+        "bm25_ndcg10": 0.5015746801761084,
+        "first_ndcg10": 0.5206547487266463,
+        "gain_vs_bm25": -0.07250811607083159,
+        "gap_to_first": -0.09158818462136963
+      },
+      "long": {
+        "queries": 150,
+        "minilm_ndcg10": 0.4635863707217768,
+        "bm25_ndcg10": 0.4689171058762129,
+        "first_ndcg10": 0.522063218558534,
+        "gain_vs_bm25": -0.0053307351544359645,
+        "gap_to_first": -0.05847684783675708
+      }
+    },
+    "passage_length": {
+      "short": {
+        "queries": 168,
+        "minilm_ndcg10": 0.5286995513906825,
+        "bm25_ndcg10": 0.5769138140193661,
+        "first_ndcg10": 0.5994807428460328,
+        "gain_vs_bm25": -0.048214262628683634,
+        "gap_to_first": -0.07078119145535033
+      },
+      "medium": {
+        "queries": 151,
+        "minilm_ndcg10": 0.537267691383977,
+        "bm25_ndcg10": 0.5594011628689979,
+        "first_ndcg10": 0.5970545859333175,
+        "gain_vs_bm25": -0.02213347148502096,
+        "gap_to_first": -0.059786894549340476
+      },
+      "long": {
+        "queries": 157,
+        "minilm_ndcg10": 0.4409556600022754,
+        "bm25_ndcg10": 0.4823276834003294,
+        "first_ndcg10": 0.5014855661688977,
+        "gain_vs_bm25": -0.04137202339805398,
+        "gap_to_first": -0.060529906166622294
+      }
+    },
+    "difficulty": {
+      "hard": {
+        "queries": 134,
+        "minilm_ndcg10": 0.04988796496535444,
+        "bm25_ndcg10": 0.011636348333114787,
+        "first_ndcg10": 0.06469632815341571,
+        "gain_vs_bm25": 0.038251616632239666,
+        "gap_to_first": -0.014808363188061257
+      },
+      "medium": {
+        "queries": 91,
+        "minilm_ndcg10": 0.49822114621465624,
+        "bm25_ndcg10": 0.43822773756258476,
+        "first_ndcg10": 0.5514687561896143,
+        "gain_vs_bm25": 0.059993408652071464,
+        "gap_to_first": -0.05324760997495803
+      },
+      "easy": {
+        "queries": 251,
+        "minilm_ndcg10": 0.7456409284545067,
+        "bm25_ndcg10": 0.8592770830577343,
+        "first_ndcg10": 0.8396345672381227,
+        "gain_vs_bm25": -0.11363615460322751,
+        "gap_to_first": -0.09399363878361583
+      }
+    },
+    "relevance_count": {
+      "one": {
+        "queries": 202,
+        "minilm_ndcg10": 0.24004339135041208,
+        "bm25_ndcg10": 0.3002819117081865,
+        "first_ndcg10": 0.31412208406842285,
+        "gain_vs_bm25": -0.060238520357774425,
+        "gap_to_first": -0.07407869271801071
+      },
+      "two_to_three": {
+        "queries": 114,
+        "minilm_ndcg10": 0.6719985479364017,
+        "bm25_ndcg10": 0.68531101058178,
+        "first_ndcg10": 0.7307609847005349,
+        "gain_vs_bm25": -0.013312462645378543,
+        "gap_to_first": -0.058762436764133216
+      },
+      "four_plus": {
+        "queries": 160,
+        "minilm_ndcg10": 0.7130149070964962,
+        "bm25_ndcg10": 0.7395883829434206,
+        "first_ndcg10": 0.7677614245306188,
+        "gain_vs_bm25": -0.026573475846924384,
+        "gap_to_first": -0.05474651743412262
+      }
+    },
+    "tail_presence": {
+      "has_tail_relevant": {
+        "queries": 134,
+        "minilm_ndcg10": 0.7166126318629258,
+        "bm25_ndcg10": 0.7222664774989892,
+        "first_ndcg10": 0.7573736527682149,
+        "gain_vs_bm25": -0.005653845636063528,
+        "gap_to_first": -0.040761020905289276
+      },
+      "no_tail_relevant": {
+        "queries": 342,
+        "minilm_ndcg10": 0.41857570755362683,
+        "bm25_ndcg10": 0.46880945806274665,
+        "first_ndcg10": 0.49155898155450456,
+        "gain_vs_bm25": -0.050233750509119816,
+        "gap_to_first": -0.0729832740008778
+      }
+    }
+  },
+  "largest_wins": [
+    {
+      "query_id": "PLAIN-2856",
+      "query": "How Fast Can Children Detoxify from PCBs?",
+      "distilled_minilm_ndcg10": 1.0,
+      "bm25_ndcg10": 0.31546487678572877,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": 0.6845351232142712,
+      "gap_to_first": 0.0,
+      "query_tokens": 7,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.24134927522340405,
+      "stability": 0.45
+    },
+    {
+      "query_id": "PLAIN-2827",
+      "query": "Clonal Selection Theory of Immunity",
+      "distilled_minilm_ndcg10": 1.0,
+      "bm25_ndcg10": 0.38685280723454163,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": 0.6131471927654584,
+      "gap_to_first": 0.0,
+      "query_tokens": 5,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.23816307467566228,
+      "stability": 0.525
+    },
+    {
+      "query_id": "PLAIN-7",
+      "query": "How Fruits and Vegetables Can Prevent Asthma",
+      "distilled_minilm_ndcg10": 1.0,
+      "bm25_ndcg10": 0.3936948167222716,
+      "first_ndcg10": 0.8626199664389337,
+      "gain_vs_bm25": 0.6063051832777284,
+      "gap_to_first": 0.13738003356106632,
+      "query_tokens": 7,
+      "relevant_candidates": 6,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.41268813269717575,
+      "stability": 0.675
+    },
+    {
+      "query_id": "PLAIN-144",
+      "query": "How Risky are CT Scans?",
+      "distilled_minilm_ndcg10": 0.9060254355346823,
+      "bm25_ndcg10": 0.35853358850813305,
+      "first_ndcg10": 0.9060254355346823,
+      "gain_vs_bm25": 0.5474918470265493,
+      "gap_to_first": 0.0,
+      "query_tokens": 5,
+      "relevant_candidates": 3,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.11899346640373279,
+      "stability": 0.575
+    },
+    {
+      "query_id": "PLAIN-504",
+      "query": "aging",
+      "distilled_minilm_ndcg10": 1.0,
+      "bm25_ndcg10": 0.4982506457922279,
+      "first_ndcg10": 0.8701249883466592,
+      "gain_vs_bm25": 0.5017493542077721,
+      "gap_to_first": 0.1298750116533408,
+      "query_tokens": 1,
+      "relevant_candidates": 13,
+      "tail_relevant_candidates": 4,
+      "entropy": 0.5009859162914965,
+      "stability": 0.525
+    },
+    {
+      "query_id": "PLAIN-714",
+      "query": "blood sugar",
+      "distilled_minilm_ndcg10": 0.49418556194058083,
+      "bm25_ndcg10": 0.0,
+      "first_ndcg10": 0.23463936301137822,
+      "gain_vs_bm25": 0.49418556194058083,
+      "gap_to_first": 0.2595461989292026,
+      "query_tokens": 2,
+      "relevant_candidates": 3,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.7046942311060487,
+      "stability": 0.45
+    },
+    {
+      "query_id": "PLAIN-2807",
+      "query": "Fibromyalgia vs. Mostly Raw & Mostly Vegetarian Diets",
+      "distilled_minilm_ndcg10": 0.9828920819566879,
+      "bm25_ndcg10": 0.5085097626218706,
+      "first_ndcg10": 0.9709286432396581,
+      "gain_vs_bm25": 0.4743823193348172,
+      "gap_to_first": 0.011963438717029762,
+      "query_tokens": 8,
+      "relevant_candidates": 4,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.004438530053464673,
+      "stability": 0.55
+    },
+    {
+      "query_id": "PLAIN-2443",
+      "query": "Dietary Pollutants May Affect Testosterone Levels",
+      "distilled_minilm_ndcg10": 0.7864724919925569,
+      "bm25_ndcg10": 0.3171937659698004,
+      "first_ndcg10": 0.8395700624665824,
+      "gain_vs_bm25": 0.46927872602275644,
+      "gap_to_first": -0.053097570474025524,
+      "query_tokens": 6,
+      "relevant_candidates": 3,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.2751396433147222,
+      "stability": 0.4
+    },
+    {
+      "query_id": "PLAIN-3288",
+      "query": "Is Gluten Bad For You?",
+      "distilled_minilm_ndcg10": 1.0,
+      "bm25_ndcg10": 0.5309999066793252,
+      "first_ndcg10": 0.8611375561264454,
+      "gain_vs_bm25": 0.4690000933206748,
+      "gap_to_first": 0.13886244387355462,
+      "query_tokens": 5,
+      "relevant_candidates": 16,
+      "tail_relevant_candidates": 3,
+      "entropy": 0.5344248156830107,
+      "stability": 0.425
+    },
+    {
+      "query_id": "PLAIN-2485",
+      "query": "Lipotoxicity: How Saturated Fat Raises Blood Sugar",
+      "distilled_minilm_ndcg10": 0.8385465274895063,
+      "bm25_ndcg10": 0.370291336443826,
+      "first_ndcg10": 0.86034433104172,
+      "gain_vs_bm25": 0.4682551910456803,
+      "gap_to_first": -0.021797803552213724,
+      "query_tokens": 7,
+      "relevant_candidates": 3,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.25822454907898185,
+      "stability": 0.65
+    },
+    {
+      "query_id": "PLAIN-821",
+      "query": "cans",
+      "distilled_minilm_ndcg10": 0.8315546295836225,
+      "bm25_ndcg10": 0.38685280723454163,
+      "first_ndcg10": 0.5706417189553201,
+      "gain_vs_bm25": 0.44470182234908084,
+      "gap_to_first": 0.26091291062830235,
+      "query_tokens": 1,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.3815553527958513,
+      "stability": 0.5
+    },
+    {
+      "query_id": "PLAIN-1723",
+      "query": "nitric oxide",
+      "distilled_minilm_ndcg10": 0.6240505200038379,
+      "bm25_ndcg10": 0.18457569677956817,
+      "first_ndcg10": 0.6131471927654584,
+      "gain_vs_bm25": 0.4394748232242697,
+      "gap_to_first": 0.010903327238379501,
+      "query_tokens": 2,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.2231408186301432,
+      "stability": 0.5
+    },
+    {
+      "query_id": "PLAIN-2486",
+      "query": "The Spillover Effect Links Obesity to Diabetes",
+      "distilled_minilm_ndcg10": 0.43067655807339306,
+      "bm25_ndcg10": 0.0,
+      "first_ndcg10": 0.43067655807339306,
+      "gain_vs_bm25": 0.43067655807339306,
+      "gap_to_first": 0.0,
+      "query_tokens": 7,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 1,
+      "entropy": 0.594008870063954,
+      "stability": 0.42500000000000004
+    },
+    {
+      "query_id": "PLAIN-328",
+      "query": "Bad Egg",
+      "distilled_minilm_ndcg10": 0.41183384043543503,
+      "bm25_ndcg10": 0.0,
+      "first_ndcg10": 0.48381288316677695,
+      "gain_vs_bm25": 0.41183384043543503,
+      "gap_to_first": -0.07197904273134192,
+      "query_tokens": 2,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.9054725856520499,
+      "stability": 0.2
+    },
+    {
+      "query_id": "PLAIN-1427",
+      "query": "intestinal health",
+      "distilled_minilm_ndcg10": 0.38685280723454163,
+      "bm25_ndcg10": 0.0,
+      "first_ndcg10": 0.5,
+      "gain_vs_bm25": 0.38685280723454163,
+      "gap_to_first": -0.11314719276545837,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.4652926652505546,
+      "stability": 0.525
+    }
+  ],
+  "largest_failures": [
+    {
+      "query_id": "PLAIN-2015",
+      "query": "rice bran oil",
+      "distilled_minilm_ndcg10": 0.0,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -1.0,
+      "gap_to_first": -1.0,
+      "query_tokens": 3,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.009028495587232982,
+      "stability": 0.5
+    },
+    {
+      "query_id": "PLAIN-2442",
+      "query": "Drugs and the Demise of the Rice Diet",
+      "distilled_minilm_ndcg10": 0.0,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -1.0,
+      "gap_to_first": -1.0,
+      "query_tokens": 8,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.33024523909350306,
+      "stability": 0.45
+    },
+    {
+      "query_id": "PLAIN-1798",
+      "query": "pancreatic enzymes",
+      "distilled_minilm_ndcg10": 0.0,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -1.0,
+      "gap_to_first": -1.0,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.12661402293765686,
+      "stability": 0.3
+    },
+    {
+      "query_id": "PLAIN-1075",
+      "query": "drug testing",
+      "distilled_minilm_ndcg10": 0.2890648263178879,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.7109351736821121,
+      "gap_to_first": -0.7109351736821121,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.6072996317943218,
+      "stability": 0.375
+    },
+    {
+      "query_id": "PLAIN-1498",
+      "query": "lemon verbena",
+      "distilled_minilm_ndcg10": 0.3010299956639812,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.6989700043360187,
+      "gap_to_first": -0.6989700043360187,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.04528469901141887,
+      "stability": 0.875
+    },
+    {
+      "query_id": "PLAIN-2851",
+      "query": "Lowering Dietary Antibiotic Intake",
+      "distilled_minilm_ndcg10": 0.3065735963827292,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.6934264036172708,
+      "gap_to_first": -0.6934264036172708,
+      "query_tokens": 4,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.2817491656005801,
+      "stability": 0.44999999999999996
+    },
+    {
+      "query_id": "PLAIN-148",
+      "query": "How Avoiding Chicken Could Prevent Bladder Infections",
+      "distilled_minilm_ndcg10": 0.3065735963827292,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 0.5437713091520254,
+      "gain_vs_bm25": -0.6934264036172708,
+      "gap_to_first": -0.23719771276929624,
+      "query_tokens": 7,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.08593552729723893,
+      "stability": 0.575
+    },
+    {
+      "query_id": "PLAIN-2566",
+      "query": "Breast Cancer and Constipation",
+      "distilled_minilm_ndcg10": 0.2691828628414762,
+      "bm25_ndcg10": 0.9550236580992475,
+      "first_ndcg10": 0.8318724637288826,
+      "gain_vs_bm25": -0.6858407952577713,
+      "gap_to_first": -0.5626896008874064,
+      "query_tokens": 4,
+      "relevant_candidates": 4,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.20411745247049776,
+      "stability": 0.42500000000000004
+    },
+    {
+      "query_id": "PLAIN-2389",
+      "query": "X-rays",
+      "distilled_minilm_ndcg10": 0.3333333333333333,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.6666666666666667,
+      "gap_to_first": -0.6666666666666667,
+      "query_tokens": 1,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.2339495247554907,
+      "stability": 0.5
+    },
+    {
+      "query_id": "PLAIN-2079",
+      "query": "shark oil",
+      "distilled_minilm_ndcg10": 0.3333333333333333,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.6666666666666667,
+      "gap_to_first": -0.6666666666666667,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.07303165515792978,
+      "stability": 0.675
+    },
+    {
+      "query_id": "PLAIN-3286",
+      "query": "Toxins in Raw Mushrooms?",
+      "distilled_minilm_ndcg10": 0.21840743681816419,
+      "bm25_ndcg10": 0.8772153153380493,
+      "first_ndcg10": 0.6131471927654584,
+      "gain_vs_bm25": -0.6588078785198851,
+      "gap_to_first": -0.39473975594729416,
+      "query_tokens": 4,
+      "relevant_candidates": 2,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.2960902836111499,
+      "stability": 0.475
+    },
+    {
+      "query_id": "PLAIN-2857",
+      "query": "DDT in Umbilical Cord Blood",
+      "distilled_minilm_ndcg10": 0.3562071871080222,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 1.0,
+      "gain_vs_bm25": -0.6437928128919779,
+      "gap_to_first": -0.6437928128919779,
+      "query_tokens": 5,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.07599896647794087,
+      "stability": 0.4
+    },
+    {
+      "query_id": "PLAIN-260",
+      "query": "Cholesterol Lowering in a Nut Shell",
+      "distilled_minilm_ndcg10": 0.3562071871080222,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 0.6309297535714575,
+      "gain_vs_bm25": -0.6437928128919779,
+      "gap_to_first": -0.27472256646343535,
+      "query_tokens": 6,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.306569296583552,
+      "stability": 0.6
+    },
+    {
+      "query_id": "PLAIN-79",
+      "query": "What to Eat to Reduce Our Toxic Exposure",
+      "distilled_minilm_ndcg10": 0.3562071871080222,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 0.43067655807339306,
+      "gain_vs_bm25": -0.6437928128919779,
+      "gap_to_first": -0.07446937096537087,
+      "query_tokens": 8,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.41166931973973464,
+      "stability": 0.525
+    },
+    {
+      "query_id": "PLAIN-1528",
+      "query": "liver failure",
+      "distilled_minilm_ndcg10": 0.3562071871080222,
+      "bm25_ndcg10": 1.0,
+      "first_ndcg10": 0.6309297535714575,
+      "gain_vs_bm25": -0.6437928128919779,
+      "gap_to_first": -0.27472256646343535,
+      "query_tokens": 2,
+      "relevant_candidates": 1,
+      "tail_relevant_candidates": 0,
+      "entropy": 0.1196948514190958,
+      "stability": 0.4
+    }
+  ],
+  "diagnosis": {
+    "primary_failure_slice": "easy",
+    "test_accessed": false
+  },
+  "test_accessed": false
+}

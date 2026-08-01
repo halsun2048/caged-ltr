@@ -1,0 +1,24 @@
+"""Query-level error and slice analysis on the independent dev predictions only."""
+from __future__ import annotations
+import argparse,json,math
+from pathlib import Path
+import numpy as np,pandas as pd
+MODELS=('bm25','tfidf','mind_minilm','distilled_minilm','first')
+def ndcg(values):
+    values=list(values); dcg=sum((2**v-1)/math.log2(i+2) for i,v in enumerate(values[:10])); ideal=sorted(values,reverse=True)[:10]; idcg=sum((2**v-1)/math.log2(i+2) for i,v in enumerate(ideal)); return dcg/idcg if idcg else 0.
+def main():
+    ap=argparse.ArgumentParser(); ap.add_argument('--predictions',type=Path,required=True); ap.add_argument('--train',type=Path,required=True); ap.add_argument('--routes',type=Path,required=True); ap.add_argument('--output',type=Path,required=True); args=ap.parse_args(); frame=pd.read_parquet(args.predictions); train=pd.read_parquet(args.train); routes=pd.read_parquet(args.routes).set_index('query_id'); rows=[]
+    for query_id,group in frame.groupby('query_id'):
+        relevant=group[group.graded_relevance>0]; row={'query_id':query_id,'query':group.iloc[0]['query'],'query_tokens':len(str(group.iloc[0]['query']).split()),'mean_passage_chars':float(group.passage.str.len().mean()),'relevant_candidates':len(relevant),'tail_relevant_candidates':int(((relevant.frequency_bucket=='tail')).sum()),'entropy':float(routes.loc[query_id,'entropy']),'stability':float(routes.loc[query_id,'stability'])}
+        for model in MODELS: row[f'{model}_ndcg10']=ndcg(group.sort_values(model,ascending=False).graded_relevance)
+        rows.append(row)
+    query=pd.DataFrame(rows); query['gain_vs_bm25']=query.distilled_minilm_ndcg10-query.bm25_ndcg10; query['gain_vs_tfidf']=query.distilled_minilm_ndcg10-query.tfidf_ndcg10; query['gap_to_first']=query.distilled_minilm_ndcg10-query.first_ndcg10
+    train_q=train.groupby('query_id').first(); qbounds=np.quantile(train_q['query'].str.split().str.len(),[.33,.66]); pbounds=np.quantile(train.groupby('query_id').passage.apply(lambda x:x.str.len().mean()),[.33,.66]); query['query_length']=pd.cut(query.query_tokens,[-np.inf,qbounds[0],qbounds[1],np.inf],labels=['short','medium','long'],include_lowest=True); query['passage_length']=pd.cut(query.mean_passage_chars,[-np.inf,pbounds[0],pbounds[1],np.inf],labels=['short','medium','long'],include_lowest=True); query['difficulty']=pd.cut(query.bm25_ndcg10,[-np.inf,.25,.6,np.inf],labels=['hard','medium','easy'],include_lowest=True); query['relevance_count']=pd.cut(query.relevant_candidates,[-1,1,3,np.inf],labels=['one','two_to_three','four_plus']); query['tail_presence']=np.where(query.tail_relevant_candidates>0,'has_tail_relevant','no_tail_relevant')
+    slices={}
+    for column in ('query_length','passage_length','difficulty','relevance_count','tail_presence'):
+        slices[column]={str(value):{'queries':len(group),'minilm_ndcg10':float(group.distilled_minilm_ndcg10.mean()),'bm25_ndcg10':float(group.bm25_ndcg10.mean()),'first_ndcg10':float(group.first_ndcg10.mean()),'gain_vs_bm25':float(group.gain_vs_bm25.mean()),'gap_to_first':float(group.gap_to_first.mean())} for value,group in query.groupby(column,observed=True)}
+    rng=np.random.default_rng(20240802); boot=[]
+    for _ in range(10000): idx=rng.integers(0,len(query),len(query)); boot.append(float(query.gain_vs_bm25.to_numpy()[idx].mean()))
+    def cases(column,ascending): return query.sort_values(column,ascending=ascending).head(15)[['query_id','query','distilled_minilm_ndcg10','bm25_ndcg10','first_ndcg10','gain_vs_bm25','gap_to_first','query_tokens','relevant_candidates','tail_relevant_candidates','entropy','stability']].to_dict('records')
+    payload={'schema':'nfcorpus_r7_error_analysis_v1','split':'independent_dev_only','queries':len(query),'overall':{'minilm_ndcg10':float(query.distilled_minilm_ndcg10.mean()),'gain_vs_bm25':float(query.gain_vs_bm25.mean()),'gain_vs_tfidf':float(query.gain_vs_tfidf.mean()),'gap_to_first':float(query.gap_to_first.mean()),'minilm_beats_bm25_rate':float((query.gain_vs_bm25>0).mean()),'minilm_beats_first_rate':float((query.gap_to_first>0).mean()),'gain_vs_bm25_bootstrap_95ci':[float(np.quantile(boot,.025)),float(np.quantile(boot,.975))]},'slices':slices,'largest_wins':cases('gain_vs_bm25',False),'largest_failures':cases('gain_vs_bm25',True),'diagnosis':{'primary_failure_slice':min(slices['difficulty'],key=lambda key:slices['difficulty'][key]['gain_vs_bm25']),'test_accessed':False},'test_accessed':False}; args.output.parent.mkdir(parents=True,exist_ok=True); args.output.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n'); args.output.with_suffix('.md').write_text('# R7.1 independent-dev error analysis\n\n```json\n'+json.dumps(payload,ensure_ascii=False,indent=2)+'\n```\n'); print(json.dumps({'stage':'complete','overall':payload['overall'],'primary_failure_slice':payload['diagnosis']['primary_failure_slice']}))
+if __name__=='__main__': main()
