@@ -9,6 +9,8 @@
   "epochs": 3,
   "best_epoch": 3,
   "valid_pair_accuracy": 0.9225352112676056,
-  "elapsed_seconds": 34.3,
+  "elapsed_seconds": 35.35,
+  "checkpoint": "artifacts/mind_text_encoder_student.pt",
+  "checkpoint_sha256": "a763f9fb55b087c9e106e7f696542bab755c5069dc129085df3978272a06334f",
   "tfidf_replacement": true
 }

@@ -39,3 +39,5 @@ data/processed/*
 !data/processed/.gitkeep
 data/teacher_labels/*
 !data/teacher_labels/.gitkeep
+# Large trained model artifacts are kept locally; metadata and scripts are versioned.
+artifacts/*.pt
