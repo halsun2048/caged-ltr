@@ -13,7 +13,7 @@ from pyserini.search.lucene import LuceneSearcher
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--split", choices=("dev", "test"), required=True)
+    parser.add_argument("--split", choices=("train", "dev", "test"), required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--top-k", type=int, default=20)
     args = parser.parse_args()
@@ -30,9 +30,7 @@ def main() -> None:
         for rank, hit in enumerate(searcher.search(str(query["text"]), args.top_k), 1):
             raw = json.loads(searcher.doc(hit.docid).raw())
             text = str(raw.get("contents", raw.get("text", "")))
-            candidates.append(
-                {"passage_id": str(hit.docid), "bm25_rank": rank, "passage": text}
-            )
+            candidates.append({"passage_id": str(hit.docid), "bm25_rank": rank, "passage": text})
         if len(candidates) < 2:
             continue
         records.append(

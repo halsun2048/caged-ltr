@@ -1,0 +1,35 @@
+{
+  "protocol": "CAGED-LTR gate v2",
+  "feature_file": "data/processed/nfcorpus_r5/train_independent/caged_gate_features.parquet",
+  "features": [
+    "entropy",
+    "permutation_stability",
+    "query_chars",
+    "query_tokens",
+    "mean_passage_chars",
+    "short_passage_rate",
+    "mean_item_candidate_frequency",
+    "max_item_candidate_frequency",
+    "behavior_uncertainty"
+  ],
+  "behavior_uncertainty": "reserved; unavailable on public NFCorpus and must not be imputed from qrels",
+  "threshold_grid": {
+    "entropy_max": [
+      0.3,
+      0.5,
+      0.7
+    ],
+    "stability_min": [
+      0.2,
+      0.4,
+      0.6
+    ],
+    "short_passage_rate_max": [
+      0.25,
+      0.5,
+      0.75
+    ]
+  },
+  "selection_split": "new independent dev with qrels required; do not use untouched test",
+  "test_evaluation": "one-time only after threshold lock"
+}
