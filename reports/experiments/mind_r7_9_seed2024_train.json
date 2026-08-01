@@ -1,0 +1,78 @@
+{
+  "schema": "mind_r7_7_english_student_v1",
+  "identity": "9e40ba9976eda31b935d25a67157b95cb94fa7ac6ea8940729fac4d48ff711b0",
+  "language": "English",
+  "model": "./all-MiniLM-L6-v2",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "precision": "bf16",
+  "train_pairs": 137439,
+  "dev_queries": 4744,
+  "epochs_completed": 5,
+  "early_stopped": false,
+  "first_loss": 0.6879786252975464,
+  "last_loss": 0.5605192184448242,
+  "loss_decreased": true,
+  "best_dev_ndcg10": 0.3895283507187225,
+  "pretrained_baseline": {
+    "ndcg10": 0.30191099134089666,
+    "hit10": 0.6224704890387859,
+    "mrr": 0.27563707049433234,
+    "latency_ms_per_query": 0.529203029311361
+  },
+  "history": [
+    {
+      "phase": "pretrained_baseline",
+      "epoch": 0,
+      "ndcg10": 0.30191099134089666,
+      "hit10": 0.6224704890387859,
+      "mrr": 0.27563707049433234,
+      "latency_ms_per_query": 0.529203029311361
+    },
+    {
+      "epoch": 1,
+      "ndcg10": 0.3841971779576017,
+      "hit10": 0.7413575042158516,
+      "mrr": 0.35032745495615164,
+      "latency_ms_per_query": 0.45556657272076917
+    },
+    {
+      "epoch": 2,
+      "ndcg10": 0.3876451922837718,
+      "hit10": 0.7455733558178752,
+      "mrr": 0.35318448683359355,
+      "latency_ms_per_query": 0.45337221349831386
+    },
+    {
+      "epoch": 3,
+      "ndcg10": 0.3894544161393143,
+      "hit10": 0.7466273187183811,
+      "mrr": 0.35763255510986197,
+      "latency_ms_per_query": 0.4545502398696274
+    },
+    {
+      "epoch": 4,
+      "ndcg10": 0.3895283507187225,
+      "hit10": 0.7474704890387859,
+      "mrr": 0.3553363035736372,
+      "latency_ms_per_query": 0.45311189568554433
+    },
+    {
+      "epoch": 5,
+      "ndcg10": 0.38331955754889824,
+      "hit10": 0.7419898819561551,
+      "mrr": 0.34948761760305136,
+      "latency_ms_per_query": 0.4537260853532312
+    }
+  ],
+  "elapsed_seconds": 315.13,
+  "checkpoint": "/root/r7_9/seed2024/best.pt",
+  "local_checkpoint": "artifacts/mind_r7_9_seed2024.pt",
+  "checkpoint_sha256": "bd86a44baf2a68e27d2726ce7bee01bfb909876e18b975a563c6ed8cc6313e4b",
+  "boundaries": {
+    "dev_used_for_early_stopping_only": true,
+    "calibration_accessed": false,
+    "mind_holdout_accessed": false,
+    "nfcorpus_locked_test_accessed": false
+  }
+}

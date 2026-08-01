@@ -1,0 +1,111 @@
+{
+  "schema": "mind_r7_8_calibration_v1",
+  "language": "English",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "queries": 4686,
+  "frequency_policy": {
+    "train_only_positive_item_frequency": true,
+    "torso_cut": 4.0,
+    "head_cut": 26.0,
+    "unseen_items": "tail"
+  },
+  "baseline": {
+    "overall": {
+      "ndcg10": 0.3033396632495585,
+      "hit10": 0.6348698250106701,
+      "mrr": 0.27804294037337063,
+      "latency_ms_per_query": 0.18934006015704552
+    },
+    "buckets": {
+      "head": {
+        "queries": 4366,
+        "ndcg10": 0.31159764024817516,
+        "hit10": 0.652313330279432,
+        "mrr": 0.2865556497449886
+      },
+      "tail": {
+        "queries": 87,
+        "ndcg10": 0.13830925934456584,
+        "hit10": 0.28735632183908044,
+        "mrr": 0.12612544285091967
+      },
+      "torso": {
+        "queries": 233,
+        "ndcg10": 0.21022085451039144,
+        "hit10": 0.43776824034334766,
+        "mrr": 0.17525467070800183
+      }
+    }
+  },
+  "trained": {
+    "overall": {
+      "ndcg10": 0.3877871755610217,
+      "hit10": 0.7473324797268459,
+      "mrr": 0.3530603195118036,
+      "latency_ms_per_query": 0.11610773644826247
+    },
+    "buckets": {
+      "head": {
+        "queries": 4366,
+        "ndcg10": 0.39674349290549293,
+        "hit10": 0.7645442052221714,
+        "mrr": 0.36264319240778314
+      },
+      "tail": {
+        "queries": 87,
+        "ndcg10": 0.23190097262732604,
+        "hit10": 0.47126436781609193,
+        "mrr": 0.1813048503510125
+      },
+      "torso": {
+        "queries": 233,
+        "ndcg10": 0.27816836924887633,
+        "hit10": 0.5278969957081545,
+        "mrr": 0.2376264257484648
+      }
+    }
+  },
+  "paired_ndcg10_delta": {
+    "mean": 0.08444751231146319,
+    "ci95_low": 0.07594059152702055,
+    "ci95_high": 0.09316585849649262,
+    "probability_positive": 1.0
+  },
+  "bucket_ndcg10_delta": {
+    "head": {
+      "mean": 0.08514585265731776,
+      "ci95_low": 0.0760799826364436,
+      "ci95_high": 0.09408630037671627,
+      "probability_positive": 1.0
+    },
+    "tail": {
+      "mean": 0.09359171328276018,
+      "ci95_low": 0.028961918781311956,
+      "ci95_high": 0.15197003040985385,
+      "probability_positive": 0.9986
+    },
+    "torso": {
+      "mean": 0.0679475147384849,
+      "ci95_low": 0.025748298924088565,
+      "ci95_high": 0.10975437572723527,
+      "probability_positive": 0.9992
+    }
+  },
+  "checkpoint": {
+    "path": "/root/r7_9/seed3407/best.pt",
+    "sha256": "b7f2a15f7357f9ba59e70ebff06a3d2855cb74b3beb8649dae02120eded1cbfa"
+  },
+  "boundaries": {
+    "calibration_accessed_once": true,
+    "calibration_used_for_tuning": false,
+    "mind_holdout_accessed": false,
+    "nfcorpus_locked_test_accessed": false
+  },
+  "acceptance": {
+    "overall_direction_positive": true,
+    "overall_ci95_excludes_zero": true,
+    "all_frequency_buckets_positive": true,
+    "checkpoint_hash_recorded": true
+  }
+}

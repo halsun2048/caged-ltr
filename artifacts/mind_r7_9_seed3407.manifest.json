@@ -1,0 +1,11 @@
+{
+  "schema": "mind_r7_9_checkpoint_manifest_v1",
+  "seed": 3407,
+  "path": "artifacts/mind_r7_9_seed3407.pt",
+  "bytes": 90895537,
+  "sha256": "b7f2a15f7357f9ba59e70ebff06a3d2855cb74b3beb8649dae02120eded1cbfa",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "language": "English",
+  "best_epoch": 2,
+  "best_dev_ndcg10": 0.3899851023146444
+}

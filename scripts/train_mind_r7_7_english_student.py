@@ -341,6 +341,9 @@ def main() -> None:
         "model": args.model,
         "device": str(device),
         "gpu": torch.cuda.get_device_name() if device.type == "cuda" else None,
+        "peak_gpu_memory_gib": (
+            torch.cuda.max_memory_allocated() / 2**30 if device.type == "cuda" else None
+        ),
         "precision": args.precision,
         "train_pairs": len(train),
         "dev_queries": int(dev.query_id.nunique()),
