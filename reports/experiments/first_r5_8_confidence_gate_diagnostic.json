@@ -1,0 +1,38 @@
+{
+  "queries": 295,
+  "overall_mean_gain": 0.038232751938720694,
+  "bins": [
+    {
+      "confidence_bin": "low",
+      "queries": 74,
+      "mean_entropy": 0.047783231593793545,
+      "mean_margin": 5.054898648648648,
+      "mean_gain": 0.040764183623879305,
+      "positive_gain_rate": 0.33783783783783783
+    },
+    {
+      "confidence_bin": "mid_low",
+      "queries": 74,
+      "mean_entropy": 0.20857271581719514,
+      "mean_margin": 1.8716216216216217,
+      "mean_gain": 0.061124172236050336,
+      "positive_gain_rate": 0.4189189189189189
+    },
+    {
+      "confidence_bin": "mid_high",
+      "queries": 73,
+      "mean_entropy": 0.3596197687665449,
+      "mean_margin": 1.1549657534246576,
+      "mean_gain": 0.024349361221283474,
+      "positive_gain_rate": 0.3013698630136986
+    },
+    {
+      "confidence_bin": "high",
+      "queries": 74,
+      "mean_entropy": 0.5683697279761274,
+      "mean_margin": 0.6731418918918919,
+      "mean_gain": 0.026505677285596184,
+      "positive_gain_rate": 0.3108108108108108
+    }
+  ]
+}
