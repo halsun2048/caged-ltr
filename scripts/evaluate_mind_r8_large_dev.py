@@ -111,9 +111,11 @@ def main() -> None:
     started = time.perf_counter()
     if args.progress:
         print(f"[encode] queries={len(queries):,} unique_passages={len(passages):,}", flush=True)
-    qvec = embed(model, tokenizer, queries.query.tolist(), device, args.max_length, args.batch_size)
+    qvec = embed(
+        model, tokenizer, queries["query"].tolist(), device, args.max_length, args.batch_size
+    )
     pvec = embed(
-        model, tokenizer, passages.passage.tolist(), device, args.max_length, args.batch_size
+        model, tokenizer, passages["passage"].tolist(), device, args.max_length, args.batch_size
     )
     qmap = dict(zip(queries.query_id, qvec, strict=True))
     pmap = dict(zip(passages.passage, pvec, strict=True))
