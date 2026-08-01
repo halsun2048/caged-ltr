@@ -1,0 +1,44 @@
+{
+  "split": "dev_only",
+  "queries": 324,
+  "train_queries": 259,
+  "valid_queries": 65,
+  "threshold_candidates": [
+    {
+      "threshold": 0.1,
+      "train_ndcg10": 0.5036415433668615
+    },
+    {
+      "threshold": 0.2,
+      "train_ndcg10": 0.5134982231046935
+    },
+    {
+      "threshold": 0.3,
+      "train_ndcg10": 0.5230053265031485
+    },
+    {
+      "threshold": 0.4,
+      "train_ndcg10": 0.5366198395744005
+    },
+    {
+      "threshold": 0.5,
+      "train_ndcg10": 0.544258750438848
+    },
+    {
+      "threshold": 0.6,
+      "train_ndcg10": 0.5477716407631148
+    }
+  ],
+  "selected_entropy_threshold": 0.6,
+  "selected_gate_train_ndcg10": 0.5477716407631148,
+  "selected_gate_valid_ndcg10": 0.5104559020637875,
+  "student_valid_ndcg10": 0.5177139051786032,
+  "student_features": [
+    "teacher_logit",
+    "teacher_rank",
+    "bm25_rank",
+    "entropy",
+    "margin"
+  ],
+  "test_accessed": false
+}
