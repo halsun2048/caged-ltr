@@ -1,0 +1,14 @@
+{
+  "schema": "mind_text_encoder_student_v1",
+  "data": "MIND-derived sproos/mindsmall-tr",
+  "rows": 1419,
+  "train_rows": 1135,
+  "valid_rows": 284,
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "device": "cuda",
+  "epochs": 3,
+  "best_epoch": 3,
+  "valid_pair_accuracy": 0.9225352112676056,
+  "elapsed_seconds": 34.3,
+  "tfidf_replacement": true
+}

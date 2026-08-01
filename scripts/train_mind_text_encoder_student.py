@@ -44,6 +44,7 @@ def main():
     ap.add_argument("--data", default="data/external/mind/sproos_mindsmall_tr/train.parquet")
     ap.add_argument("--model", default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
     ap.add_argument("--output", default="reports/experiments/mind_text_encoder_student.json")
+    ap.add_argument("--checkpoint", default="artifacts/mind_text_encoder_student.pt")
     ap.add_argument("--epochs", type=int, default=3); ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--max-length", type=int, default=128); ap.add_argument("--lr", type=float, default=2e-5)
     ap.add_argument("--seed", type=int, default=42); ap.add_argument("--progress", action="store_true")
@@ -69,7 +70,7 @@ def main():
             for i in range(0, len(rows_), args.batch_size):
                 p, n = score(rows_[i:i+args.batch_size]); hit.extend((p > n).float().cpu().tolist())
         return float(np.mean(hit))
-    start = time.time()
+    start = time.time(); best_state = None
     for ep in range(args.epochs):
         model.train(); random.shuffle(train); losses=[]
         for i in range(0, len(train), args.batch_size):
@@ -77,8 +78,12 @@ def main():
             opt.zero_grad(); loss.backward(); opt.step(); losses.append(float(loss.detach().cpu()))
             if args.progress and (i // args.batch_size) % 10 == 0: print(f"epoch={ep+1}/{args.epochs} batch={min(i+args.batch_size,len(train))}/{len(train)} loss={losses[-1]:.4f}", flush=True)
         acc = evaluate(valid); print(f"[done] epoch={ep+1}/{args.epochs} train_loss={np.mean(losses):.4f} valid_pair_acc={acc:.4f}", flush=True)
-        if acc > best: best, best_epoch = acc, ep + 1
-    payload = {"schema":"mind_text_encoder_student_v1", "data":"MIND-derived sproos/mindsmall-tr", "rows":len(rows), "train_rows":len(train), "valid_rows":len(valid), "model":args.model, "device":str(device), "epochs":args.epochs, "best_epoch":best_epoch, "valid_pair_accuracy":best, "elapsed_seconds":round(time.time()-start,2), "tfidf_replacement":True}
+        if acc > best:
+            best, best_epoch = acc, ep + 1
+            best_state = {k: v.detach().cpu() for k, v in model.state_dict().items()}
+    checkpoint = Path(args.checkpoint); checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    torch.save({"model": best_state, "model_name": args.model, "max_length": args.max_length, "seed": args.seed}, checkpoint)
+    payload = {"schema":"mind_text_encoder_student_v1", "data":"MIND-derived sproos/mindsmall-tr", "rows":len(rows), "train_rows":len(train), "valid_rows":len(valid), "model":args.model, "device":str(device), "epochs":args.epochs, "best_epoch":best_epoch, "valid_pair_accuracy":best, "elapsed_seconds":round(time.time()-start,2), "checkpoint":str(checkpoint), "tfidf_replacement":True}
     Path(args.output).parent.mkdir(parents=True, exist_ok=True); Path(args.output).write_text(json.dumps(payload, ensure_ascii=False, indent=2)+"\n")
     Path(args.output).with_suffix('.md').write_text("# MIND text encoder student\n\n" + json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps(payload, ensure_ascii=False))
