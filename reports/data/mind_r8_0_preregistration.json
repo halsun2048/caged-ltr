@@ -1,0 +1,46 @@
+{
+  "schema": "mind_r8_0_large_preregistration_v1",
+  "source": "mteb/MindSmallReranking English derivative",
+  "seed": 20260801,
+  "selection": "Exact lowest BLAKE2b-64 ranks over IDs not selected by R7.5; fixed contiguous rank intervals allocate train/dev/test.",
+  "counts": {
+    "large_dev": 20000,
+    "large_test": 20000,
+    "large_train": 200000
+  },
+  "eligible_queries": 2305960,
+  "continuing_reserve_queries": 2065960,
+  "files": {
+    "raw_query_ids": {
+      "path": "data/external/mind/mteb_english/queries/test-00000-of-00001.parquet",
+      "sha256": "ff6cc644acdc4fe23092d7920a017abfe5db60d7b94455539ad11b49fccd8b95"
+    },
+    "prior_selected": {
+      "path": "data/processed/mind_r7_5/queries_selected.parquet",
+      "sha256": "b20d9f477d084ad7911693e3f3e660feecd0ef3ccc26c51cd81dff55ddb96bec"
+    },
+    "large_split_ids": {
+      "path": "data/processed/mind_r8_0/large_split_ids.parquet",
+      "sha256": "f262f2853b1455aa13979ced11a130775da759d2fb83129b41ba224b585205a3"
+    },
+    "large_test_guard": {
+      "path": "artifacts/mind_r8_0_large_test_guard.json",
+      "sha256": "a98672e8444698f1fcfad467163a102358d12ee3968de58b17a86c638dfc29df"
+    }
+  },
+  "boundary_disclosure": {
+    "query_text_was_mechanically_streamed_during_r7_5_split_construction": true,
+    "r8_0_reads_only_query_id_column": true,
+    "large_candidate_labels_accessed_before_freeze": false,
+    "large_test_candidates_or_labels_materialized": false,
+    "large_test_metric_computed": false
+  },
+  "acceptance": {
+    "exact_requested_counts": true,
+    "no_overlap_with_r7_5": true,
+    "splits_disjoint": true,
+    "large_test_locked": true,
+    "labels_not_accessed": true,
+    "reserve_exceeds_two_million": true
+  }
+}

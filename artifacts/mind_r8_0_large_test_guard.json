@@ -1,0 +1,11 @@
+{
+  "schema": "mind_r8_0_large_test_guard_v1",
+  "status": "locked_unaccessed",
+  "query_count": 20000,
+  "query_id_sha256": "738c2c9b077ff8a4b7eaa32306bbe70b15ff0f0597d45c4ab76be2db659468fb",
+  "allowed_evaluation_count": 1,
+  "evaluation_count": 0,
+  "labels_materialized": false,
+  "predictions_exist": false,
+  "policy": "Only an explicit final R8 admission command may materialize labels and score this split."
+}
