@@ -1,0 +1,62 @@
+# R7.6 English MIND hard-pair package
+
+```json
+{
+  "schema": "mind_r7_6_english_hard_pairs_v1",
+  "language": "English",
+  "negative_policy": "first up-to-N non-relevant documents in frozen top-ranked order",
+  "negatives_per_query_max": 3,
+  "counts": {
+    "train_pairs": 137439,
+    "train_queries": 47124,
+    "dev_queries": 4744,
+    "dev_rows": 199940,
+    "calibration_queries": 4686,
+    "calibration_rows": 192351
+  },
+  "integrity": {
+    "missing_query": 0,
+    "missing_corpus": 0,
+    "missing_label": 0,
+    "invalid_candidate_sets": 0,
+    "candidate_sets_with_fewer_than_requested_negatives": 2529,
+    "train_dev_overlap": 0
+  },
+  "files": {
+    "train_pairs": {
+      "path": "data/processed/mind_r7_6/train_pairs.parquet",
+      "bytes": 2175006,
+      "sha256": "10203f4578c74ef79380c4ff3a99cbda468391cd9d4458e0b6dc666d8840d6cf"
+    },
+    "calibration_pairs": {
+      "path": "data/processed/mind_r7_6/calibration_pairs.parquet",
+      "bytes": 436308,
+      "sha256": "b14158309bec2bd1508a4860fa62335561d0da33d4c563274a8104c869c16b25"
+    },
+    "dev_listwise": {
+      "path": "data/processed/mind_r7_6/dev_listwise.parquet",
+      "bytes": 1142540,
+      "sha256": "ce80fe318c813ae44e9642db93c9c78d229aad6ca1609c61d16ea9d341c42215"
+    },
+    "calibration_listwise": {
+      "path": "data/processed/mind_r7_6/calibration_listwise.parquet",
+      "bytes": 1099056,
+      "sha256": "d2d4a441edd368aff2ce0a057cc1097a1bbcb335039a66f70d55b6e904e1e0bc"
+    }
+  },
+  "boundaries": {
+    "mind_holdout_accessed": false,
+    "nfcorpus_locked_test_accessed": false,
+    "dev_used_for_training": false,
+    "calibration_used_for_training": false
+  },
+  "acceptance": {
+    "all_text_is_from_english_bundle": true,
+    "no_missing_references": true,
+    "all_candidate_sets_valid": true,
+    "train_dev_disjoint": true,
+    "sufficient_train_queries": true,
+    "sufficient_dev_queries": true
+  }
+}
+```
