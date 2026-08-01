@@ -1,0 +1,27 @@
+{
+  "dataset": "NFCorpus independent train split",
+  "train_queries": 1904,
+  "valid_queries": 476,
+  "student": "TF-IDF(1-2gram,50k)+Ridge",
+  "features": 50000,
+  "fit_seconds": 11.11022765999951,
+  "valid_score_seconds": 0.008969955990323797,
+  "student_valid_ndcg10": 0.44947567724504234,
+  "teacher_valid_ndcg10": 0.6166534683455751,
+  "brier_score": 0.7898783760283705,
+  "head_torso_tail": {
+    "tail": {
+      "rows": 3927,
+      "student_mean_score": 10.380684328782012
+    },
+    "torso": {
+      "rows": 2522,
+      "student_mean_score": 10.34777373709727
+    },
+    "head": {
+      "rows": 1854,
+      "student_mean_score": 10.203129686264797
+    }
+  },
+  "no_test_access": true
+}
