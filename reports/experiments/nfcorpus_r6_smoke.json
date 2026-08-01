@@ -1,0 +1,32 @@
+{
+  "schema": "nfcorpus_r6_student_v1",
+  "identity": "21876c4f7f196404fb0bfbd81958e7f8ded7c36f46410ec99aea6adf2e3f2338",
+  "device": "cuda",
+  "train_pairs": 128,
+  "dev_queries": 32,
+  "first_loss": 0.6537388563156128,
+  "last_loss": 0.6239717602729797,
+  "loss_decreased": true,
+  "max_gradient_norm": 2.6002612113952637,
+  "finite_gradient": true,
+  "best_epoch": 1,
+  "best_dev_ndcg10": 0.4663460483122104,
+  "history": [
+    {
+      "epoch": 1,
+      "ndcg10": 0.4663460483122104,
+      "head_ndcg10": 0.3453317868434801,
+      "torso_ndcg10": 0.5833962367577235,
+      "tail_ndcg10": 0.3829642490672116,
+      "bucket_query_counts": {
+        "head": 18,
+        "torso": 20,
+        "tail": 13
+      },
+      "latency_ms_per_query": 25.66000943625113
+    }
+  ],
+  "resume_supported": true,
+  "test_accessed": false,
+  "elapsed_seconds": 16.95
+}
