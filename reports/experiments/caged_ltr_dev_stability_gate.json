@@ -1,0 +1,76 @@
+{
+  "split": "dev_only",
+  "queries": 324,
+  "train_queries": 259,
+  "valid_queries": 65,
+  "grid": [
+    {
+      "entropy": 0.3,
+      "stability": 0.2,
+      "train_ndcg10": 0.5228356842932554
+    },
+    {
+      "entropy": 0.3,
+      "stability": 0.4,
+      "train_ndcg10": 0.5207455779856133
+    },
+    {
+      "entropy": 0.3,
+      "stability": 0.6,
+      "train_ndcg10": 0.4908144476271321
+    },
+    {
+      "entropy": 0.3,
+      "stability": 0.8,
+      "train_ndcg10": 0.48758523975088425
+    },
+    {
+      "entropy": 0.5,
+      "stability": 0.2,
+      "train_ndcg10": 0.5440394578317262
+    },
+    {
+      "entropy": 0.5,
+      "stability": 0.4,
+      "train_ndcg10": 0.5411780834929389
+    },
+    {
+      "entropy": 0.5,
+      "stability": 0.6,
+      "train_ndcg10": 0.4933352621071518
+    },
+    {
+      "entropy": 0.5,
+      "stability": 0.8,
+      "train_ndcg10": 0.48758523975088425
+    },
+    {
+      "entropy": 0.7,
+      "stability": 0.2,
+      "train_ndcg10": 0.547511352192786
+    },
+    {
+      "entropy": 0.7,
+      "stability": 0.4,
+      "train_ndcg10": 0.5463487174602841
+    },
+    {
+      "entropy": 0.7,
+      "stability": 0.6,
+      "train_ndcg10": 0.4943111797145352
+    },
+    {
+      "entropy": 0.7,
+      "stability": 0.8,
+      "train_ndcg10": 0.48758523975088425
+    }
+  ],
+  "selected": {
+    "entropy": 0.7,
+    "stability": 0.2,
+    "train_ndcg10": 0.547511352192786
+  },
+  "valid_gate_ndcg10": 0.5167409589796018,
+  "mean_stability": 0.4775462962962963,
+  "test_accessed": false
+}
