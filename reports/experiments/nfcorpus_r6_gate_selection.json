@@ -1,0 +1,184 @@
+{
+  "schema": "nfcorpus_r6_gate_selection_v1",
+  "split": {
+    "fit": 238,
+    "select": 119,
+    "validation": 119
+  },
+  "selection_pareto": [
+    {
+      "lambda": 0.0,
+      "queries": 119,
+      "ndcg10": 0.5820465558058212,
+      "latency_ms_per_query": 318.45762000716974,
+      "first_call_rate": 0.7394957983193278,
+      "minilm_call_rate": 0.16806722689075632,
+      "bm25_call_rate": 0.09243697478991597,
+      "routes": {
+        "bm25": 11,
+        "distilled_minilm": 20,
+        "first": 88
+      }
+    },
+    {
+      "lambda": 1e-05,
+      "queries": 119,
+      "ndcg10": 0.581206608461952,
+      "latency_ms_per_query": 311.4603342933138,
+      "first_call_rate": 0.7226890756302521,
+      "minilm_call_rate": 0.18487394957983194,
+      "bm25_call_rate": 0.09243697478991597,
+      "routes": {
+        "bm25": 11,
+        "distilled_minilm": 22,
+        "first": 86
+      }
+    },
+    {
+      "lambda": 2e-05,
+      "queries": 119,
+      "ndcg10": 0.5797179767066108,
+      "latency_ms_per_query": 293.7712487383496,
+      "first_call_rate": 0.680672268907563,
+      "minilm_call_rate": 0.21008403361344538,
+      "bm25_call_rate": 0.1092436974789916,
+      "routes": {
+        "bm25": 13,
+        "distilled_minilm": 25,
+        "first": 81
+      }
+    },
+    {
+      "lambda": 5e-05,
+      "queries": 119,
+      "ndcg10": 0.5792204230994813,
+      "latency_ms_per_query": 222.13348580203413,
+      "first_call_rate": 0.5126050420168067,
+      "minilm_call_rate": 0.23529411764705882,
+      "bm25_call_rate": 0.25210084033613445,
+      "routes": {
+        "bm25": 30,
+        "distilled_minilm": 28,
+        "first": 61
+      }
+    },
+    {
+      "lambda": 0.0001,
+      "queries": 119,
+      "ndcg10": 0.5508755289507729,
+      "latency_ms_per_query": 92.95046699227714,
+      "first_call_rate": 0.21008403361344538,
+      "minilm_call_rate": 0.2605042016806723,
+      "bm25_call_rate": 0.5294117647058824,
+      "routes": {
+        "bm25": 63,
+        "distilled_minilm": 31,
+        "first": 25
+      }
+    },
+    {
+      "lambda": 0.0002,
+      "queries": 119,
+      "ndcg10": 0.5497003490753951,
+      "latency_ms_per_query": 3.2318759603490244,
+      "first_call_rate": 0.0,
+      "minilm_call_rate": 0.2773109243697479,
+      "bm25_call_rate": 0.7226890756302521,
+      "routes": {
+        "bm25": 86,
+        "distilled_minilm": 33,
+        "first": 0
+      }
+    },
+    {
+      "lambda": 0.0005,
+      "queries": 119,
+      "ndcg10": 0.5489089136329082,
+      "latency_ms_per_query": 2.8401334197006576,
+      "first_call_rate": 0.0,
+      "minilm_call_rate": 0.24369747899159663,
+      "bm25_call_rate": 0.7563025210084033,
+      "routes": {
+        "bm25": 90,
+        "distilled_minilm": 29,
+        "first": 0
+      }
+    },
+    {
+      "lambda": 0.001,
+      "queries": 119,
+      "ndcg10": 0.5418344255085337,
+      "latency_ms_per_query": 2.4483908790522912,
+      "first_call_rate": 0.0,
+      "minilm_call_rate": 0.21008403361344538,
+      "bm25_call_rate": 0.7899159663865546,
+      "routes": {
+        "bm25": 94,
+        "distilled_minilm": 25,
+        "first": 0
+      }
+    }
+  ],
+  "selected": {
+    "lambda": 0.0001,
+    "queries": 119,
+    "ndcg10": 0.5508755289507729,
+    "latency_ms_per_query": 92.95046699227714,
+    "first_call_rate": 0.21008403361344538,
+    "minilm_call_rate": 0.2605042016806723,
+    "bm25_call_rate": 0.5294117647058824,
+    "routes": {
+      "bm25": 63,
+      "distilled_minilm": 31,
+      "first": 25
+    }
+  },
+  "validation": {
+    "queries": 119,
+    "ndcg10": 0.5317810913786092,
+    "latency_ms_per_query": 120.44993167189067,
+    "first_call_rate": 0.2773109243697479,
+    "minilm_call_rate": 0.15126050420168066,
+    "bm25_call_rate": 0.5714285714285714,
+    "routes": {
+      "bm25": 68,
+      "distilled_minilm": 18,
+      "first": 33
+    }
+  },
+  "validation_baselines": {
+    "bm25": {
+      "ndcg10": 0.5210171627476651,
+      "latency_ms_per_query": 0.0
+    },
+    "distilled_minilm": {
+      "ndcg10": 0.4730121471134983,
+      "latency_ms_per_query": 11.654340584288907
+    },
+    "first": {
+      "ndcg10": 0.5357319716282066,
+      "latency_ms_per_query": 427.9928405587209
+    },
+    "frozen_gate": {
+      "ndcg10": 0.5296945577947768,
+      "latency_ms_per_query": 402.81679111409005,
+      "first_call_rate": 0.9411764705882353
+    }
+  },
+  "acceptance": {
+    "minilm_beats_tfidf_overall": true,
+    "minilm_tail_not_below_tfidf": true,
+    "three_seed_direction_stable": true,
+    "latency_within_budget": true,
+    "gate_near_first_with_50pct_or_less_calls": true
+  },
+  "all_acceptance_passed": true,
+  "artifact": "artifacts/nfcorpus_r6_three_way_gate.json",
+  "source_sha256": {
+    "formal_report": "52b95235f8563b31e0da10a886ee5cfb7eb039ab5b5c777eb72b8715a68f99ec",
+    "search_report": "453cfde16ab67a83ae7cc7c0f8bc21e7f0466e7b3c93f680ca1b20895bbb248e",
+    "predictions": "492776070a76f9dc56349a161f676ec39844b9e5137e4b404987ad7099d4f9aa",
+    "routes": "a2d81647a89e5c70bd2ebf9f54d53705be232b34167c2ac0f5e389987123b543"
+  },
+  "test_accessed": false
+}
