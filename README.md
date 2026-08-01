@@ -266,10 +266,17 @@ uv --cache-dir .uv-cache run --frozen \
 
 该结果不包含 7B 推理，也不构成排序质量或概率校准结论。协议、数据准备命令、
 扰动指标和解释边界见 [`docs/experiments/first_r5.md`](docs/experiments/first_r5.md)。
-下一步是在单张 24GB GPU 上执行固定的 8 Query R5.1 准入。
+R5.1、R5.3、R5.6 和 R5.7 已完成。当前锁定结果为：TREC-DL 与
+NFCorpus 上 FIRST 均优于 BM25 和 matched PRP；NFCorpus untouched test
+上的 FIRST NDCG@10 为 `0.343543`，BM25 为 `0.306935`。dev 集上的预注册
+query-length fallback 未被选中，因此 test 集保持原始 FIRST 协议。
+
+完整结果见 [`reports/experiments/first_r5_final_synthesis.md`](reports/experiments/first_r5_final_synthesis.md)
+和 [`reports/experiments/first_r5_7_final_locked_test.md`](reports/experiments/first_r5_7_final_locked_test.md)。
+GPU 推理容量记录见 [`reports/experiments/first_r5_engineering_metrics.md`](reports/experiments/first_r5_engineering_metrics.md)。
 
 R5.1 runner 已支持进度条和按 prompt fingerprint 断点续跑。CPU 本地只能执行
-协议 dry-run；下面的真实命令会加载 7B BF16 权重，因此明确需要 CUDA GPU：
+协议 dry-run；下面的命令用于重新运行历史 GPU 准入实验：
 
 ```bash
 uv --cache-dir .uv-cache run --frozen \
