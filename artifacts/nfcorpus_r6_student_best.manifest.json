@@ -1,0 +1,11 @@
+{
+  "artifact": "artifacts/nfcorpus_r6_student_best.pt",
+  "sha256": "a3493066b336bc21b3e5ce0e7f8cb9743095d2e6bb639becd45bc38e8b339c14",
+  "source_report": "reports/experiments/nfcorpus_r6_search.json",
+  "seed": 3407,
+  "selected_epoch": 1,
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "initialization": "MIND-derived MiniLM checkpoint",
+  "training_data": "NFCorpus R6 independent train only",
+  "test_accessed": false
+}

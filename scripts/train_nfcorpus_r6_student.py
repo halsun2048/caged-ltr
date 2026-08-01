@@ -102,6 +102,7 @@ def evaluate(model, tokenizer, dev, device, max_length, batch_size):
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--pairs", type=Path, required=True)
+    parser.add_argument("--listwise", type=Path)
     parser.add_argument("--hard-negatives", type=Path)
     parser.add_argument("--dev", type=Path, required=True)
     parser.add_argument("--initial-checkpoint", type=Path, required=True)
@@ -109,7 +110,7 @@ def main() -> None:
     parser.add_argument("--best-checkpoint", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--model", default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    parser.add_argument("--loss", choices=("pairwise", "soft_margin"), default="pairwise")
+    parser.add_argument("--loss", choices=("pairwise", "soft_margin", "listwise"), default="pairwise")
     parser.add_argument("--learning-rate", type=float, default=2e-5)
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--batch-size", type=int, default=16)
@@ -117,6 +118,7 @@ def main() -> None:
     parser.add_argument("--tail-weight", type=float, default=1.0)
     parser.add_argument("--teacher-temperature", type=float, default=4.0)
     parser.add_argument("--max-train-pairs", type=int)
+    parser.add_argument("--max-train-queries", type=int)
     parser.add_argument("--max-dev-queries", type=int)
     parser.add_argument("--checkpoint-every", type=int, default=50)
     parser.add_argument("--stop-after-batches", type=int)
@@ -131,6 +133,18 @@ def main() -> None:
         pairs = pd.concat([pairs, pd.read_parquet(args.hard_negatives)], ignore_index=True)
     if args.max_train_pairs:
         pairs = pairs.sample(min(args.max_train_pairs, len(pairs)), random_state=args.seed).reset_index(drop=True)
+    listwise = None
+    train_units: list[object]
+    if args.loss == "listwise":
+        if not args.listwise:
+            raise ValueError("--listwise is required for listwise loss")
+        listwise = pd.read_parquet(args.listwise)
+        query_units = sorted(listwise["query_id"].unique())
+        if args.max_train_queries:
+            query_units = query_units[: args.max_train_queries]
+        train_units = query_units
+    else:
+        train_units = list(range(len(pairs)))
     dev = pd.read_parquet(args.dev)
     if args.max_dev_queries:
         keep = sorted(dev["query_id"].unique())[: args.max_dev_queries]
@@ -155,24 +169,45 @@ def main() -> None:
     started = time.time()
     while epoch < args.epochs:
         model.train()
-        indices = list(range(len(pairs))); random.Random(args.seed + epoch).shuffle(indices)
+        indices = list(range(len(train_units))); random.Random(args.seed + epoch).shuffle(indices)
         total_batches = math.ceil(len(indices) / args.batch_size)
         for batch_number in range(batch_offset, total_batches):
             selected = indices[batch_number * args.batch_size : (batch_number + 1) * args.batch_size]
-            batch = pairs.iloc[selected]
-            query = model.embed(encode(tokenizer, batch["query"], device, args.max_length))
-            positive = model.embed(encode(tokenizer, batch["positive_passage"], device, args.max_length))
-            negative = model.embed(encode(tokenizer, batch["negative_passage"], device, args.max_length))
-            score_delta = (query * positive).sum(1) - (query * negative).sum(1)
-            if args.loss == "soft_margin":
-                target = torch.sigmoid(torch.tensor(batch["teacher_margin"].to_numpy(), device=device, dtype=torch.float32) / args.teacher_temperature)
-                loss_row = nn.functional.binary_cross_entropy_with_logits(score_delta, target, reduction="none")
+            if args.loss == "listwise":
+                selected_queries = [train_units[index] for index in selected]
+                batch = listwise[listwise["query_id"].isin(selected_queries)].copy()
+                query_rows = batch.groupby("query_id", sort=False).first().reset_index()
+                query = model.embed(encode(tokenizer, query_rows["query"], device, args.max_length))
+                passage = model.embed(encode(tokenizer, batch["passage"], device, args.max_length))
+                query_position = {value: index for index, value in enumerate(query_rows["query_id"])}
+                positions = torch.tensor([query_position[value] for value in batch["query_id"]], device=device)
+                scores = (query[positions] * passage).sum(1)
+                losses, query_weights = [], []
+                for query_id, group in batch.groupby("query_id", sort=False):
+                    mask = torch.tensor((batch["query_id"].to_numpy() == query_id), device=device)
+                    student_log = nn.functional.log_softmax(scores[mask] / args.teacher_temperature, dim=0)
+                    teacher = torch.tensor(group["logit"].to_numpy(), device=device, dtype=torch.float32)
+                    teacher_prob = nn.functional.softmax(teacher / args.teacher_temperature, dim=0)
+                    losses.append(nn.functional.kl_div(student_log, teacher_prob, reduction="sum") * (args.teacher_temperature**2))
+                    top_bucket = group.sort_values("teacher_rank").iloc[0]["frequency_bucket"]
+                    query_weights.append(args.tail_weight if top_bucket == "tail" else 1.0)
+                loss_row = torch.stack(losses)
+                weights = torch.tensor(query_weights, device=device, dtype=loss_row.dtype)
             else:
-                loss_row = nn.functional.softplus(-score_delta)
-            weights = torch.ones_like(loss_row)
-            if args.tail_weight != 1.0:
-                tail = (batch["positive_frequency_bucket"].to_numpy() == "tail")
-                weights[torch.tensor(tail, device=device)] = args.tail_weight
+                batch = pairs.iloc[[train_units[index] for index in selected]]
+                query = model.embed(encode(tokenizer, batch["query"], device, args.max_length))
+                positive = model.embed(encode(tokenizer, batch["positive_passage"], device, args.max_length))
+                negative = model.embed(encode(tokenizer, batch["negative_passage"], device, args.max_length))
+                score_delta = (query * positive).sum(1) - (query * negative).sum(1)
+                if args.loss == "soft_margin":
+                    target = torch.sigmoid(torch.tensor(batch["teacher_margin"].to_numpy(), device=device, dtype=torch.float32) / args.teacher_temperature)
+                    loss_row = nn.functional.binary_cross_entropy_with_logits(score_delta, target, reduction="none")
+                else:
+                    loss_row = nn.functional.softplus(-score_delta)
+                weights = torch.ones_like(loss_row)
+                if args.tail_weight != 1.0:
+                    tail = (batch["positive_frequency_bucket"].to_numpy() == "tail")
+                    weights[torch.tensor(tail, device=device)] = args.tail_weight
             loss = (loss_row * weights).sum() / weights.sum()
             optimizer.zero_grad(); loss.backward()
             grad = float(torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)); max_gradient = max(max_gradient, grad)
@@ -195,7 +230,7 @@ def main() -> None:
         epoch += 1; batch_offset = 0
         atomic_save({"identity":run_identity,"model":model.state_dict(),"optimizer":optimizer.state_dict(),"epoch":epoch,"batch_offset":0,"global_batches":global_batches,"best_ndcg":best_ndcg,"best_epoch":best_epoch,"history":history}, args.checkpoint)
         print(f"[epoch done] epoch={epoch} dev_ndcg10={metrics['ndcg10']:.6f} tail={metrics['tail_ndcg10']}", flush=True)
-    report = {"schema":"nfcorpus_r6_student_v1","identity":run_identity,"device":str(device),"train_pairs":len(pairs),"dev_queries":int(dev.query_id.nunique()),"first_loss":first_loss,"last_loss":last_loss,"loss_decreased":bool(last_loss < first_loss),"max_gradient_norm":max_gradient,"finite_gradient":bool(np.isfinite(max_gradient)),"best_epoch":best_epoch,"best_dev_ndcg10":best_ndcg,"history":history,"resume_supported":True,"test_accessed":False,"elapsed_seconds":round(time.time()-started,2)}
+    report = {"schema":"nfcorpus_r6_student_v1","identity":run_identity,"device":str(device),"loss":args.loss,"train_pairs":len(pairs) if args.loss != "listwise" else None,"train_queries":len(train_units) if args.loss == "listwise" else None,"dev_queries":int(dev.query_id.nunique()),"first_loss":first_loss,"last_loss":last_loss,"loss_decreased":bool(last_loss < first_loss),"max_gradient_norm":max_gradient,"finite_gradient":bool(np.isfinite(max_gradient)),"best_epoch":best_epoch,"best_dev_ndcg10":best_ndcg,"history":history,"resume_supported":True,"test_accessed":False,"elapsed_seconds":round(time.time()-started,2)}
     args.report.parent.mkdir(parents=True,exist_ok=True); args.report.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n"); print(json.dumps({"stage":"complete","report":str(args.report),"best_ndcg10":best_ndcg}))
 
 
