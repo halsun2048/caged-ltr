@@ -25,6 +25,29 @@ def stage(number: int, label: str) -> None:
     print(f"\n[R8 {number}/{TOTAL_STAGES}] [{bar}] {label}", flush=True)
 
 
+def latest_training_progress() -> str:
+    logs = [
+        Path("runs/mind_r8_2/formal_seed42.log"),
+        Path("runs/mind_r8_2/followup.log"),
+    ]
+    newest = ""
+    newest_time = -1.0
+    for path in logs:
+        if not path.exists() or path.stat().st_mtime < newest_time:
+            continue
+        try:
+            with path.open("rb") as handle:
+                handle.seek(max(0, path.stat().st_size - 65_536))
+                lines = handle.read().decode(errors="replace").splitlines()
+        except OSError:
+            continue
+        progress = [line.strip() for line in lines if "epoch=" in line and "batch=" in line]
+        if progress:
+            newest = progress[-1]
+            newest_time = path.stat().st_mtime
+    return newest[-110:]
+
+
 def wait_line(label: str, started: float, tick: int) -> None:
     width = 24
     position = tick % (2 * width - 2)
@@ -33,11 +56,15 @@ def wait_line(label: str, started: float, tick: int) -> None:
     bar = ["-"] * width
     bar[position] = "#"
     elapsed = int(time.monotonic() - started)
-    print(
-        f"\r[waiting] [{''.join(bar)}] {label} elapsed={elapsed // 60:02d}m{elapsed % 60:02d}s",
-        end="",
-        flush=True,
+    detail = latest_training_progress()
+    status = (
+        f"\r\033[K[waiting] [{''.join(bar)}] {label} "
+        f"elapsed={elapsed // 60:02d}m{elapsed % 60:02d}s"
     )
+    print(status, end="", flush=True)
+    if detail:
+        print(f"\n\033[K  live: {detail}", end="", flush=True)
+        print("\033[1A", end="", flush=True)
 
 
 def process_is_running(required: tuple[str, ...]) -> bool:
@@ -103,10 +130,35 @@ def train(name: str, negative_type: str, objective: str, seed: int) -> None:
     if seed != 42:
         command.append("--no-evaluate-before-training")
     print(f"[train] {name} seed={seed}", flush=True)
-    subprocess.run(command, check=True)
+    for attempt in range(1, 6):
+        try:
+            subprocess.run(command, check=True)
+            return
+        except subprocess.CalledProcessError as error:
+            if attempt == 5:
+                raise
+            delay = attempt * 30
+            print(
+                f"[retry] {name} seed={seed} exit={error.returncode} "
+                f"attempt={attempt}/5 delay={delay}s; resuming checkpoint",
+                flush=True,
+            )
+            time.sleep(delay)
 
 
 def validate_boundaries() -> None:
+    required = [
+        Path("scripts/train_mind_r8_2_large_student.py"),
+        Path("scripts/evaluate_mind_r8_large_dev.py"),
+        Path("scripts/run_mind_r8_3_to_r8_8.py"),
+        Path("configs/mind_r8_2_preregistered.json"),
+        Path("data/processed/mind_r8_1_v2/train_pairs"),
+        Path("data/processed/mind_r8_1_v2/dev_listwise"),
+        Path(MODEL),
+    ]
+    missing = [str(path) for path in required if not path.exists()]
+    if missing:
+        raise FileNotFoundError(f"R8 prerequisites missing: {missing}")
     guard_path = Path("artifacts/mind_r8_0_large_test_guard.json")
     guard = json.loads(guard_path.read_text())
     if guard["status"] != "locked_unaccessed" or guard["evaluation_count"] != 0:
@@ -160,7 +212,20 @@ def main() -> None:
         train(winner, negative_type, objective, seed)
     stage(4, "R8.3 large-dev 正式对照与分桶")
     print("[R8.2 complete] starting R8.3-R8.8 formal evaluation", flush=True)
-    subprocess.run([sys.executable, "scripts/run_mind_r8_3_to_r8_8.py"], check=True)
+    evaluation_command = [sys.executable, "scripts/run_mind_r8_3_to_r8_8.py"]
+    for attempt in range(1, 4):
+        try:
+            subprocess.run(evaluation_command, check=True)
+            break
+        except subprocess.CalledProcessError as error:
+            if attempt == 3:
+                raise
+            print(
+                f"[retry] R8.3-R8.8 exit={error.returncode} attempt={attempt}/3; "
+                "cached evaluations will be reused",
+                flush=True,
+            )
+            time.sleep(attempt * 30)
     final = json.loads(Path("reports/experiments/mind_r8_3_to_r8_9_final.json").read_text())
     decision = final["r8_8_decision"]["decision"]
     if decision == "run_once":
