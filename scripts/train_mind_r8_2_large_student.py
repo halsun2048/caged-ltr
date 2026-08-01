@@ -94,7 +94,9 @@ def embed_texts(model, tokenizer, texts, device, max_length, batch_size, dtype):
 @torch.inference_mode()
 def evaluate(model, tokenizer, dev, device, max_length, batch_size, dtype):
     query_table = dev[["query_id", "query"]].drop_duplicates("query_id")
-    corpus_table = dev[["corpus_id", "passage"]].drop_duplicates("corpus_id")
+    # The MTEB derivative assigns occurrence-specific candidate IDs while many
+    # occurrences share identical text. Encode each distinct passage once.
+    corpus_table = dev[["passage"]].drop_duplicates("passage")
     started = time.perf_counter()
     query_vectors = embed_texts(
         model,
@@ -115,11 +117,11 @@ def evaluate(model, tokenizer, dev, device, max_length, batch_size, dtype):
         dtype,
     )
     query_map = dict(zip(query_table.query_id, query_vectors, strict=True))
-    corpus_map = dict(zip(corpus_table.corpus_id, corpus_vectors, strict=True))
+    corpus_map = dict(zip(corpus_table.passage, corpus_vectors, strict=True))
     ndcgs, hits, reciprocal = [], [], []
     for _, group in dev.groupby("query_id", sort=False):
         query = query_map[group.iloc[0].query_id]
-        passages = np.stack([corpus_map[value] for value in group.corpus_id])
+        passages = np.stack([corpus_map[value] for value in group.passage])
         scores = passages @ query
         order = np.argsort(-scores, kind="stable")
         relevance = group.relevance.to_numpy()[order]
