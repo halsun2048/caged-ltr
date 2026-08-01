@@ -1,0 +1,99 @@
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00001-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00001-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00002-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00002-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00003-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00003-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00004-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00004-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00005-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00005-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00006-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00006-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00007-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00007-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00008-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00008-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00009-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00009-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00010-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00010-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00011-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00011-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00012-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00012-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00013-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00013-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00014-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00014-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/data/test-00015-of-00016.parquet?download=true
+  dir=data/external/mind/mteb_english/data
+  out=test-00015-of-00016.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00001-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00001-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00002-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00002-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00003-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00003-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00004-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00004-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00005-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00005-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00006-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00006-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00007-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00007-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00008-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00008-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00009-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00009-of-00011.parquet
+
+https://hf-mirror.com/datasets/mteb/MindSmallReranking/resolve/main/top_ranked/test-00010-of-00011.parquet?download=true
+  dir=data/external/mind/mteb_english/top_ranked
+  out=test-00010-of-00011.parquet

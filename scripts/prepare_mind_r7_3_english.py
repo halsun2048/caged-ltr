@@ -107,6 +107,11 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, default=Path("reports/data/mind_r7_3_english_audit.json")
     )
+    parser.add_argument(
+        "--bundle-report",
+        type=Path,
+        default=Path("reports/data/mind_r7_5_english_bundle.json"),
+    )
     args = parser.parse_args()
     official = args.root / "official_small"
     candidates = sorted(official.glob("*.parquet"))
@@ -116,6 +121,11 @@ def main() -> None:
         if path.is_file() and "official_small" not in path.parts
     )
     inspected = [inspect(path) for path in candidates]
+    bundle = json.loads(args.bundle_report.read_text()) if args.bundle_report.exists() else None
+    bundle_admitted = bool(
+        bundle and all(bundle["acceptance"].values()) and bundle["language"]["english_gate_passed"]
+    )
+    admitted = bundle_admitted or any(item["admitted"] for item in inspected)
     payload = {
         "schema": "mind_r7_3_english_admission_v1",
         "language_policy": {
@@ -132,21 +142,21 @@ def main() -> None:
             "use": "external behavior pretraining/evaluation only; never NFCorpus final evidence",
         },
         "official_candidates": inspected,
+        "validated_relational_bundle": bundle,
         "explicitly_rejected_non_official_files": [
             str(path) for path in rejected_language_variants
         ],
-        "download_status": "complete" if any(item["admitted"] for item in inspected) else "blocked",
+        "download_status": "complete" if admitted else "blocked",
         "blocker": None
-        if any(item["admitted"] for item in inspected)
+        if admitted
         else (
             "No complete English behavior shard is locally available; direct Microsoft "
             "returned HTTP 409 and the public mirror transfer did not complete."
         ),
         "acceptance": {
             "english_only_policy_frozen": True,
-            "at_least_one_complete_english_behavior_shard": any(
-                item["admitted"] for item in inspected
-            ),
+            "at_least_one_complete_english_behavior_shard": admitted,
+            "complete_relational_bundle": bundle_admitted,
             "non_english_data_used": False,
             "nfcorpus_test_accessed": False,
         },
