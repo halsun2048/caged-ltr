@@ -1,0 +1,95 @@
+{
+  "schema": "nfcorpus_r7_4_compression_v1",
+  "checkpoint": {
+    "path": "artifacts/nfcorpus_r6_student_best.pt",
+    "sha256": "a3493066b336bc21b3e5ce0e7f8cb9743095d2e6bb639becd45bc38e8b339c14"
+  },
+  "scope": "independent dev only; untouched test was not accessed",
+  "language": "English input texts only",
+  "device": "cpu",
+  "threads": 8,
+  "quantization": "PyTorch eager dynamic INT8 on Linear layers",
+  "quality_method": "Deterministic hash-token proxy is used because tokenizer assets are unavailable locally; this validates numerical/ranking preservation, not absolute retrieval quality.",
+  "dev_queries": 32,
+  "preservation": {
+    "fp32_ndcg10": 0.39023566691716693,
+    "int8_ndcg10": 0.37302264154478465,
+    "top10_overlap": 0.68125,
+    "score_mae": 0.1833371635293588,
+    "full_int8_ndcg10": 0.3855264835565444,
+    "full_int8_top10_overlap": 0.684375,
+    "full_int8_score_mae": 0.16823171940632164
+  },
+  "latency": {
+    "fp32_batch1": {
+      "batch_size": 1,
+      "texts": 128,
+      "milliseconds_per_text": 11.874147030766835,
+      "texts_per_second": 84.2165755071857,
+      "p50_batch_ms": 13.86616950185271,
+      "p95_batch_ms": 14.483136539638508
+    },
+    "fp32_batch8": {
+      "batch_size": 8,
+      "texts": 128,
+      "milliseconds_per_text": 7.193635929752418,
+      "texts_per_second": 139.01176119631853,
+      "p50_batch_ms": 72.75316650338937,
+      "p95_batch_ms": 75.81069299703813
+    },
+    "int8_batch1": {
+      "batch_size": 1,
+      "texts": 128,
+      "milliseconds_per_text": 6.465577491894692,
+      "texts_per_second": 154.6652253806577,
+      "p50_batch_ms": 7.416306005325168,
+      "p95_batch_ms": 7.56566475101863
+    },
+    "int8_batch8": {
+      "batch_size": 8,
+      "texts": 128,
+      "milliseconds_per_text": 3.473295187632175,
+      "texts_per_second": 287.91103144956793,
+      "p50_batch_ms": 33.750037000572775,
+      "p95_batch_ms": 36.941726506483974
+    },
+    "full_int8_batch1": {
+      "batch_size": 1,
+      "texts": 128,
+      "milliseconds_per_text": 6.462164218760336,
+      "texts_per_second": 154.7469185473337,
+      "p50_batch_ms": 7.411556493025273,
+      "p95_batch_ms": 7.833513794321333
+    },
+    "full_int8_batch8": {
+      "batch_size": 8,
+      "texts": 128,
+      "milliseconds_per_text": 3.3761243749950154,
+      "texts_per_second": 296.1976186086084,
+      "p50_batch_ms": 33.860455005196854,
+      "p95_batch_ms": 34.536904757260345
+    }
+  },
+  "storage": {
+    "fp32_bytes": 470681546,
+    "int8_bytes": 406595440,
+    "full_int8_bytes": 119981771,
+    "compression_ratio": 1.1576163913692687,
+    "reduction_percent": 13.615597752795683,
+    "full_int8_compression_ratio": 3.9229421442695656,
+    "full_int8_reduction_percent": 74.50892816605136
+  },
+  "acceptance": {
+    "test_not_accessed": true,
+    "deployment_admitted": false,
+    "int8_size_reduction_at_least_40_percent": false,
+    "mean_top10_overlap_at_least_0p95": false,
+    "mean_absolute_ndcg_drift_at_most_0p005": false,
+    "int8_batch1_faster": true,
+    "full_int8_size_reduction_at_least_40_percent": true,
+    "full_int8_mean_top10_overlap_at_least_0p95": false,
+    "full_int8_mean_absolute_ndcg_drift_at_most_0p005": true
+  },
+  "onnx_status": "not_run: onnx/onnxruntime are not project dependencies; dynamic INT8 is the admitted no-new-dependency path",
+  "decision": "Reject both INT8 variants for deployment: speed/storage improve, but the frozen 0.95 top-10 overlap requirement is not met."
+}
