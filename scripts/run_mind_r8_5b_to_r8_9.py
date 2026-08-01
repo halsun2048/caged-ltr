@@ -23,6 +23,17 @@ def run(command: list[str]) -> None:
     subprocess.run(command, check=True)
 
 
+def gate_package_ready() -> bool:
+    report = Path("reports/data/mind_r8_5d_gate_package.json")
+    required = [
+        Path("data/processed/mind_r8_5d/gate_dev.parquet"),
+        Path("data/processed/mind_r8_5d/gate_confirm.parquet"),
+        Path("runs/mind_r8_5d/gate_dev_prompts.jsonl"),
+        Path("runs/mind_r8_5d/gate_confirm_prompts.jsonl"),
+    ]
+    return report.exists() and all(path.exists() and path.stat().st_size > 0 for path in required)
+
+
 def require() -> None:
     paths = [
         "artifacts/mind_r8_0_large_test_guard.json",
@@ -108,7 +119,10 @@ def main() -> None:
     stage(2, "R8.5b independent gate split preregistration")
     run([PYTHON, "scripts/preregister_mind_r8_5b_gate.py", "--progress"])
     stage(3, "R8.5c-d top-20 pools and frozen FIRST prompts")
-    run([PYTHON, "scripts/prepare_mind_r8_5d_gate.py", "--resume", "--progress"])
+    if gate_package_ready():
+        print("[cached] verified R8.5d pools and FIRST prompts", flush=True)
+    else:
+        run([PYTHON, "scripts/prepare_mind_r8_5d_gate.py", "--resume", "--progress"])
     stage(4, "FIRST gate-dev inference with resume cache")
     first("gate_dev")
     stage(5, "distilled MiniLM gate-dev and fixed-policy inputs")
