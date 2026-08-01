@@ -1,0 +1,17 @@
+{
+  "split": "untouched_test",
+  "queries": 295,
+  "thresholds_frozen": {
+    "entropy_max": 0.7,
+    "stability_min": 0.2
+  },
+  "route_counts": {
+    "FIRST": 286,
+    "BM25": 9
+  },
+  "bm25_ndcg10": 0.5683380093917331,
+  "first_ndcg10": 0.6065707613304537,
+  "gate_ndcg10": 0.606612725936176,
+  "gate_minus_bm25": 0.03827471654444292,
+  "test_accessed": true
+}
