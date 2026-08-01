@@ -1,0 +1,35 @@
+{
+  "schema": "mind_r8_5d_gate_package_v1",
+  "source": "mteb/MindSmallReranking English derivative",
+  "top_k": 20,
+  "variants": [
+    "baseline",
+    "reverse",
+    "random_permutation"
+  ],
+  "model": "rryisthebest/First_Model",
+  "revision": "64eba9b83c174439d2b6f5d333fbb822b38d73a7",
+  "pools": {
+    "gate_dev": {
+      "path": "data/processed/mind_r8_5d/gate_dev.parquet",
+      "sha256": "95b7201e4f68d649def8da523eb110f9f8281214031a78bd575a4dd2cb341d16",
+      "queries": 20000
+    },
+    "gate_confirm": {
+      "path": "data/processed/mind_r8_5d/gate_confirm.parquet",
+      "sha256": "68703727d872f90ff2a59021355f6dcb86264b777286f0ac0a010eca658ee1a2",
+      "queries": 20000
+    }
+  },
+  "prompts": {
+    "gate_dev": {
+      "path": "runs/mind_r8_5d/gate_dev_prompts.jsonl",
+      "sha256": "35c658f2b7137ef8873913f3704710a12f85743c45b8809dc13213f63cf7835c"
+    },
+    "gate_confirm": {
+      "path": "runs/mind_r8_5d/gate_confirm_prompts.jsonl",
+      "sha256": "23cb190bfc9170c85b1c90d54e06d9fc87260abe127b07483fbae46abe4d2d9c"
+    }
+  },
+  "large_test_accessed": false
+}

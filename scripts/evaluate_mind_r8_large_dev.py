@@ -86,6 +86,7 @@ def main() -> None:
     parser.add_argument("--model", default="/root/caged-ltr/all-MiniLM-L6-v2")
     parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--name", required=True)
+    parser.add_argument("--expected-split", default="large_dev")
     parser.add_argument("--output-dir", type=Path, default=Path("runs/mind_r8_3"))
     parser.add_argument("--report", type=Path)
     parser.add_argument("--batch-size", type=int, default=512)
@@ -96,8 +97,8 @@ def main() -> None:
         raise RuntimeError("R8 formal evaluation requires CUDA")
     device = torch.device("cuda")
     dev = read_shards(args.dev)
-    if set(dev.split) != {"large_dev"}:
-        raise RuntimeError("only the frozen large_dev split may be evaluated")
+    if set(dev.split) != {args.expected_split}:
+        raise RuntimeError(f"expected only the frozen {args.expected_split} split")
     model = BiEncoder(args.model)
     checkpoint_hash = None
     if args.checkpoint:
@@ -160,7 +161,7 @@ def main() -> None:
     payload = {
         "schema": "mind_r8_3_large_dev_evaluation_v1",
         "name": args.name,
-        "split": "large_dev",
+        "split": args.expected_split,
         "checkpoint": str(args.checkpoint) if args.checkpoint else None,
         "checkpoint_sha256": checkpoint_hash,
         "overall": summarize(query_metrics),

@@ -1,0 +1,26 @@
+{
+  "schema": "mind_r8_5b_gate_preregistration_v1",
+  "seed": 20260802,
+  "counts": {
+    "gate_dev": 20000,
+    "gate_confirm": 20000
+  },
+  "eligible_reserve": 2065960,
+  "files": {
+    "split_ids": {
+      "path": "data/processed/mind_r8_5b/gate_split_ids.parquet",
+      "sha256": "7d0a7e389f8f407eefa0fe78e405766dbf98d814ad449ab35709edd5f61c1dc5"
+    },
+    "queries": {
+      "path": "data/external/mind/mteb_english/queries/test-00000-of-00001.parquet",
+      "sha256": "ff6cc644acdc4fe23092d7920a017abfe5db60d7b94455539ad11b49fccd8b95"
+    }
+  },
+  "acceptance": {
+    "exact_counts": true,
+    "disjoint": true,
+    "no_r7_overlap": true,
+    "no_r8_overlap": true,
+    "large_test_accessed": false
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "mind_r8_5b_gate_guard_v1",
+  "gate_dev_access_count": 0,
+  "gate_confirm_access_count": 0,
+  "gate_confirm_allowed_access_count": 1,
+  "status": "preregistered"
+}
