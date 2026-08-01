@@ -35,6 +35,14 @@ def identity(args: argparse.Namespace) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def atomic_save(payload: dict[str, object], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -149,6 +157,9 @@ def main() -> None:
     parser.add_argument("--max-dev-queries", type=int)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--progress", action="store_true")
+    parser.add_argument(
+        "--evaluate-before-training", action=argparse.BooleanOptionalAction, default=True
+    )
     parser.add_argument("--require-cuda", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args()
     if args.require_cuda and not torch.cuda.is_available():
@@ -199,6 +210,27 @@ def main() -> None:
         history = state["history"]
     started = time.time()
     first_loss = last_loss = None
+    baseline_metrics = None
+    if history and history[0].get("phase") == "pretrained_baseline":
+        baseline_metrics = {key: value for key, value in history[0].items() if key != "phase"}
+    elif args.evaluate_before_training and epoch == 0:
+        if args.progress:
+            print("[baseline] evaluating pretrained English MiniLM on full dev", flush=True)
+        baseline_metrics = evaluate(
+            model,
+            tokenizer,
+            dev,
+            device,
+            args.max_length,
+            args.eval_batch_size,
+            dtype,
+        )
+        history.append({"phase": "pretrained_baseline", "epoch": 0, **baseline_metrics})
+        print(
+            f"[baseline done] dev_ndcg10={baseline_metrics['ndcg10']:.6f} "
+            f"hit10={baseline_metrics['hit10']:.6f}",
+            flush=True,
+        )
     while epoch < args.epochs and stale < args.patience:
         model.train()
         indices = np.random.default_rng(args.seed + epoch).permutation(len(train))
@@ -320,9 +352,13 @@ def main() -> None:
             last_loss is not None and first_loss is not None and last_loss < first_loss
         ),
         "best_dev_ndcg10": best_ndcg,
+        "pretrained_baseline": baseline_metrics,
         "history": history,
         "elapsed_seconds": round(time.time() - started, 2),
         "checkpoint": str(args.best_checkpoint),
+        "checkpoint_sha256": (
+            sha256(args.best_checkpoint) if args.best_checkpoint.exists() else None
+        ),
         "boundaries": {
             "dev_used_for_early_stopping_only": True,
             "calibration_accessed": False,

@@ -1,0 +1,71 @@
+{
+  "schema": "mind_r7_7_english_student_v1",
+  "identity": "dbde3868e1168f6d97f230681d8e996b61dfe5d1c0cb7d891a19f6f45fe66b0e",
+  "language": "English",
+  "model": "./all-MiniLM-L6-v2",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "precision": "bf16",
+  "train_pairs": 137439,
+  "dev_queries": 4744,
+  "epochs_completed": 4,
+  "early_stopped": true,
+  "first_loss": 0.6873654723167419,
+  "last_loss": 0.5756509304046631,
+  "loss_decreased": true,
+  "best_dev_ndcg10": 0.38938956874870184,
+  "pretrained_baseline": {
+    "ndcg10": 0.30191099134089666,
+    "hit10": 0.6224704890387859,
+    "mrr": 0.27563707049433234,
+    "latency_ms_per_query": 0.5371348166164532
+  },
+  "history": [
+    {
+      "phase": "pretrained_baseline",
+      "epoch": 0,
+      "ndcg10": 0.30191099134089666,
+      "hit10": 0.6224704890387859,
+      "mrr": 0.27563707049433234,
+      "latency_ms_per_query": 0.5371348166164532
+    },
+    {
+      "epoch": 1,
+      "ndcg10": 0.3878661993930226,
+      "hit10": 0.7502107925801011,
+      "mrr": 0.35250693383291964,
+      "latency_ms_per_query": 0.4563774797919365
+    },
+    {
+      "epoch": 2,
+      "ndcg10": 0.38938956874870184,
+      "hit10": 0.752318718381113,
+      "mrr": 0.3548176724213419,
+      "latency_ms_per_query": 0.46011107420339914
+    },
+    {
+      "epoch": 3,
+      "ndcg10": 0.3880857860061279,
+      "hit10": 0.7533726812816189,
+      "mrr": 0.35116211309450435,
+      "latency_ms_per_query": 0.45348485940784644
+    },
+    {
+      "epoch": 4,
+      "ndcg10": 0.3860634566837131,
+      "hit10": 0.7485244519392917,
+      "mrr": 0.3524151005257362,
+      "latency_ms_per_query": 0.4601273197848758
+    }
+  ],
+  "elapsed_seconds": 251.41,
+  "checkpoint": "/root/r7_7_formal/best.pt",
+  "local_checkpoint": "artifacts/mind_r7_7_english_student.pt",
+  "checkpoint_sha256": "253241fba6b18e14b89cc5d59e48a6c5538a3b78106246c62897e5c0025f6bc8",
+  "boundaries": {
+    "dev_used_for_early_stopping_only": true,
+    "calibration_accessed": false,
+    "mind_holdout_accessed": false,
+    "nfcorpus_locked_test_accessed": false
+  }
+}
