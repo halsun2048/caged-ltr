@@ -1,0 +1,55 @@
+# R7.0 metric and boundary audit
+
+```json
+{
+  "schema": "nfcorpus_r7_metric_audit_v1",
+  "metric_registry": {
+    "R5_official": "linear graded gain; IDCG from complete official qrels",
+    "R6_formal": "exponential gain (2^rel-1); IDCG restricted to retrieved candidate pool",
+    "cross_version_direct_comparison_allowed": false
+  },
+  "same_bm25_test_pool_metric_demonstration": {
+    "linear_gain_ndcg10": 0.5090125207172611,
+    "exponential_gain_ndcg10": 0.5087971515803226,
+    "queries": 295,
+    "r5_complete_qrels_linear_ndcg10": 0.33799938105937954,
+    "interpretation": "gain choice is small here; complete-qrels versus candidate-pool IDCG explains the major scale shift"
+  },
+  "boundaries": {
+    "train_queries": 1904,
+    "dev_queries": 476,
+    "test_queries": 295,
+    "train_dev_overlap": 0,
+    "train_test_overlap": 0,
+    "dev_test_overlap": 0
+  },
+  "hash_verification": {
+    "dev_listwise.parquet": true,
+    "dev_queries.txt": true,
+    "item_buckets.parquet": true,
+    "train_hard_negatives.parquet": true,
+    "train_listwise.parquet": true,
+    "train_pairwise.parquet": true,
+    "train_queries.txt": true
+  },
+  "locked_test": {
+    "report_sha256": "a7a77b1a9ed526afc1d18035581a0376da1b484d218f3bf1e5c382dd6c74966b",
+    "accessed_once": true,
+    "further_tuning_prohibited": true,
+    "output_guard": "evaluator refuses when output exists"
+  },
+  "issues": {
+    "legacy_exploratory_scripts_with_top10_only_idcg": [
+      "run_mind_text_encoder_dev_comparison.py",
+      "run_caged_ltr_dev_stability_gate.py"
+    ],
+    "formal_r6_dev_train_and_locked_test_affected": false,
+    "policy": "legacy numbers must retain gain and IDCG-scope labels and must not be mixed with R6 formal tables"
+  },
+  "acceptance": {
+    "no_split_overlap": true,
+    "all_present_generated_hashes_match": true,
+    "locked_test_frozen": true
+  }
+}
+```

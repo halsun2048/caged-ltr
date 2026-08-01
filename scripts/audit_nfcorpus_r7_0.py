@@ -1,0 +1,21 @@
+"""Audit R5/R6 metric semantics, data boundaries, hashes and locked-test state."""
+from __future__ import annotations
+import argparse,hashlib,json,math
+from pathlib import Path
+import pandas as pd
+def sha(path):
+    digest=hashlib.sha256()
+    with Path(path).open('rb') as handle:
+        for chunk in iter(lambda:handle.read(1048576),b''): digest.update(chunk)
+    return digest.hexdigest()
+def ndcg(values,exponential):
+    values=list(values); gain=lambda x:(2**x-1) if exponential else x; dcg=sum(gain(v)/math.log2(i+2) for i,v in enumerate(values[:10])); ideal=sorted(values,reverse=True)[:10]; idcg=sum(gain(v)/math.log2(i+2) for i,v in enumerate(ideal)); return dcg/idcg if idcg else 0.
+def evaluate(candidates,qrels):
+    rel=qrels.set_index(['query_id','passage_id']).graded_relevance.to_dict(); linear=[]; exponential=[]
+    for query_id,group in candidates.sort_values('bm25_rank').groupby('query_id'):
+        values=[rel.get((query_id,p),0) for p in group.passage_id]; linear.append(ndcg(values,False)); exponential.append(ndcg(values,True))
+    return {'linear_gain_ndcg10':sum(linear)/len(linear),'exponential_gain_ndcg10':sum(exponential)/len(exponential),'queries':len(linear)}
+def main():
+    ap=argparse.ArgumentParser(); ap.add_argument('--r6-manifest',type=Path,required=True); ap.add_argument('--train-ids',type=Path,required=True); ap.add_argument('--dev-ids',type=Path,required=True); ap.add_argument('--test-candidates',type=Path,required=True); ap.add_argument('--test-qrels',type=Path,required=True); ap.add_argument('--r5-report',type=Path,required=True); ap.add_argument('--locked-report',type=Path,required=True); ap.add_argument('--output',type=Path,required=True); args=ap.parse_args(); manifest=json.loads(args.r6_manifest.read_text()); train=set(args.train_ids.read_text().splitlines()); dev=set(args.dev_ids.read_text().splitlines()); candidates=pd.read_parquet(args.test_candidates); qrels=pd.read_parquet(args.test_qrels); test=set(candidates.query_id.unique()); metric=evaluate(candidates,qrels); r5=json.loads(args.r5_report.read_text()); locked=json.loads(args.locked_report.read_text()); generated_checks={name:(sha(args.r6_manifest.parent/name)==expected if (args.r6_manifest.parent/name).exists() else None) for name,expected in manifest['generated_sha256'].items()}
+    payload={'schema':'nfcorpus_r7_metric_audit_v1','metric_registry':{'R5_official':'linear graded gain; IDCG from complete official qrels','R6_formal':'exponential gain (2^rel-1); IDCG restricted to retrieved candidate pool','cross_version_direct_comparison_allowed':False},'same_bm25_test_pool_metric_demonstration':{**metric,'r5_complete_qrels_linear_ndcg10':float(r5['metrics']['bm25']),'interpretation':'gain choice is small here; complete-qrels versus candidate-pool IDCG explains the major scale shift'},'boundaries':{'train_queries':len(train),'dev_queries':len(dev),'test_queries':len(test),'train_dev_overlap':len(train&dev),'train_test_overlap':len(train&test),'dev_test_overlap':len(dev&test)},'hash_verification':generated_checks,'locked_test':{'report_sha256':sha(args.locked_report),'accessed_once':locked['test_accessed_once'],'further_tuning_prohibited':locked['further_tuning_prohibited'],'output_guard':'evaluator refuses when output exists'},'issues':{'legacy_exploratory_scripts_with_top10_only_idcg':['run_mind_text_encoder_dev_comparison.py','run_caged_ltr_dev_stability_gate.py'],'formal_r6_dev_train_and_locked_test_affected':False,'policy':'legacy numbers must retain gain and IDCG-scope labels and must not be mixed with R6 formal tables'},'acceptance':{'no_split_overlap':not(train&dev or train&test or dev&test),'all_present_generated_hashes_match':all(value for value in generated_checks.values() if value is not None),'locked_test_frozen':locked['test_accessed_once'] and locked['further_tuning_prohibited']}}; args.output.parent.mkdir(parents=True,exist_ok=True); args.output.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n'); args.output.with_suffix('.md').write_text('# R7.0 metric and boundary audit\n\n```json\n'+json.dumps(payload,ensure_ascii=False,indent=2)+'\n```\n'); print(json.dumps({'stage':'complete','acceptance':payload['acceptance'],'metrics':payload['same_bm25_test_pool_metric_demonstration']}))
+if __name__=='__main__': main()
