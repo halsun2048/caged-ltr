@@ -1,0 +1,65 @@
+{
+  "schema": "nfcorpus_r6_locked_test_v1",
+  "locked_commit": "365ac7c",
+  "queries": 295,
+  "gate": {
+    "ndcg10": 0.5243546146610744,
+    "hit10": 0.7254237288135593,
+    "mrr": 0.5483433653243959,
+    "routes": {
+      "bm25": 192,
+      "distilled_minilm": 55,
+      "first": 48
+    },
+    "first_call_rate": 0.16271186440677965,
+    "latency_ms_per_query": 73.1970421928555
+  },
+  "baselines": {
+    "bm25": {
+      "ndcg10": 0.5087971515803226,
+      "hit10": 0.7186440677966102,
+      "mrr": 0.5424803408447214
+    },
+    "distilled_minilm": {
+      "ndcg10": 0.4915599306030023,
+      "hit10": 0.7152542372881356,
+      "mrr": 0.5295417559445214
+    },
+    "first": {
+      "ndcg10": 0.5657150772392638,
+      "hit10": 0.7254237288135593,
+      "mrr": 0.5872422005093727
+    },
+    "previous_frozen_gate": {
+      "ndcg10": 0.5652805253680115,
+      "hit10": 0.7254237288135593,
+      "mrr": 0.5890097549887916
+    }
+  },
+  "efficiency": {
+    "first_latency_ms_per_query": 450.149322561604,
+    "previous_frozen_gate_latency_ms_per_query": 438.5990826034192,
+    "distilled_minilm_latency_ms_per_query": 12.283810125506026
+  },
+  "paired_bootstrap_95ci": {
+    "gate_minus_first": [
+      -0.058344181380122664,
+      -0.024762649302554635
+    ],
+    "gate_minus_bm25": [
+      0.0031169981108737353,
+      0.02933645020602924
+    ]
+  },
+  "acceptance": {
+    "near_first_with_50pct_or_less_calls": false
+  },
+  "source_sha256": {
+    "scored": "45b252a3de74b63e04dd7d33b2512ef45be6a1d8fefdc9f4bada8f906252bdd8",
+    "qrels": "63b10c43c899bc188fd53e45c43072e3d835dd3376f37d8a18c42a24ce023cdd",
+    "gate_artifact": "009c0c3ab25834a634de127203c6ee27d3f080427dac8e95683d686abeb84a5d",
+    "scoring_metadata": "b4b6d792e4f9d1de7381f1f54918a6d2f7d578673aada22a3c89fa25ecc922ef"
+  },
+  "test_accessed_once": true,
+  "further_tuning_prohibited": true
+}

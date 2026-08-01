@@ -1,0 +1,7 @@
+{
+  "queries": 295,
+  "rows": 5047,
+  "latency_ms_per_query": 12.283810125506026,
+  "device": "cuda",
+  "qrels_accessed": false
+}
