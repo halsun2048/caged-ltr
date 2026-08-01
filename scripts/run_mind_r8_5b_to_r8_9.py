@@ -111,6 +111,11 @@ def student(split: str) -> None:
 
 
 def main() -> None:
+    source_root = str((Path.cwd() / "src").resolve())
+    existing_pythonpath = os.environ.get("PYTHONPATH", "")
+    os.environ["PYTHONPATH"] = (
+        source_root if not existing_pythonpath else source_root + os.pathsep + existing_pythonpath
+    )
     os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
     os.environ.pop("HF_TOKEN", None)
     os.environ.pop("HUGGING_FACE_HUB_TOKEN", None)
