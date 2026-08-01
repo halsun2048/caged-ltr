@@ -1,0 +1,44 @@
+{
+  "schema": "mind_text_encoder_dev_comparison_v1",
+  "split": "independent_dev_20_percent",
+  "train_queries": 1904,
+  "dev_queries": 476,
+  "device": "cuda",
+  "models": {
+    "first": {
+      "overall_ndcg10": 0.6166534683455751,
+      "buckets": {
+        "head": 0.38516316134958034,
+        "torso": 0.28122095318065166,
+        "tail": 0.21797684220419536
+      }
+    },
+    "tfidf": {
+      "overall_ndcg10": 0.4625633484263789,
+      "buckets": {
+        "head": 0.2554662217047583,
+        "torso": 0.20620720432199596,
+        "tail": 0.18794990123997196
+      }
+    },
+    "minilm": {
+      "overall_ndcg10": 0.4863673787722972,
+      "buckets": {
+        "head": 0.2919947222778953,
+        "torso": 0.2254877945351005,
+        "tail": 0.18414183459969985
+      }
+    }
+  },
+  "latency_ms_per_query": {
+    "first": 0.0,
+    "tfidf": 4.324820199335667,
+    "minilm": 16.223131697585792
+  },
+  "frequency_bucket_thresholds": [
+    8.0,
+    13.0
+  ],
+  "test_accessed": false,
+  "tfidf_role": "efficiency_baseline"
+}
