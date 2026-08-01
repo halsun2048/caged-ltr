@@ -1,0 +1,119 @@
+# R7.2 nested-CV gate
+
+```json
+{
+  "schema": "nfcorpus_r7_nested_gate_v1",
+  "protocol": "5-fold outer / 4-fold inner nested CV on independent dev only",
+  "queries": 476,
+  "features": [
+    "query_chars",
+    "query_tokens",
+    "mean_passage_chars",
+    "short_passage_rate",
+    "mean_item_frequency",
+    "max_item_frequency",
+    "entropy",
+    "stability",
+    "bm25_margin",
+    "bm25_entropy",
+    "bm25_std",
+    "distilled_minilm_margin",
+    "distilled_minilm_entropy",
+    "distilled_minilm_std",
+    "first_margin",
+    "first_entropy",
+    "first_std",
+    "margin_diff_minilm_bm25",
+    "entropy_diff_minilm_bm25"
+  ],
+  "folds": [
+    {
+      "fold": 0,
+      "selected": {
+        "kind": "logistic",
+        "parameter": 0.1,
+        "lambda": 0.0,
+        "ndcg": 0.5684347641160248,
+        "first_call_rate": 0.3815789473684211
+      },
+      "test_ndcg": 0.5015070129458219,
+      "test_first_call_rate": 0.21875
+    },
+    {
+      "fold": 1,
+      "selected": {
+        "kind": "ridge",
+        "parameter": 1.0,
+        "lambda": 5e-05,
+        "ndcg": 0.5437941439778525,
+        "first_call_rate": 0.4671916010498688
+      },
+      "test_ndcg": 0.6030679684863323,
+      "test_first_call_rate": 0.631578947368421
+    },
+    {
+      "fold": 2,
+      "selected": {
+        "kind": "logistic",
+        "parameter": 0.1,
+        "lambda": 0.0,
+        "ndcg": 0.5722657925916347,
+        "first_call_rate": 0.33858267716535434
+      },
+      "test_ndcg": 0.49565814405203107,
+      "test_first_call_rate": 0.3684210526315789
+    },
+    {
+      "fold": 3,
+      "selected": {
+        "kind": "logistic",
+        "parameter": 0.1,
+        "lambda": 0.0001,
+        "ndcg": 0.5471617456629393,
+        "first_call_rate": 0.27296587926509186
+      },
+      "test_ndcg": 0.5987696031063301,
+      "test_first_call_rate": 0.3368421052631579
+    },
+    {
+      "fold": 4,
+      "selected": {
+        "kind": "ridge",
+        "parameter": 1.0,
+        "lambda": 5e-05,
+        "ndcg": 0.5540064597863967,
+        "first_call_rate": 0.4645669291338583
+      },
+      "test_ndcg": 0.596649271479925,
+      "test_first_call_rate": 0.45263157894736844
+    }
+  ],
+  "oof": {
+    "ndcg10": 0.5590093424782304,
+    "first_call_rate": 0.4012605042016807,
+    "minilm_call_rate": 0.25210084033613445,
+    "bm25_call_rate": 0.34663865546218486,
+    "latency_ms_per_query": 174.6746920521646
+  },
+  "baselines": {
+    "bm25_ndcg10": 0.5401608038704284,
+    "first_ndcg10": 0.5663891621062633,
+    "frozen_gate_ndcg10": 0.5668027285743679
+  },
+  "paired_bootstrap_95ci": {
+    "gate_minus_first": [
+      -0.01988793309000579,
+      0.004468444625400923
+    ],
+    "gate_minus_bm25": [
+      0.0038858710484447005,
+      0.0335268810619497
+    ],
+    "gate_minus_frozen": [
+      -0.02015675159460982,
+      0.00387847965714062
+    ]
+  },
+  "test_accessed": false
+}
+```
