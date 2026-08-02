@@ -73,6 +73,9 @@ def main() -> None:
     acceptance["all_passed"] = all(
         value for key, value in acceptance.items() if key != "large_test_accessed"
     )
+    frozen_policy = guard.get("policy", {})
+    if not isinstance(frozen_policy, dict):
+        frozen_policy = {}
     payload = {
         "schema": "mind_r8_14_tail_confirm_once_v1",
         "split": args.split,
@@ -80,7 +83,7 @@ def main() -> None:
         "policy": {
             "budget": 0.4,
             "tail_floor": 0.75,
-            "gate_model_sha256": (guard.get("policy", {}).get("gate_model_sha256", "frozen-r8.14")),
+            "gate_model_sha256": frozen_policy.get("gate_model_sha256", "frozen-r8.14"),
         },
         "overall": overall,
         "frequency_buckets": buckets,
