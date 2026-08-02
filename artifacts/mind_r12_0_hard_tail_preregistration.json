@@ -1,0 +1,28 @@
+{
+  "schema": "mind_r12_0_hard_tail_preregistration_v1",
+  "source_audit": "reports/experiments/mind_r12_failure_audit.json",
+  "selection_split": "new_r12_dev_only",
+  "confirm_split": "new_r12_confirm_once",
+  "budget": [
+    0.45,
+    0.5,
+    0.55,
+    0.6
+  ],
+  "tail_floor": [
+    1.0
+  ],
+  "torso_floor": [
+    0.35,
+    0.5,
+    0.65
+  ],
+  "selection_rule": [
+    "Tail gap <= 0.003",
+    "Torso gap minimized",
+    "then minimum FIRST call rate",
+    "no confirm-based tuning"
+  ],
+  "large_test_accessed": false,
+  "historical_confirms_reopened": false
+}

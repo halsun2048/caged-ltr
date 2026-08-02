@@ -1,0 +1,285 @@
+{
+  "schema": "mind_r12_0_failure_audit_v1",
+  "status": "locked_for_next_split",
+  "r10": {
+    "selected": {
+      "budget": 0.5,
+      "tail_floor": 0.5,
+      "torso_floor": 0.0,
+      "overall": {
+        "ndcg10": 0.6925478651718499,
+        "hit10": 0.9922,
+        "mrr": 0.6369865469802815,
+        "first_call_rate": 0.5,
+        "latency_ms": 36.97316146072
+      },
+      "by_bucket": {
+        "head": {
+          "ndcg10": 0.7457930591055316,
+          "hit10": 0.9984998499849985,
+          "mrr": 0.6970310938020209,
+          "first_call_rate": 0.2676267626762676,
+          "latency_ms": 19.22353941998989
+        },
+        "tail": {
+          "ndcg10": 0.6620384633927565,
+          "hit10": 0.9856028794241152,
+          "mrr": 0.5961749055352393,
+          "first_call_rate": 0.6745650869826035,
+          "latency_ms": 50.256947770324444
+        },
+        "torso": {
+          "ndcg10": 0.6698212267531687,
+          "hit10": 0.9924992499249925,
+          "mrr": 0.6177658863204896,
+          "first_call_rate": 0.5577557755775577,
+          "latency_ms": 41.43501165739935
+        }
+      },
+      "dev_gap": -0.045052155940101146,
+      "dev_tail_gap": -0.01350427805359622
+    },
+    "confirm": {
+      "gate": {
+        "ndcg10": 0.668451177054683,
+        "hit10": 0.9853,
+        "mrr": 0.605717715482402,
+        "first_call_rate": 0.5,
+        "latency_ms": 37.539519322668205
+      },
+      "buckets": {
+        "head": {
+          "route_rate": 0.2757275727572757,
+          "gate": {
+            "ndcg10": 0.7255090098473218,
+            "hit10": 0.9984998499849985,
+            "mrr": 0.6682459579624296,
+            "first_call_rate": 0.2757275727572757,
+            "latency_ms": 20.527225394194424
+          },
+          "student": {
+            "ndcg10": 0.6865659443177503,
+            "hit10": 0.9942994299429943,
+            "mrr": 0.6248626416041764,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6501574630848652,
+            "hit10": 0.9963996399639964,
+            "mrr": 0.546251838803594,
+            "first_call_rate": 1.0,
+            "latency_ms": 64.40936778069673
+          }
+        },
+        "tail": {
+          "route_rate": 0.649370125974805,
+          "gate": {
+            "ndcg10": 0.6326732413021515,
+            "hit10": 0.9724055188962207,
+            "mrr": 0.5593973951910801,
+            "first_call_rate": 0.649370125974805,
+            "latency_ms": 48.93509160774324
+          },
+          "student": {
+            "ndcg10": 0.40560341802579,
+            "hit10": 0.7951409718056389,
+            "mrr": 0.35373621454401427,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6459119967733219,
+            "hit10": 0.9916016796640672,
+            "mrr": 0.5474435708488163,
+            "first_call_rate": 1.0,
+            "latency_ms": 72.70988390048684
+          }
+        },
+        "torso": {
+          "route_rate": 0.5748574857485749,
+          "gate": {
+            "ndcg10": 0.6471820144687471,
+            "hit10": 0.984998499849985,
+            "mrr": 0.5895236907795324,
+            "first_call_rate": 0.5748574857485749,
+            "latency_ms": 43.152821952480075
+          },
+          "student": {
+            "ndcg10": 0.5024381397621109,
+            "hit10": 0.9246924692469247,
+            "mrr": 0.44469351349734826,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6449652729119079,
+            "hit10": 0.9891989198919892,
+            "mrr": 0.5561592614472902,
+            "first_call_rate": 1.0,
+            "latency_ms": 71.78265171839534
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "confirm_overall_gap_at_most_0p003": true,
+      "confirm_tail_gap_at_most_0p003": false,
+      "confirm_call_rate_at_most_0p55": true,
+      "large_test_accessed": false,
+      "all_passed": false
+    }
+  },
+  "r11": {
+    "selected": {
+      "budget": 0.5,
+      "tail_floor": 0.5,
+      "torso_floor": 0.0,
+      "overall": {
+        "ndcg10": 0.6941021104422977,
+        "hit10": 0.994,
+        "mrr": 0.6346441218503718,
+        "first_call_rate": 0.5,
+        "latency_ms": 36.843055779421704
+      },
+      "by_bucket": {
+        "head": {
+          "ndcg10": 0.7504822495619786,
+          "hit10": 0.9987998799879988,
+          "mrr": 0.699373552073822,
+          "first_call_rate": 0.26792679267926794,
+          "latency_ms": 19.031025817631924
+        },
+        "tail": {
+          "ndcg10": 0.6588154590312333,
+          "hit10": 0.9876987698769877,
+          "mrr": 0.5874481924549431,
+          "first_call_rate": 0.6693669366936693,
+          "latency_ms": 49.88819906032951
+        },
+        "torso": {
+          "ndcg10": 0.6732168741919597,
+          "hit10": 0.9957995799579958,
+          "mrr": 0.6173010333001332,
+          "first_call_rate": 0.5628562856285628,
+          "latency_ms": 41.620795462337696
+        }
+      },
+      "dev_gap": -0.045078158829002235,
+      "dev_tail_gap": -0.014773531226261793
+    },
+    "confirm": {
+      "gate": {
+        "ndcg10": 0.6637407644476742,
+        "hit10": 0.983,
+        "mrr": 0.6001003266741,
+        "first_call_rate": 0.5,
+        "latency_ms": 36.98309905340895
+      },
+      "buckets": {
+        "head": {
+          "route_rate": 0.2958295829582958,
+          "gate": {
+            "ndcg10": 0.7162870490561153,
+            "hit10": 0.9960996099609961,
+            "mrr": 0.6568044953846034,
+            "first_call_rate": 0.2958295829582958,
+            "latency_ms": 21.136916501941766
+          },
+          "student": {
+            "ndcg10": 0.6766527159047749,
+            "hit10": 0.9927992799279928,
+            "mrr": 0.6152236957225351,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6438554448955431,
+            "hit10": 0.9960996099609961,
+            "mrr": 0.5365392470815513,
+            "first_call_rate": 1.0,
+            "latency_ms": 64.94647225314819
+          }
+        },
+        "tail": {
+          "route_rate": 0.6529694061187763,
+          "gate": {
+            "ndcg10": 0.6222352473342125,
+            "hit10": 0.9655068986202759,
+            "mrr": 0.5519603002546004,
+            "first_call_rate": 0.6529694061187763,
+            "latency_ms": 49.066515592596936
+          },
+          "student": {
+            "ndcg10": 0.3928793049794032,
+            "hit10": 0.7795440911817636,
+            "mrr": 0.34759840277624493,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6390820495841636,
+            "hit10": 0.989502099580084,
+            "mrr": 0.5405741457778844,
+            "first_call_rate": 1.0,
+            "latency_ms": 73.13089191078227
+          }
+        },
+        "torso": {
+          "route_rate": 0.5511551155115512,
+          "gate": {
+            "ndcg10": 0.6527124498531185,
+            "hit10": 0.9873987398739874,
+            "mrr": 0.5915506278353669,
+            "first_call_rate": 0.5511551155115512,
+            "latency_ms": 40.74223967818766
+          },
+          "student": {
+            "ndcg10": 0.5066494495530938,
+            "hit10": 0.9282928292829283,
+            "mrr": 0.44746768446284685,
+            "first_call_rate": 0.0,
+            "latency_ms": 0.67
+          },
+          "first": {
+            "ndcg10": 0.6493725139510141,
+            "hit10": 0.9933993399339934,
+            "mrr": 0.5556883325826667,
+            "first_call_rate": 1.0,
+            "latency_ms": 71.1479879359359
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "confirm_overall_gap_at_most_0p003": true,
+      "confirm_tail_gap_at_most_0p003": false,
+      "confirm_call_rate_at_most_0p55": true,
+      "large_test_accessed": false,
+      "all_passed": false
+    }
+  },
+  "observations": [
+    "R10 and R11 both pass overall but fail Tail on independent confirm.",
+    "R11 execution used tail_floor=0.5 although the intended preregistration was 0.75/0.9/1.0; it is therefore exploratory, not a strict preregistered confirmation.",
+    "The next strategy must hard-route all Tail queries to FIRST and allocate residual budget to Torso/Head."
+  ],
+  "r12_search_space": {
+    "budget": [
+      0.45,
+      0.5,
+      0.55,
+      0.6
+    ],
+    "tail_floor": [
+      1.0
+    ],
+    "torso_floor": [
+      0.35,
+      0.5,
+      0.65
+    ],
+    "head_policy": "gain-ranked residual budget"
+  },
+  "confirm_policy": "new independent confirm only; one evaluation; no historical confirm reruns; no large-test access"
+}
