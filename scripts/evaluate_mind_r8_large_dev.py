@@ -126,7 +126,11 @@ def main() -> None:
         order = np.argsort(-scores, kind="stable")
         rel = group.relevance.to_numpy()[order]
         relevant = np.flatnonzero(rel > 0)
-        positive_frequency = group.loc[group.relevance > 0, "train_item_frequency"].mean()
+        positive_frequency = (
+            group.loc[group.relevance > 0, "train_item_frequency"].mean()
+            if "train_item_frequency" in group
+            else 0.0
+        )
         rows.append(
             {
                 "query_id": query_id,
@@ -136,7 +140,11 @@ def main() -> None:
                 "top1_correct": float(rel[0] > 0),
                 "margin": float(scores[order[0]] - scores[order[1]]) if len(order) > 1 else 1.0,
                 "positive_frequency": float(positive_frequency),
-                "query_characters": int(group.query_characters.iloc[0]),
+                "query_characters": (
+                    int(group.query_characters.iloc[0])
+                    if "query_characters" in group
+                    else len(str(group.iloc[0]["query"]))
+                ),
                 "candidate_count": len(group),
             }
         )
