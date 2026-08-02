@@ -1,0 +1,12 @@
+flowchart LR
+    U[用户 Query] --> Q[Query 理解/改写]
+    Q --> R[候选召回]
+    R --> G{CAGED-LTR Gate}
+    G -->|大多数请求| S[MiniLM Student]
+    G -->|困难/高价值请求| F[FIRST replay/LLM]
+    S --> E[证据约束解释]
+    F --> E
+    E --> API[FastAPI]
+    API --> UI[Streamlit Dashboard]
+    API --> M[Prometheus Metrics]
+    API --> AB[A/B Experiment]
