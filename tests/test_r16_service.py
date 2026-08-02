@@ -9,6 +9,7 @@ from caged_ltr.r16_service import (
     SearchService,
     lexical_score,
 )
+from caged_ltr.r18_gate_features import FEATURES, vector_from_ranked
 
 
 def candidates():
@@ -81,3 +82,12 @@ def test_post_student_gate_manifest_routes():
     result = service.search("best restaurants", candidates(), "gate")
     assert result["route"]["mode"] == "post_student_gate"
     assert 0 <= result["route"]["probability"] <= 1
+
+
+def test_r19_feature_builder_uses_ranked_top_item():
+    items = [Candidate("a", "unrelated"), Candidate("b", "best restaurants downtown")]
+    ranked = CachedBackend().rerank("best restaurants", items)
+    vector = vector_from_ranked("best restaurants", items, ranked)
+    assert len(vector) == len(FEATURES) == 13
+    assert vector[8] > 0  # lexical overlap belongs to the ranked top item, not input index 0
+    assert vector[11] == len(ranked[0].text)

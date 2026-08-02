@@ -1,0 +1,54 @@
+{
+  "schema": "caged_ltr_r19_gate_confirm_v1",
+  "selection": "frozen R19 dev OOF manifest; no confirm tuning",
+  "manifest_sha256": "23b72ab971063a547ff57ffd1935a23915ddece0d48e8da8ff9bef41344a1899",
+  "overall": {
+    "queries": 10000,
+    "ndcg10": 0.6051843794479681,
+    "hit10": 0.9583,
+    "mrr": 0.5258517786938723,
+    "first_call_rate": 0.3949
+  },
+  "by_bucket": {
+    "head": {
+      "queries": 3333,
+      "ndcg10": 0.7026710486946037,
+      "hit10": 0.9993999399939995,
+      "mrr": 0.6294727199992726,
+      "first_call_rate": 0.23972397239723972
+    },
+    "tail": {
+      "queries": 3334,
+      "ndcg10": 0.532637363155377,
+      "hit10": 0.9073185362927415,
+      "mrr": 0.4530726716853771,
+      "first_call_rate": 0.47420515896820636
+    },
+    "torso": {
+      "queries": 3333,
+      "ndcg10": 0.5802664927754391,
+      "hit10": 0.9681968196819682,
+      "mrr": 0.4950317803126614,
+      "first_call_rate": 0.47074707470747074
+    }
+  },
+  "student": {
+    "queries": 10000,
+    "ndcg10": 0.5280121610695259,
+    "hit10": 0.9028,
+    "mrr": 0.4692126750257827,
+    "first_call_rate": 0.0
+  },
+  "first": {
+    "queries": 10000,
+    "ndcg10": 0.6455307770618973,
+    "hit10": 0.9945,
+    "mrr": 0.5458442684521361,
+    "first_call_rate": 1.0
+  },
+  "boundaries": {
+    "dev_accessed": true,
+    "confirm_accessed": true,
+    "large_test_accessed": false
+  }
+}

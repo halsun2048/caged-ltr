@@ -139,11 +139,18 @@ class PostStudentGateRouter:
         self.coef = payload["coef"]
         self.intercept = payload["intercept"]
         self.threshold = payload["threshold"]
+        self.feature_builder_version = payload.get("feature_builder_version", "legacy-r18")
         self.name = "post-student-logistic-gain"
 
     def _vector(
         self, query: str, candidates: list[Candidate], ranked: list[RankedCandidate]
     ) -> list[float]:
+        if self.feature_builder_version != "legacy-r18":
+            from .r18_gate_features import FEATURES, vector_from_ranked
+
+            if self.features != FEATURES:
+                raise ValueError("Gate manifest feature list does not match feature builder")
+            return vector_from_ranked(query, candidates, ranked)
         scores = [item.score for item in ranked]
         top = scores[0] if scores else 0.0
         second = scores[1] if len(scores) > 1 else top

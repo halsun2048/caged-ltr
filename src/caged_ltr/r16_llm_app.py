@@ -51,24 +51,33 @@ def understand_query_with_provider(query: str) -> QueryUnderstanding:
             {"role": "user", "content": query},
         ],
     }
+    headers = {"content-type": "application/json"}
+    api_key = os.getenv("R16_LLM_API_KEY", "")
+    if api_key:
+        headers["authorization"] = f"Bearer {api_key}"
     request = Request(
         endpoint,
         data=json.dumps(request_body).encode(),
-        headers={
-            "content-type": "application/json",
-            "authorization": f"Bearer {os.getenv('R16_LLM_API_KEY', '')}",
-        },
+        headers=headers,
     )
     try:
         with urlopen(request, timeout=float(os.getenv("R16_LLM_TIMEOUT_SECONDS", "5"))) as response:
             outer = json.loads(response.read())
         content = outer["choices"][0]["message"]["content"]
         payload = json.loads(content)
+        rewritten = str(payload["rewritten_query"]).strip()
+        intent = str(payload["intent"]).strip()
+        constraints = payload.get("constraints", [])
+        confidence = float(payload.get("confidence", 0.5))
+        if not rewritten or not intent or not isinstance(constraints, list):
+            raise ValueError("invalid provider schema")
+        if not 0.0 <= confidence <= 1.0:
+            raise ValueError("confidence outside [0,1]")
         return QueryUnderstanding(
-            str(payload["rewritten_query"]),
-            str(payload["intent"]),
-            [str(value) for value in payload.get("constraints", [])],
-            float(payload.get("confidence", 0.5)),
+            rewritten,
+            intent,
+            [str(value) for value in constraints],
+            confidence,
             "openai-compatible",
         )
     except Exception:
