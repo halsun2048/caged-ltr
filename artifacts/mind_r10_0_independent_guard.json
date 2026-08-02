@@ -1,0 +1,12 @@
+{
+  "schema": "mind_r10_0_independent_guard_v1",
+  "status": "preregistered_locked",
+  "labels_materialized": false,
+  "evaluation_count": 0,
+  "allowed_evaluation_count": 1,
+  "query_count": 20000,
+  "query_id_sha256": "81d1fc4ae0b9d294665e297b50c0512be2a2960e99c19d4fe00a5f1257021fda",
+  "seed": 20260802,
+  "source": "MTEB MIND-derived relation; excludes R8.0 large and R8.14 confirm",
+  "policy": "dev may be used for routing selection; confirm is one-time fixed confirmation; no large-test access"
+}
