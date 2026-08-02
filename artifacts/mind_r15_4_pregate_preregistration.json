@@ -1,0 +1,53 @@
+{
+  "schema": "mind_r15_4_pregate_preregistration_v1",
+  "experiment_id": "mind-r15-4-qrels-free-pregate",
+  "source_split": "R12 dev only",
+  "teacher": "five-fold OOF Tail-safe post-Student Gate route",
+  "student_router": "five-fold OOF ExtraTreesClassifier with fixed 60% FIRST budget",
+  "features": [
+    "query_characters",
+    "query_words",
+    "candidate_count",
+    "passage_characters_mean",
+    "passage_characters_std",
+    "passage_characters_min",
+    "passage_characters_max",
+    "candidate_frequency_mean",
+    "candidate_frequency_std",
+    "candidate_frequency_min",
+    "candidate_frequency_max",
+    "candidate_frequency_zero_share",
+    "top1_lexical_overlap",
+    "max_lexical_overlap",
+    "mean_lexical_overlap"
+  ],
+  "forbidden_features": [
+    "relevance",
+    "positive_frequency",
+    "frequency_bucket",
+    "student score",
+    "student margin",
+    "student entropy",
+    "FIRST logits"
+  ],
+  "acceptance": {
+    "route_agreement_minimum": 0.95,
+    "ndcg_gap_to_post_gate_maximum": 0.003,
+    "tail_gap_to_post_gate_maximum": 0.003,
+    "first_call_rate_maximum": 0.6,
+    "pregate_p99_ms_maximum": 0.5,
+    "total_p99_above_first_maximum_ms": 1.0,
+    "mean_latency_reduction_vs_first_minimum": 0.3
+  },
+  "inference": {
+    "folds": 5,
+    "seed": 20260816,
+    "bootstrap_draws": 10000
+  },
+  "boundaries": {
+    "r12_confirm_accessed": false,
+    "large_test_accessed": false,
+    "nfcorpus_test_accessed": false
+  },
+  "protocol_sha256": "d398b6fb15fc76a54994865169b60ec3f42de5fb24f78599cac76811676f4e56"
+}
