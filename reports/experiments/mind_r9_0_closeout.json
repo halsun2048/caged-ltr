@@ -1,0 +1,411 @@
+{
+  "schema": "mind_r9_0_closeout_v1",
+  "status": "locked",
+  "final_split": "large_test",
+  "final_metrics": {
+    "student": {
+      "ndcg10": 0.526599513179073,
+      "hit10": 0.9029,
+      "mrr": 0.4697578506362059,
+      "first_call_rate": 0.0,
+      "latency_ms": 0.67
+    },
+    "first": {
+      "ndcg10": 0.6471850027837429,
+      "hit10": 0.99255,
+      "mrr": 0.5498525345762769,
+      "first_call_rate": 1.0,
+      "latency_ms": 69.51109944764059
+    },
+    "gate": {
+      "ndcg10": 0.650056142420189,
+      "hit10": 0.98155,
+      "mrr": 0.5862742889734105,
+      "first_call_rate": 0.4,
+      "latency_ms": 30.171426638860723
+    }
+  },
+  "frequency_buckets": {
+    "head": {
+      "queries": 6667,
+      "route_rate": 0.10769461526923654,
+      "student": {
+        "ndcg10": 0.6877119681989542,
+        "hit10": 0.9958002099895005,
+        "mrr": 0.6268860223885634,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.6536142575019354,
+        "hit10": 0.9961001949902505,
+        "mrr": 0.5494934231809888,
+        "first_call_rate": 1.0,
+        "latency_ms": 64.08909927429717
+      },
+      "gate": {
+        "ndcg10": 0.7074894812944345,
+        "hit10": 0.9976001199940003,
+        "mrr": 0.6495891460617856,
+        "first_call_rate": 0.10769461526923654,
+        "latency_ms": 8.469041726834176
+      }
+    },
+    "tail": {
+      "queries": 6667,
+      "route_rate": 0.7499625018749062,
+      "student": {
+        "ndcg10": 0.3989354977414742,
+        "hit10": 0.7945102744862756,
+        "mrr": 0.34823529276509413,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.639832672838559,
+        "hit10": 0.9899505024748763,
+        "mrr": 0.5404766050866234,
+        "first_call_rate": 1.0,
+        "latency_ms": 72.63210406703735
+      },
+      "gate": {
+        "ndcg10": 0.6452000265069389,
+        "hit10": 0.9767511624418779,
+        "mrr": 0.5710078619013959,
+        "first_call_rate": 0.7499625018749062,
+        "latency_ms": 55.4372675783031
+      }
+    },
+    "torso": {
+      "queries": 6666,
+      "route_rate": 0.34233423342334235,
+      "student": {
+        "ndcg10": 0.49314605582907695,
+        "hit10": 0.9183918391839184,
+        "mrr": 0.43414689537874035,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.648108216485866,
+        "hit10": 0.9915991599159916,
+        "mrr": 0.5595890358633913,
+        "first_call_rate": 1.0,
+        "latency_ms": 71.81244018543869
+      },
+      "gate": {
+        "ndcg10": 0.5974710320870126,
+        "hit10": 0.9702970297029703,
+        "mrr": 0.538218650971749,
+        "first_call_rate": 0.34233423342334235,
+        "latency_ms": 26.60743603958358
+      }
+    }
+  },
+  "r9_0_ablation": [
+    {
+      "policy": "ordinary_gain_gate",
+      "budget": 0.38465,
+      "tail_floor": 0.0,
+      "ndcg10": 0.6448600868091792,
+      "tail_ndcg10": 0.5969504291975279,
+      "latency_ms": 29.107130199105015,
+      "source": "R8.10 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.35,
+      "tail_floor": 0.75,
+      "ndcg10": 0.6374040231425065,
+      "tail_ndcg10": 0.6459181444749488,
+      "latency_ms": 26.509711529703345,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.35,
+      "tail_floor": 0.9,
+      "ndcg10": 0.6290435992533674,
+      "tail_ndcg10": 0.6636174892870204,
+      "latency_ms": 26.131545744561592,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.35,
+      "tail_floor": 1.0,
+      "ndcg10": 0.6123147268843603,
+      "tail_ndcg10": 0.6433829856415223,
+      "latency_ms": 25.85467791932635,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.4,
+      "tail_floor": 0.75,
+      "ndcg10": 0.650085553837935,
+      "tail_ndcg10": 0.6459181444749488,
+      "latency_ms": 30.17938306269236,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.4,
+      "tail_floor": 0.9,
+      "ndcg10": 0.6433040997356105,
+      "tail_ndcg10": 0.6636174892870204,
+      "latency_ms": 29.95630269643618,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.4,
+      "tail_floor": 1.0,
+      "ndcg10": 0.626788460218639,
+      "tail_ndcg10": 0.6433829856415223,
+      "latency_ms": 29.67164898406947,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.45,
+      "tail_floor": 0.75,
+      "ndcg10": 0.6597501983543882,
+      "tail_ndcg10": 0.6459181444749488,
+      "latency_ms": 33.62775107673835,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.45,
+      "tail_floor": 0.9,
+      "ndcg10": 0.655985630431039,
+      "tail_ndcg10": 0.6636174892870204,
+      "latency_ms": 33.62597422942519,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.45,
+      "tail_floor": 1.0,
+      "ndcg10": 0.6411614115705031,
+      "tail_ndcg10": 0.6433829856415223,
+      "latency_ms": 33.49365156430751,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.5,
+      "tail_floor": 0.75,
+      "ndcg10": 0.6675158835712153,
+      "tail_ndcg10": 0.6459181444749488,
+      "latency_ms": 37.16771344147157,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.5,
+      "tail_floor": 0.9,
+      "ndcg10": 0.6656502749474923,
+      "tail_ndcg10": 0.6636174892870204,
+      "latency_ms": 37.074342243471186,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.5,
+      "tail_floor": 1.0,
+      "ndcg10": 0.6525588297810742,
+      "tail_ndcg10": 0.6433829856415223,
+      "latency_ms": 36.98906343365554,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.55,
+      "tail_floor": 0.75,
+      "ndcg10": 0.6749202786367237,
+      "tail_ndcg10": 0.6459181444749488,
+      "latency_ms": 40.51292636716273,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.55,
+      "tail_floor": 0.9,
+      "ndcg10": 0.6734159601643193,
+      "tail_ndcg10": 0.6636174892870204,
+      "latency_ms": 40.6143046082044,
+      "source": "R8.11 fresh-confirm"
+    },
+    {
+      "policy": "tail_floor_gate",
+      "budget": 0.55,
+      "tail_floor": 1.0,
+      "ndcg10": 0.6618237513509444,
+      "tail_ndcg10": 0.6433829856415223,
+      "latency_ms": 40.501018836132715,
+      "source": "R8.11 fresh-confirm"
+    }
+  ],
+  "pareto": [
+    {
+      "policy": "MiniLM",
+      "budget": 0.0,
+      "ndcg10": 0.526599513179073,
+      "latency_ms": 0.67
+    },
+    {
+      "policy": "FIRST",
+      "budget": 1.0,
+      "ndcg10": 0.6471850027837429,
+      "latency_ms": 69.51109944764059
+    },
+    {
+      "policy": "Tail-floor gate (locked)",
+      "budget": 0.4,
+      "ndcg10": 0.650056142420189,
+      "latency_ms": 30.171426638860723
+    },
+    {
+      "policy": "tail-floor 0.75@0.35",
+      "budget": 0.35,
+      "ndcg10": 0.6374040231425065,
+      "latency_ms": 26.509711529703345
+    },
+    {
+      "policy": "tail-floor 0.90@0.35",
+      "budget": 0.35,
+      "ndcg10": 0.6290435992533674,
+      "latency_ms": 26.131545744561592
+    },
+    {
+      "policy": "tail-floor 1.00@0.35",
+      "budget": 0.35,
+      "ndcg10": 0.6123147268843603,
+      "latency_ms": 25.85467791932635
+    },
+    {
+      "policy": "tail-floor 0.75@0.40",
+      "budget": 0.4,
+      "ndcg10": 0.650085553837935,
+      "latency_ms": 30.17938306269236
+    },
+    {
+      "policy": "tail-floor 0.90@0.40",
+      "budget": 0.4,
+      "ndcg10": 0.6433040997356105,
+      "latency_ms": 29.95630269643618
+    },
+    {
+      "policy": "tail-floor 1.00@0.40",
+      "budget": 0.4,
+      "ndcg10": 0.626788460218639,
+      "latency_ms": 29.67164898406947
+    },
+    {
+      "policy": "tail-floor 0.75@0.45",
+      "budget": 0.45,
+      "ndcg10": 0.6597501983543882,
+      "latency_ms": 33.62775107673835
+    },
+    {
+      "policy": "tail-floor 0.90@0.45",
+      "budget": 0.45,
+      "ndcg10": 0.655985630431039,
+      "latency_ms": 33.62597422942519
+    },
+    {
+      "policy": "tail-floor 1.00@0.45",
+      "budget": 0.45,
+      "ndcg10": 0.6411614115705031,
+      "latency_ms": 33.49365156430751
+    },
+    {
+      "policy": "tail-floor 0.75@0.50",
+      "budget": 0.5,
+      "ndcg10": 0.6675158835712153,
+      "latency_ms": 37.16771344147157
+    },
+    {
+      "policy": "tail-floor 0.90@0.50",
+      "budget": 0.5,
+      "ndcg10": 0.6656502749474923,
+      "latency_ms": 37.074342243471186
+    },
+    {
+      "policy": "tail-floor 1.00@0.50",
+      "budget": 0.5,
+      "ndcg10": 0.6525588297810742,
+      "latency_ms": 36.98906343365554
+    },
+    {
+      "policy": "tail-floor 0.75@0.55",
+      "budget": 0.55,
+      "ndcg10": 0.6749202786367237,
+      "latency_ms": 40.51292636716273
+    },
+    {
+      "policy": "tail-floor 0.90@0.55",
+      "budget": 0.55,
+      "ndcg10": 0.6734159601643193,
+      "latency_ms": 40.6143046082044
+    },
+    {
+      "policy": "tail-floor 1.00@0.55",
+      "budget": 0.55,
+      "ndcg10": 0.6618237513509444,
+      "latency_ms": 40.501018836132715
+    }
+  ],
+  "efficiency": {
+    "student": {
+      "elapsed_seconds": 45.22911828500219,
+      "latency_ms_per_query_amortized": 2.261455914250109,
+      "throughput_queries_per_second": 442.1930110150285,
+      "peak_gpu_memory_gib": 0.43101072311401367,
+      "checkpoint_bytes": 90898094,
+      "unique_passages_encoded": 2840
+    },
+    "first": {
+      "cuda_used": true,
+      "completed_records": 60000,
+      "model": "rryisthebest/First_Model",
+      "protocol_fingerprint": "77b267f434c8fa9a185d5d83b3a7246c4112cef1fd47fe6f3d3b6fb80628f7df"
+    },
+    "gate_throughput_qps": 33.14394151690535
+  },
+  "hashes": {
+    "student_checkpoint_sha256": "4cf97dd8d08aa3e9ab7c87d2d3eed87fe7e640edcfc3b461422b0d254e5c56f9",
+    "frozen_gate_sha256": "56bdab96fb1d43331308860a2de32439d013eb7d72acca598a13b6c3e9cfbcd1",
+    "first_protocol_fingerprint": "77b267f434c8fa9a185d5d83b3a7246c4112cef1fd47fe6f3d3b6fb80628f7df",
+    "large_test_guard": "738c2c9b077ff8a4b7eaa32306bbe70b15ff0f0597d45c4ab76be2db659468fb"
+  },
+  "guard": {
+    "schema": "mind_r8_0_large_test_guard_v1",
+    "status": "consumed_closed",
+    "query_count": 20000,
+    "query_id_sha256": "738c2c9b077ff8a4b7eaa32306bbe70b15ff0f0597d45c4ab76be2db659468fb",
+    "allowed_evaluation_count": 1,
+    "evaluation_count": 1,
+    "labels_materialized": true,
+    "predictions_exist": true,
+    "policy": "Only an explicit final R8 admission command may materialize labels and score this split.",
+    "result": "reports/experiments/mind_r8_9_tail_final_once.json",
+    "admitted": true
+  },
+  "acceptance": {
+    "overall_gap_at_most_0p003": true,
+    "tail_gap_at_most_0p003": true,
+    "first_call_rate_at_most_0p55": true,
+    "gate_at_least_student": true,
+    "large_test_accessed": true,
+    "all_passed": true
+  },
+  "limitations": [
+    "R9.0 消融复用已消费的 independent fresh-confirm 数据；没有再次访问 large-test。",
+    "最终 large-test 只执行一次，guard 已为 consumed_closed/evaluation_count=1。",
+    "Torso 分桶的 gate 低于 FIRST，整体和 Tail 仍满足预注册质量差距门槛。",
+    "报告未将单次 large-test 结果表述为跨种子统计显著性；置信区间需另建不触碰该 test 的 bootstrap 分析。"
+  ]
+}

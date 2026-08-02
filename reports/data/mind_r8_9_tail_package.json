@@ -1,0 +1,26 @@
+{
+  "schema": "mind_r8_5d_gate_package_v1",
+  "source": "mteb/MindSmallReranking English derivative",
+  "top_k": 20,
+  "variants": [
+    "baseline",
+    "reverse",
+    "random_permutation"
+  ],
+  "model": "rryisthebest/First_Model",
+  "revision": "64eba9b83c174439d2b6f5d333fbb822b38d73a7",
+  "pools": {
+    "large_test": {
+      "path": "data/processed/mind_r8_9_tail/large_test.parquet",
+      "sha256": "a01735e674e5cf0910fb997d4a8eac42988293c1d271ea458bf61ed50ea01bf9",
+      "queries": 20000
+    }
+  },
+  "prompts": {
+    "large_test": {
+      "path": "runs/mind_r8_9_tail/large_test_prompts.jsonl",
+      "sha256": "04596a48b8276e38758a22f4dadf77da88f5c9c8528e00238f414b4530363497"
+    }
+  },
+  "large_test_accessed": false
+}
