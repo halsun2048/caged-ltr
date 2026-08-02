@@ -45,6 +45,11 @@ def main() -> None:
         "--report", type=Path, default=Path("reports/data/mind_r8_5d_gate_package.json")
     )
     parser.add_argument("--candidates", type=int, default=20)
+    parser.add_argument(
+        "--frequency-reference",
+        type=Path,
+        default=Path("data/processed/mind_r8_1_v2/train_listwise"),
+    )
     parser.add_argument("--seed", type=int, default=20260802)
     parser.add_argument("--splits", nargs="+", default=["gate_dev", "gate_confirm"])
     parser.add_argument("--resume", action="store_true")
@@ -56,8 +61,9 @@ def main() -> None:
     corpus_file = next((args.raw_root / "corpus").glob("*.parquet"))
     labels = sorted((args.raw_root / "data").glob("*.parquet"))
     candidates = sorted((args.raw_root / "top_ranked").glob("*.parquet"))
-    if not labels or not candidates:
-        raise FileNotFoundError("raw MTEB MIND label/candidate shards are missing")
+    frequency_files = sorted(args.frequency_reference.glob("*.parquet"))
+    if not labels or not candidates or not frequency_files:
+        raise FileNotFoundError("raw MIND shards or training-frequency reference are missing")
     connection = duckdb.connect()
     connection.execute("SET memory_limit='12GB'")
     connection.execute("SET threads=8")
@@ -93,13 +99,18 @@ def main() -> None:
                 FROM raw_rank GROUP BY query_id, corpus_id
               ), corpus AS (
                 SELECT id AS corpus_id, text AS passage FROM read_parquet('{corpus_file}')
+              ), frequency AS (
+                SELECT corpus_id, max(train_item_frequency)::BIGINT AS train_item_frequency
+                FROM read_parquet({sql_paths(frequency_files)}) GROUP BY corpus_id
               )
               SELECT r.query_id, q.query, r.corpus_id, c.passage,
                      coalesce(l.relevance, 0)::INTEGER AS relevance, r.source_rank,
+                     coalesce(f.train_item_frequency, 0)::BIGINT AS train_item_frequency,
                      '{split}' AS split
               FROM ranked r INNER JOIN q USING(query_id)
               INNER JOIN corpus c USING(corpus_id)
               LEFT JOIN l USING(query_id, corpus_id)
+              LEFT JOIN frequency f USING(corpus_id)
               ORDER BY r.query_id, r.source_rank
             ) TO '{output}' (FORMAT PARQUET, COMPRESSION ZSTD)
             """

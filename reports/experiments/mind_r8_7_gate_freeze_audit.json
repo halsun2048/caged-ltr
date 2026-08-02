@@ -1,0 +1,48 @@
+{
+  "schema": "mind_r8_7_gate_freeze_audit_v1",
+  "model": "extra_trees_leaf10",
+  "features": [
+    "margin",
+    "top1_score",
+    "top3_gap",
+    "top5_gap",
+    "score_mean",
+    "score_std",
+    "score_entropy",
+    "student_top1_source_rank",
+    "student_top3_mean_source_rank",
+    "student_source_top1_agreement",
+    "student_source_top3_overlap",
+    "top1_lexical_overlap",
+    "max_lexical_overlap",
+    "mean_lexical_overlap",
+    "query_characters",
+    "candidate_count",
+    "top1_passage_characters",
+    "mean_passage_characters"
+  ],
+  "threshold": 0.19195935257931707,
+  "artifact": {
+    "path": "artifacts/mind_r8_6_gate_v2.joblib",
+    "bytes": 82647372,
+    "sha256": "56bdab96fb1d43331308860a2de32439d013eb7d72acca598a13b6c3e9cfbcd1"
+  },
+  "efficiency": {
+    "dev_first_call_rate": 0.4,
+    "dev_latency_ms": 31.66266370446421,
+    "confirm_first_call_rate": 0.37605,
+    "confirm_latency_ms": 28.39139844001504
+  },
+  "checks": {
+    "artifact_hash_matches_manifest": true,
+    "artifact_size_matches_manifest": true,
+    "model_type_frozen": true,
+    "features_match_artifact": true,
+    "threshold_matches_artifact": true,
+    "features_are_pre_first": true,
+    "confirm_gate_passed": true,
+    "first_call_reduction_passed": true,
+    "large_test_locked_unaccessed": true
+  },
+  "all_checks_passed": true
+}

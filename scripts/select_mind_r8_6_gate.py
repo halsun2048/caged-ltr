@@ -70,11 +70,16 @@ def first_frame(pool_path: Path, prompts_path: Path, results_path: Path) -> pd.D
     return pd.DataFrame(rows)
 
 
-def merge(split: str, root: Path) -> pd.DataFrame:
+def merge(
+    split: str,
+    root: Path,
+    pool_root: Path = Path("data/processed/mind_r8_5d"),
+    first_root: Path = Path("runs/mind_r8_5d"),
+) -> pd.DataFrame:
     first = first_frame(
-        Path(f"data/processed/mind_r8_5d/{split}.parquet"),
-        Path(f"runs/mind_r8_5d/{split}_prompts.jsonl"),
-        Path(f"runs/mind_r8_5d/{split}_first/results.jsonl"),
+        pool_root / f"{split}.parquet",
+        first_root / f"{split}_prompts.jsonl",
+        first_root / f"{split}_first/results.jsonl",
     )
     student = pd.read_parquet(root / f"{split}_query_metrics.parquet")
     return student.merge(first, on="query_id", validate="one_to_one")
