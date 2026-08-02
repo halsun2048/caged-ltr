@@ -1,0 +1,32 @@
+{
+  "schema": "mind_r13_cross_split_stability_v1",
+  "historical_confirm_reopened": false,
+  "rows": [
+    {
+      "split": "r10",
+      "ndcg10": 0.668451177054683,
+      "call_rate": 0.5,
+      "tail_ndcg10": 0.6326732413021515,
+      "torso_ndcg10": 0.6471820144687471,
+      "accepted": false
+    },
+    {
+      "split": "r11",
+      "ndcg10": 0.6637407644476742,
+      "call_rate": 0.5,
+      "tail_ndcg10": 0.6222352473342125,
+      "torso_ndcg10": 0.6527124498531185,
+      "accepted": false
+    },
+    {
+      "split": "r12",
+      "ndcg10": 0.6625624996284124,
+      "call_rate": 0.55,
+      "tail_ndcg10": 0.6445124406805376,
+      "torso_ndcg10": 0.6543382702253013,
+      "accepted": true
+    }
+  ],
+  "interpretation": "R10/R11 gain gate fail Tail; R12 hard-Tail passes Tail and overall. This is cross-split descriptive evidence, not multi-seed OOF.",
+  "next_required": "true train-fold OOF on qrels-free data"
+}
