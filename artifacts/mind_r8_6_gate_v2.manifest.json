@@ -1,0 +1,13 @@
+{
+  "schema": "local_model_artifact_manifest_v1",
+  "artifact": "artifacts/mind_r8_6_gate_v2.joblib",
+  "bytes": 82647372,
+  "sha256": "56bdab96fb1d43331308860a2de32439d013eb7d72acca598a13b6c3e9cfbcd1",
+  "model": "extra_trees_leaf10",
+  "frozen_threshold": 0.19195935257931707,
+  "source_report": "reports/experiments/mind_r8_6_gate_v2.json",
+  "recovery": {
+    "local": "artifacts/mind_r8_6_gate_v2.joblib",
+    "gpu_server_at_creation": "/root/caged-ltr/artifacts/mind_r8_6_gate_v2.joblib"
+  }
+}

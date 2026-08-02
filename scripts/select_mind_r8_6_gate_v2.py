@@ -108,18 +108,22 @@ def main() -> None:
         value for value in candidates
         if value["first_call_rate"] <= 0.55 and value["ndcg10"] >= first_quality - 0.003
     ]
-    selected = max(eligible, key=lambda value: value["ndcg10"]) if eligible else None
+    # Freeze the cheapest policy that is already quality-equivalent to FIRST.
+    selected = min(eligible, key=lambda value: value["first_call_rate"]) if eligible else None
     confirm_result = None
     admitted = False
     frozen = None
     if selected:
         model = estimators()[selected["model"]]
         model.fit(x, gain)
+        dev_prediction = model.predict(x)
+        threshold = float(np.quantile(dev_prediction, 1 - selected["budget"]))
+        selected = {**selected, "threshold": threshold}
         # Confirmation is evaluated exactly once after all model/budget choices are frozen.
         confirm = merge("gate_confirm", args.metrics_root)
         confirm_x = confirm[FEATURES].replace([np.inf, -np.inf], np.nan).fillna(0.0)
         confirm_prediction = model.predict(confirm_x)
-        route = route_at_budget(confirm_prediction, selected["budget"])
+        route = confirm_prediction >= threshold
         confirm_result = metrics(confirm, route)
         admitted = bool(
             confirm_result["first_call_rate"] <= 0.55

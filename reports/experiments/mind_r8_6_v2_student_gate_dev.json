@@ -1,0 +1,80 @@
+{
+  "schema": "mind_r8_3_large_dev_evaluation_v1",
+  "name": "gate_dev",
+  "split": "gate_dev",
+  "checkpoint": "artifacts/mind_r8_2_hard_random.pt",
+  "checkpoint_sha256": "4cf97dd8d08aa3e9ab7c87d2d3eed87fe7e640edcfc3b461422b0d254e5c56f9",
+  "overall": {
+    "queries": 20000,
+    "ndcg10": 0.5288690002072813,
+    "hit10": 0.90385,
+    "mrr": 0.47079621451583337,
+    "top1_accuracy": 0.27165,
+    "mean_margin": 0.1193568346770946
+  },
+  "frequency_buckets": {
+    "head": {
+      "queries": 6667,
+      "ndcg10": 0.5277025275720617,
+      "hit10": 0.9004049797510124,
+      "mrr": 0.47063744300501076,
+      "top1_accuracy": 0.27238638068096593,
+      "mean_margin": 0.12223602379098795
+    },
+    "tail": {
+      "queries": 6667,
+      "ndcg10": 0.5281327416615483,
+      "hit10": 0.9052047397630119,
+      "mrr": 0.4701259656745319,
+      "top1_accuracy": 0.2711864406779661,
+      "mean_margin": 0.11682644698856022
+    },
+    "torso": {
+      "queries": 6666,
+      "ndcg10": 0.5307720168264549,
+      "hit10": 0.905940594059406,
+      "mrr": 0.4716253592334467,
+      "top1_accuracy": 0.27137713771377137,
+      "mean_margin": 0.11900798092628925
+    }
+  },
+  "length_buckets": {
+    "long": {
+      "queries": 6667,
+      "ndcg10": 0.532433645668867,
+      "hit10": 0.9064046797660117,
+      "mrr": 0.47290318000499976,
+      "top1_accuracy": 0.27418629068546574,
+      "mean_margin": 0.11648764350783017
+    },
+    "medium": {
+      "queries": 6666,
+      "ndcg10": 0.5338091577660486,
+      "hit10": 0.9045904590459046,
+      "mrr": 0.47763761356325724,
+      "top1_accuracy": 0.2745274527452745,
+      "mean_margin": 0.12221521985564272
+    },
+    "short": {
+      "queries": 6667,
+      "ndcg10": 0.5203649381735129,
+      "hit10": 0.9005549722513875,
+      "mrr": 0.4618488761377921,
+      "top1_accuracy": 0.2662366881655917,
+      "mean_margin": 0.11936806940415086
+    }
+  },
+  "efficiency": {
+    "elapsed_seconds": 39.87311312300153,
+    "latency_ms_per_query_amortized": 1.9936556561500764,
+    "throughput_queries_per_second": 501.59113331089856,
+    "peak_gpu_memory_gib": 0.43101072311401367,
+    "checkpoint_bytes": 90898094,
+    "unique_passages_encoded": 2796
+  },
+  "query_metrics": "runs/mind_r8_6_v2/gate_dev_query_metrics.parquet",
+  "boundaries": {
+    "large_dev_accessed": true,
+    "large_test_accessed": false
+  }
+}
