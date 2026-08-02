@@ -1,0 +1,103 @@
+{
+  "schema": "mind_r15_offline_ab_v1",
+  "protocol_sha256": "f9c02954745667ad4bdf58e9f7968b99f464389e57a4b66d62c33a01280ace0e",
+  "queries": 10000,
+  "aa": {
+    "arms": {
+      "treatment": 5029,
+      "control": 4971
+    },
+    "srm_p_value": 0.5619146177971287,
+    "ndcg_difference": 0.00078201726222904,
+    "bootstrap_95ci": [
+      -0.008208615420871543,
+      0.0097011376034043
+    ],
+    "bucket_balance": {
+      "head": {
+        "treatment_share": 0.33585205806323326,
+        "control_share": 0.33071816535908266,
+        "absolute_difference": 0.0051338927041506
+      },
+      "torso": {
+        "treatment_share": 0.33187512427918076,
+        "control_share": 0.3347415007040837,
+        "absolute_difference": 0.00286637642490295
+      },
+      "tail": {
+        "treatment_share": 0.332272817657586,
+        "control_share": 0.33454033393683363,
+        "absolute_difference": 0.00226751627924765
+      }
+    },
+    "acceptance": {
+      "srm_pass": true,
+      "bucket_balance_pass": true,
+      "ndcg_ci_includes_zero": true,
+      "all_passed": true
+    }
+  },
+  "ab": {
+    "randomized_replay": {
+      "treatment_gate_ndcg10": 0.6701709103406233,
+      "control_first_ndcg10": 0.6449431294078227,
+      "difference": 0.025227780932800536,
+      "bootstrap_95ci": [
+        0.016245341529350362,
+        0.034525760130959454
+      ]
+    },
+    "paired_potential_outcome": {
+      "difference": 0.023796973890439742,
+      "bootstrap_95ci": [
+        0.019999363196473986,
+        0.027488851815683887
+      ]
+    },
+    "paired_tail": {
+      "difference": 0.0,
+      "bootstrap_95ci": [
+        0.0,
+        0.0
+      ]
+    },
+    "treatment_first_call_rate": 0.5999,
+    "first_call_reduction": 0.4001,
+    "latency": {
+      "control": {
+        "p50_ms": 73.71870707720518,
+        "p95_ms": 81.93009152309969,
+        "p99_ms": 82.69743119832128,
+        "mean_ms": 68.8662015124457
+      },
+      "treatment": {
+        "p50_ms": 74.18447705671976,
+        "p95_ms": 86.39158221880759,
+        "p99_ms": 87.18380537337477,
+        "mean_ms": 48.09451276263541
+      },
+      "mean_reduction": 0.3016238487621009
+    },
+    "acceptance": {
+      "quality_noninferiority": true,
+      "tail_noninferiority": true,
+      "first_call_reduction": true,
+      "mean_latency_reduction": true,
+      "p99_guardrail": true,
+      "all_passed": true
+    }
+  },
+  "online_metrics": {
+    "CTR": null,
+    "long_click_rate": null,
+    "CVR": null,
+    "reason": "not observable in offline MIND replay"
+  },
+  "interpretation": "Randomized replay emulates assignment; paired potential-outcome estimates are reported because both offline policies are observable for every dev query.",
+  "boundaries": {
+    "r12_dev_accessed": true,
+    "r12_confirm_accessed": false,
+    "large_test_accessed": false,
+    "nfcorpus_test_accessed": false
+  }
+}
