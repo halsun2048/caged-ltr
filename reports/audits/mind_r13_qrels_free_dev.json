@@ -1,0 +1,16 @@
+{
+  "schema": "qrels_free_protocol_audit_v1",
+  "pool": "data/processed/mind_r13_qrels_free_r12/dev.parquet",
+  "prompts": null,
+  "pool_columns": [
+    "corpus_id",
+    "passage",
+    "query",
+    "query_id",
+    "source_rank",
+    "split"
+  ],
+  "forbidden_pool_columns": [],
+  "forbidden_prompt_lines": [],
+  "qrels_free": true
+}
