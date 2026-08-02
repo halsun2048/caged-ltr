@@ -1,0 +1,10 @@
+.git
+.venv
+.uv-cache
+artifacts/r16_runtime
+data/raw
+data/external
+runs
+tests
+__pycache__
+*.pyc

@@ -4,6 +4,7 @@ from caged_ltr.r16_llm_app import as_json, explain_result, understand_query
 from caged_ltr.r16_service import (
     CachedBackend,
     Candidate,
+    PostStudentGateRouter,
     ReplayFirstBackend,
     SearchService,
     lexical_score,
@@ -67,3 +68,16 @@ def test_first_failure_retries_and_degrades():
     assert service.metrics()["degradations"] == 1
     second = service.search("q", candidates(), "first")
     assert second["route"]["failure"] == "circuit-open"
+
+
+def test_post_student_gate_manifest_routes():
+    router = PostStudentGateRouter("artifacts/r18_post_student_gate.json")
+    service = SearchService(
+        student=CachedBackend(),
+        first=CachedBackend(),
+        route_mode="post_student_gate",
+        router=router,
+    )
+    result = service.search("best restaurants", candidates(), "gate")
+    assert result["route"]["mode"] == "post_student_gate"
+    assert 0 <= result["route"]["probability"] <= 1

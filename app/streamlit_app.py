@@ -2,7 +2,9 @@
 """R17 portfolio dashboard for the CAGED-LTR serving demo."""
 
 import json
+import os
 from pathlib import Path
+from urllib.request import Request, urlopen
 
 import streamlit as st
 
@@ -31,6 +33,21 @@ def candidate_input(raw: str) -> list[Candidate]:
     return result
 
 
+def api_search(base_url: str, query: str, candidates: list[Candidate], backend: str) -> dict:
+    payload = {
+        "query": query,
+        "backend": backend,
+        "candidates": [item.__dict__ for item in candidates],
+    }
+    request = Request(
+        f"{base_url.rstrip('/')}/search",
+        data=json.dumps(payload).encode(),
+        headers={"content-type": "application/json"},
+    )
+    with urlopen(request, timeout=10) as response:
+        return json.loads(response.read())
+
+
 def metric_card(report: dict) -> None:
     student, first = report["student"], report["first_recorded_model_inference"]
     gate = report["hard_tail_gate_replay"]
@@ -47,6 +64,7 @@ st.sidebar.title("CAGED-LTR R17")
 st.sidebar.caption("成本感知的大模型搜索重排")
 page = st.sidebar.radio("展示页面", ["项目总览", "智能搜索", "A/B 实验", "性能与成本", "部署说明"])
 budget = st.sidebar.slider("FIRST 调用预算", 0.0, 1.0, 0.4, 0.05)
+api_url = st.sidebar.text_input("FastAPI URL（可选）", os.getenv("R18_API_URL", ""))
 service = get_service(budget)
 benchmark = load_json(str(ROOT / "reports/experiments/r16_gpu_service_benchmark.json"))
 ab_report = load_json(str(ROOT / "reports/experiments/mind_r15_offline_ab.json"))
@@ -89,7 +107,15 @@ elif page == "智能搜索":
     backend = st.selectbox("策略", ["gate", "student", "first"])
     if st.button("开始检索", type="primary"):
         candidates = candidate_input(raw)
-        result = service.search(query, candidates, backend)
+        if api_url.strip():
+            try:
+                result = api_search(api_url, query, candidates, backend)
+                st.success("实时 FastAPI 模式")
+            except Exception as error:
+                st.warning(f"API 不可用，已回退离线模式: {type(error).__name__}")
+                result = service.search(query, candidates, backend)
+        else:
+            result = service.search(query, candidates, backend)
         understanding = as_json(query)
         st.subheader("Query 理解")
         st.json(understanding)
@@ -112,6 +138,34 @@ elif page == "智能搜索":
 
 elif page == "A/B 实验":
     st.title("在线 A/B 实验面板")
+    st.subheader("单请求稳定分流演示")
+    user_id = st.text_input("匿名用户 ID", "demo-user-001")
+    ab_query = st.text_input("A/B Query", "best restaurants downtown")
+    if st.button("执行 A/B 请求"):
+        ab_candidates = [
+            Candidate("A", "best restaurants downtown"),
+            Candidate("B", "home cooking guide"),
+        ]
+        if api_url.strip():
+            payload = {
+                "query": ab_query,
+                "user_id": user_id,
+                "backend": "gate",
+                "candidates": [item.__dict__ for item in ab_candidates],
+            }
+            try:
+                request = Request(
+                    f"{api_url.rstrip('/')}/ab/search",
+                    data=json.dumps(payload).encode(),
+                    headers={"content-type": "application/json"},
+                )
+                with urlopen(request, timeout=10) as response:
+                    live_ab = json.loads(response.read())
+            except Exception as error:
+                live_ab = {"error": type(error).__name__}
+        else:
+            live_ab = service.ab_search(ab_query, ab_candidates, user_id)
+        st.json(live_ab)
     ab = ab_report["ab"]
     left, right = st.columns(2)
     with left:

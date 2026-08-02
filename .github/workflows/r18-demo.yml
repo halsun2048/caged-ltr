@@ -1,0 +1,16 @@
+name: R18 demo image
+
+on:
+  push:
+    tags: ["r18-*"]
+  workflow_dispatch:
+
+jobs:
+  build-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build demo image
+        run: docker build -f Dockerfile.demo -t caged-ltr-r18-demo .
+      - name: Validate container import
+        run: docker run --rm caged-ltr-r18-demo python -m py_compile /app/scripts/run_r16_api.py

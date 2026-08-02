@@ -8,6 +8,9 @@ released; a real Student/FIRST adapter can be plugged into the same interface.
 
 import hashlib
 import json
+import logging
+import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from dataclasses import dataclass
@@ -75,11 +78,12 @@ class MiniLMBackend:
         self._model.load_state_dict(
             torch.load(checkpoint, map_location="cpu", weights_only=False)["model"]
         )
+        self._lock = threading.Lock()
 
     def rerank(self, query: str, candidates: list[Candidate]) -> list[RankedCandidate]:
         texts = [query, *[item.text for item in candidates]]
         batch = self._tokenize(self._tokenizer, texts, self._device, 96)
-        with self._torch.inference_mode():
+        with self._lock, self._torch.inference_mode():
             embeddings = self._model.embed(batch)
             scores = (embeddings[0:1] @ embeddings[1:].T).flatten().float().cpu().tolist()
         order = sorted(
@@ -124,6 +128,67 @@ class ReplayFirstBackend:
         ]
 
 
+class PostStudentGateRouter:
+    """Portable linear gain router trained from a frozen dev manifest."""
+
+    def __init__(self, manifest_path: str | Path) -> None:
+        payload = json.loads(Path(manifest_path).read_text())
+        self.features = payload["features"]
+        self.mean = payload["mean"]
+        self.scale = payload["scale"]
+        self.coef = payload["coef"]
+        self.intercept = payload["intercept"]
+        self.threshold = payload["threshold"]
+        self.name = "post-student-logistic-gain"
+
+    def _vector(
+        self, query: str, candidates: list[Candidate], ranked: list[RankedCandidate]
+    ) -> list[float]:
+        scores = [item.score for item in ranked]
+        top = scores[0] if scores else 0.0
+        second = scores[1] if len(scores) > 1 else top
+        texts = [item.text for item in candidates]
+        overlaps = [lexical_score(query, text) for text in texts]
+        mean_score = sum(scores) / max(len(scores), 1)
+        variance = sum((value - mean_score) ** 2 for value in scores) / max(len(scores), 1)
+        return [
+            float(len(query)),
+            float(len(candidates)),
+            float(top - second),
+            float(top),
+            float(top - (scores[2] if len(scores) > 2 else second)),
+            float(top - (scores[4] if len(scores) > 4 else second)),
+            mean_score,
+            variance**0.5,
+            variance,
+            overlaps[0] if overlaps else 0.0,
+            max(overlaps, default=0.0),
+            sum(overlaps) / max(len(overlaps), 1),
+            float(len(texts[0])) if texts else 0.0,
+            sum(map(len, texts)) / max(len(texts), 1),
+        ]
+
+    def decide(
+        self, query: str, candidates: list[Candidate], ranked: list[RankedCandidate]
+    ) -> dict[str, object]:
+        vector = self._vector(query, candidates, ranked)
+        score = self.intercept + sum(
+            coef * ((value - mean) / scale)
+            for coef, value, mean, scale in zip(
+                self.coef, vector, self.mean, self.scale, strict=True
+            )
+        )
+        probability = 1 / (1 + pow(2.718281828, -score))
+        use_first = probability >= self.threshold
+        return {
+            "backend": "first" if use_first else "student",
+            "reason": "trained_post_student_gain",
+            "mode": "post_student_gate",
+            "probability": probability,
+            "threshold": self.threshold,
+        }
+
+
 class SearchService:
     def __init__(
         self,
@@ -134,6 +199,8 @@ class SearchService:
         max_retries: int = 1,
         circuit_failure_threshold: int = 3,
         circuit_cooldown_seconds: float = 10.0,
+        route_mode: str = "demo_hash",
+        router: PostStudentGateRouter | None = None,
     ) -> None:
         self.student = student or CachedBackend()
         self.first = first or CachedBackend()
@@ -150,13 +217,24 @@ class SearchService:
         self.degradations = 0
         self._circuit_open_until = 0.0
         self._first_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="r16-first")
+        self.route_mode = route_mode
+        self.router = router
 
     def route(self, query: str, candidates: list[Candidate]) -> dict[str, object]:
+        if self.route_mode == "post_student_gate":
+            raise RuntimeError(
+                "post_student_gate routing requires the Student result; use search()"
+            )
+        if self.route_mode != "demo_hash":
+            raise RuntimeError(
+                f"route mode {self.route_mode!r} requires an explicit trained router adapter"
+            )
         digest = hashlib.sha256(query.encode()).digest()
         use_first = int.from_bytes(digest[:8], "big") / 2**64 < self.first_budget
         return {
             "backend": "first" if use_first else "student",
-            "reason": "stable-budget-route",
+            "reason": "budget_demo_router",
+            "mode": self.route_mode,
             "budget": self.first_budget,
         }
 
@@ -164,11 +242,18 @@ class SearchService:
         self, query: str, candidates: list[Candidate], backend: str = "gate"
     ) -> dict[str, object]:
         started = time.perf_counter()
-        decision = (
-            self.route(query, candidates)
-            if backend == "gate"
-            else {"backend": backend, "reason": "explicit-backend"}
-        )
+        student_result = None
+        if backend == "gate" and self.route_mode == "post_student_gate":
+            if self.router is None:
+                raise RuntimeError("post_student_gate mode requires router manifest")
+            student_result = self.student.rerank(query, candidates)
+            decision = self.router.decide(query, candidates, student_result)
+        else:
+            decision = (
+                self.route(query, candidates)
+                if backend == "gate"
+                else {"backend": backend, "reason": "explicit-backend"}
+            )
         selected = decision["backend"]
         if selected == "first":
             result, selected, failure = self._first_with_resilience(query, candidates)
@@ -177,7 +262,11 @@ class SearchService:
             else:
                 self.first_calls += 1
         elif selected == "student":
-            result = self.student.rerank(query, candidates)
+            result = (
+                student_result
+                if student_result is not None
+                else self.student.rerank(query, candidates)
+            )
         else:
             raise ValueError(f"unknown backend: {selected}")
         elapsed = 1000 * (time.perf_counter() - started)
@@ -229,8 +318,11 @@ class SearchService:
             "circuit_open": time.monotonic() < self._circuit_open_until,
         }
 
-    def ab_search(self, query: str, candidates: list[Candidate]) -> dict[str, object]:
-        digest = hashlib.sha256(("r16-ab:" + query).encode()).digest()
+    def ab_search(
+        self, query: str, candidates: list[Candidate], user_id: str | None = None
+    ) -> dict[str, object]:
+        assignment_key = user_id or query
+        digest = hashlib.sha256(("r18-ab:" + assignment_key).encode()).digest()
         arm = "treatment_gate" if digest[0] < 128 else "control_first"
         self.ab_counts[arm] += 1
         return {
@@ -241,7 +333,7 @@ class SearchService:
 
 def create_app(service: SearchService | None = None):
     try:
-        from fastapi import Body, FastAPI
+        from fastapi import Body, FastAPI, HTTPException
         from fastapi.responses import PlainTextResponse
         from pydantic import BaseModel, Field
     except ImportError as error:  # pragma: no cover - exercised when app extra is absent
@@ -257,14 +349,47 @@ def create_app(service: SearchService | None = None):
         query: str = Field(min_length=1)
         candidates: list[CandidateInput] = Field(min_length=1, max_length=100)
         backend: str = "gate"
+        user_id: str | None = None
 
     app = FastAPI(title="CAGED-LTR R16 Demo", version="0.1.0")
     runtime = service or SearchService()
     from .r16_llm_app import as_json, explain_result
 
+    request_log = logging.getLogger("caged_ltr.api")
+    rate_limit = int(os.getenv("R18_RATE_LIMIT_PER_MINUTE", "120"))
+    rate_state: dict[str, tuple[float, int]] = {}
+
+    @app.middleware("http")
+    async def request_guard(request, call_next):
+        client = request.client.host if request.client else "unknown"
+        now = time.monotonic()
+        start, count = rate_state.get(client, (now, 0))
+        if now - start >= 60:
+            start, count = now, 0
+        count += 1
+        rate_state[client] = (start, count)
+        if count > rate_limit:
+            from fastapi.responses import JSONResponse
+
+            return JSONResponse({"detail": "rate limit exceeded"}, status_code=429)
+        response = await call_next(request)
+        request_log.info(
+            "request method=%s path=%s status=%s client=%s",
+            request.method,
+            request.url.path,
+            response.status_code,
+            client,
+        )
+        return response
+
     @app.get("/health")
     def health() -> dict[str, object]:
-        return {"status": "ok", "student": runtime.student.name, "first": runtime.first.name}
+        return {
+            "status": "ok",
+            "student": runtime.student.name,
+            "first": runtime.first.name,
+            "route_mode": runtime.route_mode,
+        }
 
     @app.get("/metrics")
     def metrics() -> dict[str, object]:
@@ -297,10 +422,20 @@ def create_app(service: SearchService | None = None):
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
         return runtime.search(payload.query, candidates, payload.backend)
 
+    @app.post("/search/batch")
+    def batch_search(payload: list[SearchInput] = Body(...)) -> dict[str, object]:
+        if len(payload) > 32:
+            raise HTTPException(status_code=422, detail="batch size must be <= 32")
+        results = []
+        for item in payload:
+            candidates = [Candidate(value.item_id, value.text) for value in item.candidates]
+            results.append(runtime.search(item.query, candidates, item.backend))
+        return {"results": results, "batch_size": len(results)}
+
     @app.post("/ab/search")
     def ab_search(payload: SearchInput = Body(...)) -> dict[str, object]:
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
-        return runtime.ab_search(payload.query, candidates)
+        return runtime.ab_search(payload.query, candidates, payload.user_id)
 
     @app.post("/understand")
     def understand(payload: SearchInput = Body(...)) -> dict[str, object]:

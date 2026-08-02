@@ -1,0 +1,15 @@
+{
+  "schema": "caged_ltr_r18_llm_provider_smoke_v1",
+  "provider": "openai-compatible",
+  "result": {
+    "rewritten_query": "cheap downtown restaurants",
+    "intent": "recommendation",
+    "constraints": [
+      "cheap",
+      "downtown"
+    ],
+    "confidence": 0.91,
+    "provider": "openai-compatible"
+  },
+  "external_api_called": false
+}

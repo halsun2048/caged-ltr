@@ -6,6 +6,8 @@ COPY pyproject.toml README.md /app/
 COPY src /app/src
 COPY app /app/app
 COPY scripts /app/scripts
+COPY reports /app/reports
+COPY data/demo /app/data/demo
 ENV PYTHONPATH=/app/src
 EXPOSE 8000 8501
 CMD ["uvicorn", "scripts.run_r16_api:app", "--host", "0.0.0.0", "--port", "8000"]

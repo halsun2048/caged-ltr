@@ -2,13 +2,27 @@
 
 import os
 
-from caged_ltr.r16_service import MiniLMBackend, ReplayFirstBackend, SearchService, create_app
+from caged_ltr.r16_service import (
+    MiniLMBackend,
+    PostStudentGateRouter,
+    ReplayFirstBackend,
+    SearchService,
+    create_app,
+)
 
 
 def build_service() -> SearchService:
     mode = os.getenv("R16_BACKEND", "cached")
+    route_mode = os.getenv("R16_ROUTE_MODE", "demo_hash")
+    router = None
+    if route_mode == "post_student_gate":
+        router = PostStudentGateRouter(os.environ["R16_GATE_MANIFEST"])
     if mode != "real":
-        return SearchService(first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4")))
+        return SearchService(
+            first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4")),
+            route_mode=route_mode,
+            router=router,
+        )
     student = MiniLMBackend(
         os.environ["R16_MODEL_PATH"],
         os.environ["R16_STUDENT_CHECKPOINT"],
@@ -16,7 +30,11 @@ def build_service() -> SearchService:
     )
     first = ReplayFirstBackend(os.environ["R16_FIRST_RESULTS"])
     return SearchService(
-        student=student, first=first, first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4"))
+        student=student,
+        first=first,
+        first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4")),
+        route_mode=route_mode,
+        router=router,
     )
 
 
