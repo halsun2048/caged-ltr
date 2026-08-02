@@ -1,0 +1,239 @@
+{
+  "schema": "mind_r14_4_dual_granularity_pilot_v1",
+  "scope": "objective-level pairwise/listwise losses derived from the same FIRST logits; not an independent PRP teacher",
+  "train_queries": 2000,
+  "dev_queries": 2000,
+  "seeds": [
+    42,
+    2024
+  ],
+  "route_rate": 0.4,
+  "route_entropy_threshold": 1.2958499431610107,
+  "variants": {
+    "listwise_only": {
+      "mean_ndcg10": 0.3137118099881886,
+      "seeds": [
+        {
+          "overall_ndcg10": 0.31560986508643607,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.35998963909859116,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24336209486889002,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.2876630419931553,
+              "queries": 608
+            }
+          },
+          "variant": "listwise_only",
+          "seed": 42,
+          "last_loss": 2.0660414695739746,
+          "elapsed_seconds": 68.5,
+          "peak_gpu_memory_gib": 1.0313878059387207,
+          "pairwise_route_rate": 0.0
+        },
+        {
+          "overall_ndcg10": 0.3118137548899412,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.35243722855181153,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24601558820351163,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.28602104856826965,
+              "queries": 608
+            }
+          },
+          "variant": "listwise_only",
+          "seed": 2024,
+          "last_loss": 1.0930991172790527,
+          "elapsed_seconds": 66.29,
+          "peak_gpu_memory_gib": 1.0360517501831055,
+          "pairwise_route_rate": 0.0
+        }
+      ]
+    },
+    "pairwise_only": {
+      "mean_ndcg10": 0.30143830969904395,
+      "seeds": [
+        {
+          "overall_ndcg10": 0.3016113496653736,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.3489150529716378,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.22441554158336596,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.27194203613046664,
+              "queries": 608
+            }
+          },
+          "variant": "pairwise_only",
+          "seed": 42,
+          "last_loss": 0.8848150372505188,
+          "elapsed_seconds": 66.79,
+          "peak_gpu_memory_gib": 1.0313878059387207,
+          "pairwise_route_rate": 1.0
+        },
+        {
+          "overall_ndcg10": 0.3012652697327143,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.34392852116512607,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.23587819734089457,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.2718311880790756,
+              "queries": 608
+            }
+          },
+          "variant": "pairwise_only",
+          "seed": 2024,
+          "last_loss": 1.0418554544448853,
+          "elapsed_seconds": 66.65,
+          "peak_gpu_memory_gib": 1.0360517501831055,
+          "pairwise_route_rate": 1.0
+        }
+      ]
+    },
+    "joint": {
+      "mean_ndcg10": 0.3131370973297646,
+      "seeds": [
+        {
+          "overall_ndcg10": 0.3154016054977336,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.35943665106652745,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24281704564377152,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.28823901512039357,
+              "queries": 608
+            }
+          },
+          "variant": "joint",
+          "seed": 42,
+          "last_loss": 2.577997922897339,
+          "elapsed_seconds": 67.0,
+          "peak_gpu_memory_gib": 1.0313878059387207,
+          "pairwise_route_rate": 1.0
+        },
+        {
+          "overall_ndcg10": 0.3108725891617956,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.35174208957608943,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24492368028414122,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.2847672019766165,
+              "queries": 608
+            }
+          },
+          "variant": "joint",
+          "seed": 2024,
+          "last_loss": 1.631880521774292,
+          "elapsed_seconds": 66.89,
+          "peak_gpu_memory_gib": 1.0360517501831055,
+          "pairwise_route_rate": 1.0
+        }
+      ]
+    },
+    "routed_joint": {
+      "mean_ndcg10": 0.31330216662466537,
+      "seeds": [
+        {
+          "overall_ndcg10": 0.3150774334262135,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.35927116738832016,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24203467860917108,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.28794114068927423,
+              "queries": 608
+            }
+          },
+          "variant": "routed_joint",
+          "seed": 42,
+          "last_loss": 2.5744428634643555,
+          "elapsed_seconds": 67.36,
+          "peak_gpu_memory_gib": 1.0313878059387207,
+          "pairwise_route_rate": 0.4
+        },
+        {
+          "overall_ndcg10": 0.3115268998231172,
+          "buckets": {
+            "head": {
+              "ndcg10": 0.3517785534275225,
+              "queries": 1008
+            },
+            "tail": {
+              "ndcg10": 0.24469267247493534,
+              "queries": 384
+            },
+            "torso": {
+              "ndcg10": 0.2870049861199286,
+              "queries": 608
+            }
+          },
+          "variant": "routed_joint",
+          "seed": 2024,
+          "last_loss": 1.0876641273498535,
+          "elapsed_seconds": 65.49,
+          "peak_gpu_memory_gib": 1.0360517501831055,
+          "pairwise_route_rate": 0.4
+        }
+      ]
+    }
+  },
+  "joint_gain": -0.0005747126584240148,
+  "routed_gain": -0.0004096433635232266,
+  "acceptance": {
+    "joint_gain_at_least_0p005": false,
+    "tail_not_reverse_all_seeds": false,
+    "routed_retains_95pct_joint_gain": false,
+    "pairwise_call_reduction_at_least_40pct": true,
+    "two_seed_direction_consistent": false
+  },
+  "go": false,
+  "boundaries": {
+    "large_train_only_for_training": true,
+    "large_dev_evaluation_only": true,
+    "confirm_accessed": false,
+    "large_test_accessed": false
+  },
+  "source_sha256": {
+    "data/processed/mind_r14_4/pilot_pool.parquet": "694efcbc8b357cf273c47fc420a08c8c1aa401b5861c195c70bd77269ecb3b1f",
+    "runs/mind_r14_4/pilot_prompts.jsonl": "4135673755761de0d6f80d5f8d3d4240d7cb981ef2f3c95e15133b044c35fd87",
+    "runs/mind_r14_4/first/results.jsonl": "f6e356a9949af79f92354bdb0aeee2860ab889aeeb4c9f3a51847c968cd7fef7"
+  }
+}

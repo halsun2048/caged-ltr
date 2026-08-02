@@ -19,7 +19,8 @@ def main() -> None:
     stats = load(Path("reports/experiments/mind_r14_statistics.json"))
     latency = load(Path("reports/experiments/mind_r14_service_latency.json"))
     cross = load(Path("reports/experiments/mind_r14_cross_domain_audit.json"))
-    dual = load(Path("reports/experiments/mind_r14_4_dual_granularity_audit.json"))
+    dual_path = Path("reports/experiments/mind_r14_4_dual_granularity_pilot.json")
+    dual = load(dual_path)
     payload = {
         "schema": "mind_r14_closeout_v1",
         "status": "bounded_closeout_complete",
@@ -28,7 +29,7 @@ def main() -> None:
             "R14.1_paired_statistics": "not_available_without_reconstructing_comparators",
             "R14.2_service_latency": "complete",
             "R14.3_cross_domain": cross["decision"]["status"],
-            "R14.4_dual_granularity": dual["decision"],
+            "R14.4_dual_granularity": "no_go" if not dual["go"] else "go",
         },
         "evidence": {
             "statistics": stats,
@@ -41,7 +42,7 @@ def main() -> None:
             "not_supported": [
                 "A statistically significant large-test advantage over FIRST, because comparator per-query arrays were not persisted.",
                 "Strict zero-shot transfer of the same gate thresholds across datasets.",
-                "A dual-granularity pairwise-plus-listwise distillation gain, because aligned FIRST logits are absent from the current training package.",
+                "A dual-granularity pairwise-plus-listwise distillation gain: the 2,000-query, two-seed pilot produced a negative mean gain and Tail reversal.",
             ],
             "recommendation": "Stop broad model exploration; freeze the routing result and report these boundaries explicitly.",
         },
@@ -56,7 +57,7 @@ def main() -> None:
                 Path("reports/experiments/mind_r14_statistics.json"),
                 Path("reports/experiments/mind_r14_service_latency.json"),
                 Path("reports/experiments/mind_r14_cross_domain_audit.json"),
-                Path("reports/experiments/mind_r14_4_dual_granularity_audit.json"),
+                dual_path,
             )
         },
     }

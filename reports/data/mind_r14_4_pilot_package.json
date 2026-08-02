@@ -1,0 +1,24 @@
+{
+  "schema": "mind_r14_4_pilot_package_v1",
+  "source_split": "large_train_only",
+  "query_count": 2000,
+  "candidate_count": 20,
+  "seed": 20260810,
+  "ids": {
+    "path": "data/processed/mind_r14_4/pilot_query_ids.parquet",
+    "sha256": "be21e2f3391e791520bc7944fa098773a0709a04341dc3b3c666fa94c68b7e74"
+  },
+  "pool": {
+    "path": "data/processed/mind_r14_4/pilot_pool.parquet",
+    "sha256": "694efcbc8b357cf273c47fc420a08c8c1aa401b5861c195c70bd77269ecb3b1f"
+  },
+  "prompts": {
+    "path": "runs/mind_r14_4/pilot_prompts.jsonl",
+    "sha256": "4135673755761de0d6f80d5f8d3d4240d7cb981ef2f3c95e15133b044c35fd87"
+  },
+  "model": "rryisthebest/First_Model",
+  "revision": "64eba9b83c174439d2b6f5d333fbb822b38d73a7",
+  "large_dev_accessed": false,
+  "confirm_accessed": false,
+  "large_test_accessed": false
+}
