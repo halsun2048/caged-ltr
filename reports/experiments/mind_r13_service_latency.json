@@ -1,0 +1,38 @@
+{
+  "schema": "mind_r13_service_latency_v1",
+  "device": "NVIDIA GeForce RTX 4090",
+  "requests": 950,
+  "warmup_requests": 50,
+  "candidate_count_per_request": 20,
+  "student": {
+    "p50_ms": 4.682844039052725,
+    "p95_ms": 4.989574151113629,
+    "p99_ms": 6.013498418033123,
+    "mean_ms": 4.726233705143003,
+    "throughput_qps": 211.58496646321527
+  },
+  "first_recorded_model_inference": {
+    "p50_ms": 73.70913703925908,
+    "p95_ms": 81.94761130725965,
+    "p99_ms": 82.69114128313959,
+    "mean_ms": 68.81325640995831,
+    "throughput_qps": 14.532083673565038
+  },
+  "hard_tail_gate_replay": {
+    "p50_ms": 52.5094858603552,
+    "p95_ms": 84.75234633078799,
+    "p99_ms": 85.6373634468764,
+    "mean_ms": 42.197872854916284,
+    "throughput_qps": 23.69787698631578,
+    "first_call_rate": 0.55
+  },
+  "peak_gpu_memory_mib": 105.19775390625,
+  "checkpoint": "artifacts/mind_r13_reweight_mild.pt",
+  "checkpoint_sha256": "2f86373331b5430b8fd298c0fda890af18bb22134c778faee75f26cb1aee71ac",
+  "methodology": {
+    "student": "synchronous request-level query plus candidate encoding on CUDA",
+    "first": "recorded synchronous model prefill plus decoding, cache reads excluded",
+    "gate": "student measurement plus deterministic replay of recorded FIRST latency"
+  },
+  "large_test_accessed": false
+}

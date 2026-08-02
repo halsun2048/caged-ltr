@@ -1,0 +1,95 @@
+{
+  "schema": "mind_r8_2_large_student_v1",
+  "identity": "c30b9d39f26683067f76fd5fb4150d2e8c41ce15b33907f996ab159e7177e6d1",
+  "language": "English",
+  "model": "/root/caged-ltr/all-MiniLM-L6-v2",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "peak_gpu_memory_gib": 15.250592231750488,
+  "precision": "bf16",
+  "train_pairs": 732036,
+  "negative_type": "all",
+  "objective": "pairwise",
+  "frequency_reweighting": {
+    "head_weight": 1.0,
+    "torso_weight": 1.5,
+    "tail_weight": 2.0,
+    "train_only_q33": 883.0,
+    "train_only_q67": 4029.0,
+    "bucket_counts": {
+      "tail": 245276,
+      "torso": 244166,
+      "head": 242594
+    }
+  },
+  "inbatch_weight": 0.0,
+  "dev_queries": 20000,
+  "epochs_completed": 5,
+  "early_stopped": false,
+  "first_loss": 0.6853237748146057,
+  "last_loss": 0.5677417516708374,
+  "loss_decreased": true,
+  "best_dev_ndcg10": 0.39636595495797255,
+  "pretrained_baseline": {
+    "ndcg10": 0.3123442609547334,
+    "hit10": 0.6398,
+    "mrr": 0.28565813206044016,
+    "latency_ms_per_query": 0.47566155104432256
+  },
+  "history": [
+    {
+      "phase": "pretrained_baseline",
+      "epoch": 0,
+      "ndcg10": 0.3123442609547334,
+      "hit10": 0.6398,
+      "mrr": 0.28565813206044016,
+      "latency_ms_per_query": 0.47566155104432256
+    },
+    {
+      "epoch": 1,
+      "ndcg10": 0.3926359221187518,
+      "hit10": 0.7481,
+      "mrr": 0.35944563468756346,
+      "latency_ms_per_query": 0.46351780105615037
+    },
+    {
+      "epoch": 2,
+      "ndcg10": 0.3937548970322456,
+      "hit10": 0.75015,
+      "mrr": 0.36033097374541834,
+      "latency_ms_per_query": 0.4552968173986301
+    },
+    {
+      "epoch": 3,
+      "ndcg10": 0.39535497733296715,
+      "hit10": 0.7506,
+      "mrr": 0.3631562493415153,
+      "latency_ms_per_query": 0.4587270515039563
+    },
+    {
+      "epoch": 4,
+      "ndcg10": 0.39636595495797255,
+      "hit10": 0.75215,
+      "mrr": 0.36362138211546924,
+      "latency_ms_per_query": 0.45044680170249196
+    },
+    {
+      "epoch": 5,
+      "ndcg10": 0.39562531965879555,
+      "hit10": 0.7517,
+      "mrr": 0.3637883893202472,
+      "latency_ms_per_query": 0.44805200709961357
+    }
+  ],
+  "elapsed_seconds": 1475.62,
+  "checkpoint": "artifacts/mind_r13_reweight_balanced.pt",
+  "checkpoint_sha256": "95dceb1baa267376156e000650366f7da1ed615028fbf7aa0f5afee2015df8b2",
+  "boundaries": {
+    "dev_used_for_early_stopping_only": true,
+    "large_dev_used_for_early_stopping_only": true,
+    "large_test_accessed": false,
+    "calibration_accessed": false,
+    "mind_holdout_accessed": false,
+    "nfcorpus_locked_test_accessed": false
+  }
+}

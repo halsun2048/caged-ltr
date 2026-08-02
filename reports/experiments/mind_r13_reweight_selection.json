@@ -1,0 +1,88 @@
+{
+  "schema": "mind_r13_reweight_selection_v1",
+  "selection_split": "MIND dev only",
+  "variants": [
+    {
+      "name": "balanced",
+      "best_dev_ndcg10": 0.39636595495797255,
+      "checkpoint": "artifacts/mind_r13_reweight_balanced.pt",
+      "checkpoint_sha256": "95dceb1baa267376156e000650366f7da1ed615028fbf7aa0f5afee2015df8b2",
+      "frequency_reweighting": {
+        "head_weight": 1.0,
+        "torso_weight": 1.5,
+        "tail_weight": 2.0,
+        "train_only_q33": 883.0,
+        "train_only_q67": 4029.0,
+        "bucket_counts": {
+          "tail": 245276,
+          "torso": 244166,
+          "head": 242594
+        }
+      },
+      "elapsed_seconds": 1475.62,
+      "peak_gpu_memory_gib": 15.250592231750488
+    },
+    {
+      "name": "mild",
+      "best_dev_ndcg10": 0.4001588075886393,
+      "checkpoint": "artifacts/mind_r13_reweight_mild.pt",
+      "checkpoint_sha256": "2f86373331b5430b8fd298c0fda890af18bb22134c778faee75f26cb1aee71ac",
+      "frequency_reweighting": {
+        "head_weight": 1.0,
+        "torso_weight": 1.25,
+        "tail_weight": 1.5,
+        "train_only_q33": 883.0,
+        "train_only_q67": 4029.0,
+        "bucket_counts": {
+          "tail": 245276,
+          "torso": 244166,
+          "head": 242594
+        }
+      },
+      "elapsed_seconds": 1432.81,
+      "peak_gpu_memory_gib": 15.250592231750488
+    },
+    {
+      "name": "strong",
+      "best_dev_ndcg10": 0.3853752898302533,
+      "checkpoint": "artifacts/mind_r13_reweight_strong.pt",
+      "checkpoint_sha256": "64a66fba7b333911a594e7d538309340febab90985b7046567578ae02065d48d",
+      "frequency_reweighting": {
+        "head_weight": 1.0,
+        "torso_weight": 2.0,
+        "tail_weight": 3.0,
+        "train_only_q33": 883.0,
+        "train_only_q67": 4029.0,
+        "bucket_counts": {
+          "tail": 245276,
+          "torso": 244166,
+          "head": 242594
+        }
+      },
+      "elapsed_seconds": 1469.57,
+      "peak_gpu_memory_gib": 15.250592231750488
+    }
+  ],
+  "selected": {
+    "name": "mild",
+    "best_dev_ndcg10": 0.4001588075886393,
+    "checkpoint": "artifacts/mind_r13_reweight_mild.pt",
+    "checkpoint_sha256": "2f86373331b5430b8fd298c0fda890af18bb22134c778faee75f26cb1aee71ac",
+    "frequency_reweighting": {
+      "head_weight": 1.0,
+      "torso_weight": 1.25,
+      "tail_weight": 1.5,
+      "train_only_q33": 883.0,
+      "train_only_q67": 4029.0,
+      "bucket_counts": {
+        "tail": 245276,
+        "torso": 244166,
+        "head": 242594
+      }
+    },
+    "elapsed_seconds": 1432.81,
+    "peak_gpu_memory_gib": 15.250592231750488
+  },
+  "confirm_accessed": false,
+  "large_test_accessed": false
+}
