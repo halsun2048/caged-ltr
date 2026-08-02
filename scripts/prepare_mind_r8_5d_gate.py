@@ -48,7 +48,7 @@ def main() -> None:
     parser.add_argument(
         "--frequency-reference",
         type=Path,
-        default=Path("data/processed/mind_r8_1_v2/train_listwise"),
+        default=Path("data/processed/mind_r8_1_v2/train_pairs"),
     )
     parser.add_argument("--seed", type=int, default=20260802)
     parser.add_argument("--splits", nargs="+", default=["gate_dev", "gate_confirm"])
@@ -100,8 +100,9 @@ def main() -> None:
               ), corpus AS (
                 SELECT id AS corpus_id, text AS passage FROM read_parquet('{corpus_file}')
               ), frequency AS (
-                SELECT corpus_id, max(train_item_frequency)::BIGINT AS train_item_frequency
-                FROM read_parquet({sql_paths(frequency_files)}) GROUP BY corpus_id
+                SELECT positive_id AS corpus_id,
+                       max(positive_item_frequency)::BIGINT AS train_item_frequency
+                FROM read_parquet({sql_paths(frequency_files)}) GROUP BY positive_id
               )
               SELECT r.query_id, q.query, r.corpus_id, c.passage,
                      coalesce(l.relevance, 0)::INTEGER AS relevance, r.source_rank,
