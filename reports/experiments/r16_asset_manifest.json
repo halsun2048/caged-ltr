@@ -1,0 +1,71 @@
+{
+  "schema": "caged_ltr_r16_asset_manifest_v1",
+  "python": "3.13.5",
+  "platform": "Linux-6.12.35-061235-generic-x86_64-with-glibc2.35",
+  "assets": [
+    {
+      "path": "all-MiniLM-L6-v2/config.json",
+      "required": true,
+      "exists": true,
+      "bytes": 612,
+      "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41"
+    },
+    {
+      "path": "all-MiniLM-L6-v2/tokenizer.json",
+      "required": true,
+      "exists": true,
+      "bytes": 466247,
+      "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037"
+    },
+    {
+      "path": "all-MiniLM-L6-v2/tokenizer_config.json",
+      "required": true,
+      "exists": true,
+      "bytes": 350,
+      "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b"
+    },
+    {
+      "path": "artifacts/mind_r13_reweight_mild.pt",
+      "required": true,
+      "exists": true,
+      "bytes": 90898203,
+      "sha256": "2f86373331b5430b8fd298c0fda890af18bb22134c778faee75f26cb1aee71ac"
+    },
+    {
+      "path": "artifacts/mind_r13_reweight_balanced.pt",
+      "required": true,
+      "exists": true,
+      "bytes": 90898639,
+      "sha256": "95dceb1baa267376156e000650366f7da1ed615028fbf7aa0f5afee2015df8b2"
+    },
+    {
+      "path": "artifacts/mind_r13_reweight_strong.pt",
+      "required": true,
+      "exists": true,
+      "bytes": 90898421,
+      "sha256": "64a66fba7b333911a594e7d538309340febab90985b7046567578ae02065d48d"
+    },
+    {
+      "path": "runs/mind_r12_0/dev_first/results.jsonl",
+      "required": true,
+      "exists": true,
+      "bytes": 26360362,
+      "sha256": "44eb55a02d4858e81b6cb626aed263e9525db4719f65f7f1de9daa59fa9ba4f8"
+    }
+  ],
+  "missing": [],
+  "cuda": {
+    "available": true,
+    "torch": "2.13.0+cu130",
+    "device": "NVIDIA GeForce RTX 4090",
+    "capability": [
+      8,
+      9
+    ]
+  },
+  "admission": {
+    "all_required_assets_present": true,
+    "cuda_available": true,
+    "passed": true
+  }
+}
