@@ -1,0 +1,20 @@
+{
+  "schema": "mind_r14_4_dual_granularity_audit_v1",
+  "pilot": {
+    "listwise_rows": 51520,
+    "pairwise_rows": 46068,
+    "listwise_query_count": 1299,
+    "pairwise_query_count": 12521,
+    "teacher_logits_present": false,
+    "missing_listwise_columns": [],
+    "missing_pairwise_columns": []
+  },
+  "decision": "no_go_pending_teacher_logit_alignment",
+  "reason": "The current listwise package contains relevance labels but no aligned FIRST logits; training a joint KD pilot before alignment would not test the stated method.",
+  "large_test_accessed": false,
+  "confirm_accessed": false,
+  "source_sha256": {
+    "data/processed/mind_r8_1_v2/dev_listwise/part-00000-of-00016.parquet": "1f4709d9474d3d128840340b0d36982c567df3fa4fa9875f2d73e7953d60394d",
+    "data/processed/mind_r8_1_v2/train_pairs/part-00000-of-00016.parquet": "1a18677b26f1926782d41f8a6aae994f75c6cedd355347c05acad90ce94f634d"
+  }
+}

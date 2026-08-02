@@ -1,0 +1,29 @@
+{
+  "schema": "mind_r14_cross_domain_audit_v1",
+  "dataset": "NFCorpus independent dev only",
+  "protocol": "5-fold outer / 4-fold inner nested validation; no NFCorpus test access",
+  "observed": {
+    "oof_ndcg10": 0.5590093424782304,
+    "first_ndcg10": 0.5663891621062633,
+    "bm25_ndcg10": 0.5401608038704284,
+    "first_call_rate": 0.4012605042016807,
+    "gate_minus_first_bootstrap_95ci": [
+      -0.01988793309000579,
+      0.004468444625400923
+    ]
+  },
+  "decision": {
+    "principle_transfers": true,
+    "same_mind_thresholds_transferred": false,
+    "status": "supportive_but_not_strict_zero_shot_transfer",
+    "reason": "NFCorpus confirms the quality-cost routing pattern, but prior protocol used dataset-specific calibration; this is not evidence that MIND thresholds transfer unchanged."
+  },
+  "boundaries": {
+    "mind_large_test_reopened": false,
+    "nfcorpus_test_reopened": false
+  },
+  "source_sha256": {
+    "reports/experiments/nfcorpus_r7_2_nested_gate.json": "0eeca707868b1e4531ab44b913f414975157407f7c67fa08a9ff91aa6b05e59d",
+    "reports/experiments/mind_r13_cross_domain.json": "d5edc3c2fbc7d436cf3a5cd0c268d61ed813d6595ae47a8ee292ab4b57408167"
+  }
+}

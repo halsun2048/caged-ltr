@@ -1,0 +1,205 @@
+{
+  "schema": "mind_r14_closeout_v1",
+  "status": "bounded_closeout_complete",
+  "decisions": {
+    "R14.0_asset_freeze": "complete",
+    "R14.1_paired_statistics": "not_available_without_reconstructing_comparators",
+    "R14.2_service_latency": "complete",
+    "R14.3_cross_domain": "supportive_but_not_strict_zero_shot_transfer",
+    "R14.4_dual_granularity": "no_go_pending_teacher_logit_alignment"
+  },
+  "evidence": {
+    "statistics": {
+      "schema": "mind_r14_statistics_v1",
+      "protocol": "offline audit only; no model inference and no labels newly materialized",
+      "reports": [
+        {
+          "label": "R9 large-test frozen artifact",
+          "path": "runs/mind_r8_9_tail/large_test_query_metrics.parquet",
+          "rows": 20000,
+          "columns": [
+            "query_id",
+            "ndcg10",
+            "hit10",
+            "mrr",
+            "top1_correct",
+            "margin",
+            "top1_score",
+            "top3_gap",
+            "top5_gap",
+            "score_mean",
+            "score_std",
+            "score_entropy",
+            "student_top1_source_rank",
+            "student_top3_mean_source_rank",
+            "student_source_top1_agreement",
+            "student_source_top3_overlap",
+            "top1_lexical_overlap",
+            "max_lexical_overlap",
+            "mean_lexical_overlap",
+            "top1_passage_characters",
+            "mean_passage_characters",
+            "positive_frequency",
+            "query_characters",
+            "candidate_count",
+            "frequency_bucket",
+            "length_bucket"
+          ],
+          "source_sha256": "1f2ea21711fdcf7fed7faf098fa94a69660f872d9140d4bf5e11a8f32e45a3a2",
+          "test_accessed": false,
+          "status": "not_available",
+          "reason": "saved artifact contains student metrics only; first_ndcg10/gate_ndcg10 were not persisted",
+          "paired_bootstrap": null
+        },
+        {
+          "label": "R12 confirm frozen artifact",
+          "path": "runs/mind_r12_0/r12_confirm_query_metrics.parquet",
+          "rows": 10000,
+          "columns": [
+            "query_id",
+            "ndcg10",
+            "hit10",
+            "mrr",
+            "top1_correct",
+            "margin",
+            "top1_score",
+            "top3_gap",
+            "top5_gap",
+            "score_mean",
+            "score_std",
+            "score_entropy",
+            "student_top1_source_rank",
+            "student_top3_mean_source_rank",
+            "student_source_top1_agreement",
+            "student_source_top3_overlap",
+            "top1_lexical_overlap",
+            "max_lexical_overlap",
+            "mean_lexical_overlap",
+            "top1_passage_characters",
+            "mean_passage_characters",
+            "positive_frequency",
+            "query_characters",
+            "candidate_count",
+            "frequency_bucket",
+            "length_bucket"
+          ],
+          "source_sha256": "268a088461c90108623df0b26fb31a9e8609dddfab816d00b63a7583d5c5717f",
+          "test_accessed": false,
+          "status": "not_available",
+          "reason": "saved artifact contains student metrics only; first_ndcg10/gate_ndcg10 were not persisted",
+          "paired_bootstrap": null
+        }
+      ],
+      "large_test_reopened": false,
+      "confirm_reopened": false,
+      "interpretation": "A paired CI is reported only when both comparator columns were persisted in the source artifact."
+    },
+    "service_latency": {
+      "schema": "mind_r13_service_latency_v1",
+      "device": "NVIDIA GeForce RTX 4090",
+      "requests": 950,
+      "warmup_requests": 50,
+      "candidate_count_per_request": 20,
+      "student": {
+        "p50_ms": 4.629214876331389,
+        "p95_ms": 4.864955646917224,
+        "p99_ms": 5.1601136405952275,
+        "mean_ms": 4.659351503819619,
+        "throughput_qps": 214.62214198268262
+      },
+      "first_recorded_model_inference": {
+        "p50_ms": 73.70913703925908,
+        "p95_ms": 81.94761130725965,
+        "p99_ms": 82.69114128313959,
+        "mean_ms": 68.81325640995831,
+        "throughput_qps": 14.532083673565038
+      },
+      "hard_tail_gate_replay": {
+        "p50_ms": 52.50591493677348,
+        "p95_ms": 84.61623105686158,
+        "p99_ms": 85.62559438869357,
+        "mean_ms": 42.130990653592896,
+        "throughput_qps": 23.73549694623003,
+        "first_call_rate": 0.55
+      },
+      "peak_gpu_memory_mib": 105.19775390625,
+      "checkpoint": "artifacts/mind_r13_reweight_mild.pt",
+      "checkpoint_sha256": "2f86373331b5430b8fd298c0fda890af18bb22134c778faee75f26cb1aee71ac",
+      "methodology": {
+        "student": "synchronous request-level query plus candidate encoding on CUDA",
+        "first": "recorded synchronous model prefill plus decoding, cache reads excluded",
+        "gate": "student measurement plus deterministic replay of recorded FIRST latency"
+      },
+      "large_test_accessed": false
+    },
+    "cross_domain": {
+      "schema": "mind_r14_cross_domain_audit_v1",
+      "dataset": "NFCorpus independent dev only",
+      "protocol": "5-fold outer / 4-fold inner nested validation; no NFCorpus test access",
+      "observed": {
+        "oof_ndcg10": 0.5590093424782304,
+        "first_ndcg10": 0.5663891621062633,
+        "bm25_ndcg10": 0.5401608038704284,
+        "first_call_rate": 0.4012605042016807,
+        "gate_minus_first_bootstrap_95ci": [
+          -0.01988793309000579,
+          0.004468444625400923
+        ]
+      },
+      "decision": {
+        "principle_transfers": true,
+        "same_mind_thresholds_transferred": false,
+        "status": "supportive_but_not_strict_zero_shot_transfer",
+        "reason": "NFCorpus confirms the quality-cost routing pattern, but prior protocol used dataset-specific calibration; this is not evidence that MIND thresholds transfer unchanged."
+      },
+      "boundaries": {
+        "mind_large_test_reopened": false,
+        "nfcorpus_test_reopened": false
+      },
+      "source_sha256": {
+        "reports/experiments/nfcorpus_r7_2_nested_gate.json": "0eeca707868b1e4531ab44b913f414975157407f7c67fa08a9ff91aa6b05e59d",
+        "reports/experiments/mind_r13_cross_domain.json": "d5edc3c2fbc7d436cf3a5cd0c268d61ed813d6595ae47a8ee292ab4b57408167"
+      }
+    },
+    "dual_granularity_audit": {
+      "schema": "mind_r14_4_dual_granularity_audit_v1",
+      "pilot": {
+        "listwise_rows": 51520,
+        "pairwise_rows": 46068,
+        "listwise_query_count": 1299,
+        "pairwise_query_count": 12521,
+        "teacher_logits_present": false,
+        "missing_listwise_columns": [],
+        "missing_pairwise_columns": []
+      },
+      "decision": "no_go_pending_teacher_logit_alignment",
+      "reason": "The current listwise package contains relevance labels but no aligned FIRST logits; training a joint KD pilot before alignment would not test the stated method.",
+      "large_test_accessed": false,
+      "confirm_accessed": false,
+      "source_sha256": {
+        "data/processed/mind_r8_1_v2/dev_listwise/part-00000-of-00016.parquet": "1f4709d9474d3d128840340b0d36982c567df3fa4fa9875f2d73e7953d60394d",
+        "data/processed/mind_r8_1_v2/train_pairs/part-00000-of-00016.parquet": "1a18677b26f1926782d41f8a6aae994f75c6cedd355347c05acad90ce94f634d"
+      }
+    }
+  },
+  "final_interpretation": {
+    "supported_claim": "Tail-safe budgeted routing between a low-latency MiniLM student and FIRST preserves ranking quality with substantially fewer teacher calls.",
+    "not_supported": [
+      "A statistically significant large-test advantage over FIRST, because comparator per-query arrays were not persisted.",
+      "Strict zero-shot transfer of the same gate thresholds across datasets.",
+      "A dual-granularity pairwise-plus-listwise distillation gain, because aligned FIRST logits are absent from the current training package."
+    ],
+    "recommendation": "Stop broad model exploration; freeze the routing result and report these boundaries explicitly."
+  },
+  "boundaries": {
+    "large_test_reopened": false,
+    "r12_confirm_reopened": false,
+    "nfcorpus_test_reopened": false
+  },
+  "source_sha256": {
+    "reports/experiments/mind_r14_statistics.json": "00c05ec3109b77baf96c1f725b67f7d253845387fbb9d12a38e516801c5bb054",
+    "reports/experiments/mind_r14_service_latency.json": "bd6a39f7cebcadd064b24cd36436dd44998df1b472e10ac5abac9c2176ec3319",
+    "reports/experiments/mind_r14_cross_domain_audit.json": "f01ba901bfc6efd36ae483372412dea34870a559c1b0b0c808ddd424a153def5",
+    "reports/experiments/mind_r14_4_dual_granularity_audit.json": "b00ee6403a72ca6fa870a762adb68196d71c5c57d5b132c6b4dc39c7d2807743"
+  }
+}

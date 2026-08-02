@@ -1,6 +1,6 @@
 {
   "schema": "caged_ltr_r13_release_manifest_v1",
-  "git_commit": "d3a3c117b39f81215a4c1e5b119f1bc8fc4a0fc6",
+  "git_commit": "29dedc6",
   "evidence": {
     "reports/experiments/mind_r9_0_closeout.json": {
       "sha256": "4c099f8058a196f53c4d042a2cbea20696705f90c3db338c7de06ad41b0d9342",
@@ -17,9 +17,13 @@
     "artifacts/mind_r12_0_independent_guard.json": {
       "sha256": "4c56411e900b1a80238988dc155db7dcea2010eac4a55ec3dfe0f2a1bf6383b6",
       "bytes": 588
+    },
+    "reports/experiments/mind_r14_closeout.json": {
+      "sha256": "4eec9bf56efb6dcc202e124509c28811bf17ad419bf6d275a5682a97dd7c5391",
+      "bytes": 8637
     }
   },
   "large_test_policy": "locked; no additional evaluation",
   "r12_confirm_policy": "consumed_closed; evaluation_count=1",
-  "next_work": "qrels-free R13 protocol and train-fold OOF only"
+  "next_work": "R14 bounded closeout complete; no further locked-test evaluation"
 }
