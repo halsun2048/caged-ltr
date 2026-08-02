@@ -1,6 +1,7 @@
 # Python and uv
 .venv/
 .uv-cache/
+artifacts/r16_runtime/
 __pycache__/
 *.py[cod]
 .pytest_cache/

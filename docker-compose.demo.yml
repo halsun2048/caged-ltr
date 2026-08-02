@@ -1,0 +1,19 @@
+services:
+  caged-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    command: ["uvicorn", "scripts.run_r16_api:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      R16_BACKEND: cached
+    ports:
+      - "8000:8000"
+  caged-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    environment:
+      PYTHONPATH: /app/src
+    ports:
+      - "8501:8501"
