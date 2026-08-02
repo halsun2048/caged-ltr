@@ -1,0 +1,119 @@
+{
+  "schema": "mind_r8_14_tail_confirm_once_v1",
+  "split": "large_test",
+  "queries": 20000,
+  "policy": {
+    "budget": 0.4,
+    "tail_floor": 0.75,
+    "gate_model_sha256": "frozen-r8.14"
+  },
+  "overall": {
+    "student": {
+      "ndcg10": 0.526599513179073,
+      "hit10": 0.9029,
+      "mrr": 0.4697578506362059,
+      "first_call_rate": 0.0,
+      "latency_ms": 0.67
+    },
+    "first": {
+      "ndcg10": 0.6471850027837429,
+      "hit10": 0.99255,
+      "mrr": 0.5498525345762769,
+      "first_call_rate": 1.0,
+      "latency_ms": 69.51109944764059
+    },
+    "gate": {
+      "ndcg10": 0.650056142420189,
+      "hit10": 0.98155,
+      "mrr": 0.5862742889734105,
+      "first_call_rate": 0.4,
+      "latency_ms": 30.171426638860723
+    }
+  },
+  "frequency_buckets": {
+    "head": {
+      "queries": 6667,
+      "route_rate": 0.10769461526923654,
+      "student": {
+        "ndcg10": 0.6877119681989542,
+        "hit10": 0.9958002099895005,
+        "mrr": 0.6268860223885634,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.6536142575019354,
+        "hit10": 0.9961001949902505,
+        "mrr": 0.5494934231809888,
+        "first_call_rate": 1.0,
+        "latency_ms": 64.08909927429717
+      },
+      "gate": {
+        "ndcg10": 0.7074894812944345,
+        "hit10": 0.9976001199940003,
+        "mrr": 0.6495891460617856,
+        "first_call_rate": 0.10769461526923654,
+        "latency_ms": 8.469041726834176
+      }
+    },
+    "tail": {
+      "queries": 6667,
+      "route_rate": 0.7499625018749062,
+      "student": {
+        "ndcg10": 0.3989354977414742,
+        "hit10": 0.7945102744862756,
+        "mrr": 0.34823529276509413,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.639832672838559,
+        "hit10": 0.9899505024748763,
+        "mrr": 0.5404766050866234,
+        "first_call_rate": 1.0,
+        "latency_ms": 72.63210406703735
+      },
+      "gate": {
+        "ndcg10": 0.6452000265069389,
+        "hit10": 0.9767511624418779,
+        "mrr": 0.5710078619013959,
+        "first_call_rate": 0.7499625018749062,
+        "latency_ms": 55.4372675783031
+      }
+    },
+    "torso": {
+      "queries": 6666,
+      "route_rate": 0.34233423342334235,
+      "student": {
+        "ndcg10": 0.49314605582907695,
+        "hit10": 0.9183918391839184,
+        "mrr": 0.43414689537874035,
+        "first_call_rate": 0.0,
+        "latency_ms": 0.67
+      },
+      "first": {
+        "ndcg10": 0.648108216485866,
+        "hit10": 0.9915991599159916,
+        "mrr": 0.5595890358633913,
+        "first_call_rate": 1.0,
+        "latency_ms": 71.81244018543869
+      },
+      "gate": {
+        "ndcg10": 0.5974710320870126,
+        "hit10": 0.9702970297029703,
+        "mrr": 0.538218650971749,
+        "first_call_rate": 0.34233423342334235,
+        "latency_ms": 26.60743603958358
+      }
+    }
+  },
+  "acceptance": {
+    "overall_gap_at_most_0p003": true,
+    "tail_gap_at_most_0p003": true,
+    "first_call_rate_at_most_0p55": true,
+    "gate_at_least_student": true,
+    "large_test_accessed": true,
+    "all_passed": true
+  },
+  "large_test_accessed": true
+}
