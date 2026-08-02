@@ -16,6 +16,7 @@ def main() -> None:
     parser.add_argument("--metrics-root", type=Path, default=Path("runs/mind_r14"))
     parser.add_argument("--pool-root", type=Path, default=Path("data/processed/mind_r14"))
     parser.add_argument("--first-root", type=Path, default=Path("runs/mind_r14"))
+    parser.add_argument("--split", default="fresh_confirm_v2")
     parser.add_argument(
         "--gate-model", type=Path, default=Path("artifacts/mind_r8_6_gate_v2.joblib")
     )
@@ -31,7 +32,7 @@ def main() -> None:
     if guard["evaluation_count"] == 1:
         print(json.dumps({"stage": "cached_closed", "report": str(args.output)}))
         return
-    frame = merge("fresh_confirm_v2", args.metrics_root, args.pool_root, args.first_root)
+    frame = merge(args.split, args.metrics_root, args.pool_root, args.first_root)
     frozen = joblib.load(args.gate_model)
     x = frame[frozen["features"]].replace([np.inf, -np.inf], np.nan).fillna(0.0)
     prediction = frozen["model"].predict(x)
@@ -67,24 +68,24 @@ def main() -> None:
         <= 0.003,
         "first_call_rate_at_most_0p55": overall["gate"]["first_call_rate"] <= 0.55,
         "gate_at_least_student": overall["gate"]["ndcg10"] >= overall["student"]["ndcg10"],
-        "large_test_accessed": False,
+        "large_test_accessed": args.split == "large_test",
     }
     acceptance["all_passed"] = all(
         value for key, value in acceptance.items() if key != "large_test_accessed"
     )
     payload = {
         "schema": "mind_r8_14_tail_confirm_once_v1",
-        "split": "fresh_confirm_v2",
+        "split": args.split,
         "queries": len(frame),
         "policy": {
             "budget": 0.4,
             "tail_floor": 0.75,
-            "gate_model_sha256": guard["policy"]["gate_model_sha256"],
+            "gate_model_sha256": (guard.get("policy", {}).get("gate_model_sha256", "frozen-r8.14")),
         },
         "overall": overall,
         "frequency_buckets": buckets,
         "acceptance": acceptance,
-        "large_test_accessed": False,
+        "large_test_accessed": args.split == "large_test",
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n")
