@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import os
 from dataclasses import asdict, dataclass
+from urllib.request import Request, urlopen
 
 
 @dataclass(frozen=True)
@@ -31,6 +34,47 @@ def understand_query(query: str) -> QueryUnderstanding:
     return QueryUnderstanding(normalized, intent, constraints, 0.72)
 
 
+def understand_query_with_provider(query: str) -> QueryUnderstanding:
+    """Use an OpenAI-compatible endpoint when configured, otherwise stay offline."""
+    endpoint = os.getenv("R16_LLM_ENDPOINT")
+    if not endpoint:
+        return understand_query(query)
+    request_body = {
+        "model": os.getenv("R16_LLM_MODEL", "gpt-4o-mini"),
+        "temperature": 0,
+        "response_format": {"type": "json_object"},
+        "messages": [
+            {
+                "role": "system",
+                "content": "Return JSON with rewritten_query, intent, constraints, confidence.",
+            },
+            {"role": "user", "content": query},
+        ],
+    }
+    request = Request(
+        endpoint,
+        data=json.dumps(request_body).encode(),
+        headers={
+            "content-type": "application/json",
+            "authorization": f"Bearer {os.getenv('R16_LLM_API_KEY', '')}",
+        },
+    )
+    try:
+        with urlopen(request, timeout=float(os.getenv("R16_LLM_TIMEOUT_SECONDS", "5"))) as response:
+            outer = json.loads(response.read())
+        content = outer["choices"][0]["message"]["content"]
+        payload = json.loads(content)
+        return QueryUnderstanding(
+            str(payload["rewritten_query"]),
+            str(payload["intent"]),
+            [str(value) for value in payload.get("constraints", [])],
+            float(payload.get("confidence", 0.5)),
+            "openai-compatible",
+        )
+    except Exception:
+        return understand_query(query)
+
+
 def explain_result(
     query: str, item_id: str, text: str, score: float, backend: str
 ) -> dict[str, object]:
@@ -48,4 +92,4 @@ def explain_result(
 
 
 def as_json(query: str) -> dict[str, object]:
-    return asdict(understand_query(query))
+    return asdict(understand_query_with_provider(query))

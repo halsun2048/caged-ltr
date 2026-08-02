@@ -10,6 +10,8 @@ PYTHONPATH=src streamlit run app/streamlit_app.py
 
 API 提供 `/health`、`/search`、`/route`、`/ab/search`、`/understand`、`/explain`、`/metrics` 和 `/metrics/prometheus`。FIRST 调用包含超时、一次重试、连续失败熔断和 Student 自动降级；这些事件会进入 metrics。默认 cached backend 保证无 GPU 时仍能演示完整链路；设置 `R16_BACKEND=real` 并提供 `R16_MODEL_PATH`、`R16_STUDENT_CHECKPOINT`、`R16_FIRST_RESULTS` 后可加载真实 MiniLM 与冻结 FIRST replay。
 
+若配置 `R16_LLM_ENDPOINT`，`/understand` 会调用 OpenAI-compatible JSON 接口；未配置、超时或响应格式错误时自动回退 deterministic provider。可选环境变量为 `R16_LLM_API_KEY`、`R16_LLM_MODEL` 和 `R16_LLM_TIMEOUT_SECONDS`。
+
 ## Docker
 
 ```bash
@@ -17,6 +19,8 @@ docker compose -f docker-compose.demo.yml up --build
 ```
 
 API 在 8000 端口，Streamlit 在 8501 端口。Prometheus 抓取配置位于 `monitoring/prometheus.demo.yml`。
+
+当前 GPU 服务器未安装 Docker Engine，因此镜像构建配置已完成 YAML 校验，但实际 `docker build` 需在本地或 CI Docker runner 执行。
 
 ## 压力测试
 
