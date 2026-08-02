@@ -1,0 +1,25 @@
+{
+  "schema": "caged_ltr_r13_release_manifest_v1",
+  "git_commit": "d3a3c117b39f81215a4c1e5b119f1bc8fc4a0fc6",
+  "evidence": {
+    "reports/experiments/mind_r9_0_closeout.json": {
+      "sha256": "4c099f8058a196f53c4d042a2cbea20696705f90c3db338c7de06ad41b0d9342",
+      "bytes": 11716
+    },
+    "reports/experiments/mind_r12_gate_search.json": {
+      "sha256": "eb4bb8b2fab2fcc4ea5424727d1f51287b674daf4cc090a05018bfa5d34e7f1e",
+      "bytes": 27286
+    },
+    "artifacts/mind_r8_0_large_test_guard.json": {
+      "sha256": "fca29d22772275e561c73e1be4e4e6a1b246ec4277281f977ff53cfa91e32db0",
+      "bytes": 500
+    },
+    "artifacts/mind_r12_0_independent_guard.json": {
+      "sha256": "4c56411e900b1a80238988dc155db7dcea2010eac4a55ec3dfe0f2a1bf6383b6",
+      "bytes": 588
+    }
+  },
+  "large_test_policy": "locked; no additional evaluation",
+  "r12_confirm_policy": "consumed_closed; evaluation_count=1",
+  "next_work": "qrels-free R13 protocol and train-fold OOF only"
+}
