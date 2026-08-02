@@ -1,0 +1,52 @@
+{
+  "schema": "mind_r8_14_preregistration_v1",
+  "seed": 20260805,
+  "count": 20000,
+  "eligible_reserve": 2005960,
+  "policy": {
+    "model": "extra_trees_leaf10",
+    "gate_model_sha256": "56bdab96fb1d43331308860a2de32439d013eb7d72acca598a13b6c3e9cfbcd1",
+    "budget": 0.4,
+    "tail_floor": 0.75,
+    "features": [
+      "margin",
+      "top1_score",
+      "top3_gap",
+      "top5_gap",
+      "score_mean",
+      "score_std",
+      "score_entropy",
+      "student_top1_source_rank",
+      "student_top3_mean_source_rank",
+      "student_source_top1_agreement",
+      "student_source_top3_overlap",
+      "top1_lexical_overlap",
+      "max_lexical_overlap",
+      "mean_lexical_overlap",
+      "query_characters",
+      "candidate_count",
+      "top1_passage_characters",
+      "mean_passage_characters"
+    ],
+    "acceptance": {
+      "overall_gap_at_most": 0.003,
+      "tail_gap_at_most": 0.003,
+      "first_call_rate_at_most": 0.55
+    }
+  },
+  "query_ids_sha256": "302cffee95f6c8b5e53e8f2f19ae3b3961c9717fc9e3d287c96ec7b97765426b",
+  "source_queries_sha256": "ff6cc644acdc4fe23092d7920a017abfe5db60d7b94455539ad11b49fccd8b95",
+  "exclusions": {
+    "r7": 56554,
+    "r8": 240000,
+    "old_gate": 40000,
+    "fresh_gate": 20000
+  },
+  "acceptance": {
+    "exact_count": true,
+    "unique": true,
+    "disjoint": true,
+    "labels_not_accessed": true,
+    "large_test_not_accessed": true
+  }
+}
