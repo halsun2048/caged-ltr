@@ -6,6 +6,7 @@ import argparse
 import glob
 import hashlib
 import json
+import re
 import time
 from pathlib import Path
 
@@ -80,6 +81,14 @@ def summarize(frame: pd.DataFrame) -> dict[str, float | int]:
     }
 
 
+def lexical_overlap(query: str, passage: str) -> float:
+    query_tokens = set(re.findall(r"[a-z0-9]+", query.lower()))
+    if not query_tokens:
+        return 0.0
+    passage_tokens = set(re.findall(r"[a-z0-9]+", passage.lower()))
+    return len(query_tokens & passage_tokens) / len(query_tokens)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dev", default="data/processed/mind_r8_1_v2/dev_listwise/*.parquet")
@@ -125,6 +134,17 @@ def main() -> None:
         scores = np.stack([pmap[value] for value in group.passage]) @ qmap[query_id]
         order = np.argsort(-scores, kind="stable")
         rel = group.relevance.to_numpy()[order]
+        ordered_scores = scores[order]
+        shifted = (scores - scores.max()) / 0.05
+        probabilities = np.exp(shifted) / np.exp(shifted).sum()
+        overlaps = np.array(
+            [lexical_overlap(str(group.iloc[0]["query"]), str(value)) for value in group.passage]
+        )
+        source_ranks = (
+            group.source_rank.to_numpy(dtype=float)
+            if "source_rank" in group
+            else np.arange(1, len(group) + 1, dtype=float)
+        )
         relevant = np.flatnonzero(rel > 0)
         positive_frequency = (
             group.loc[group.relevance > 0, "train_item_frequency"].mean()
@@ -139,6 +159,27 @@ def main() -> None:
                 "mrr": 1 / (int(relevant[0]) + 1) if len(relevant) else 0.0,
                 "top1_correct": float(rel[0] > 0),
                 "margin": float(scores[order[0]] - scores[order[1]]) if len(order) > 1 else 1.0,
+                "top1_score": float(ordered_scores[0]),
+                "top3_gap": (
+                    float(ordered_scores[0] - ordered_scores[min(2, len(order) - 1)])
+                ),
+                "top5_gap": (
+                    float(ordered_scores[0] - ordered_scores[min(4, len(order) - 1)])
+                ),
+                "score_mean": float(scores.mean()),
+                "score_std": float(scores.std()),
+                "score_entropy": float(-(probabilities * np.log(probabilities + 1e-12)).sum()),
+                "student_top1_source_rank": float(source_ranks[order[0]]),
+                "student_top3_mean_source_rank": float(source_ranks[order[:3]].mean()),
+                "student_source_top1_agreement": float(source_ranks[order[0]] == 1),
+                "student_source_top3_overlap": float(
+                    np.isin(order[:3], np.argsort(source_ranks)[:3]).mean()
+                ),
+                "top1_lexical_overlap": float(overlaps[order[0]]),
+                "max_lexical_overlap": float(overlaps.max()),
+                "mean_lexical_overlap": float(overlaps.mean()),
+                "top1_passage_characters": len(str(group.iloc[order[0]]["passage"])),
+                "mean_passage_characters": float(group.passage.astype(str).str.len().mean()),
                 "positive_frequency": float(positive_frequency),
                 "query_characters": (
                     int(group.query_characters.iloc[0])

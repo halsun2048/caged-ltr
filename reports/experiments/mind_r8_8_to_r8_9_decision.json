@@ -1,0 +1,8 @@
+{
+  "schema": "mind_r8_8_to_r8_9_decision_v1",
+  "r8_8_admitted": false,
+  "r8_9_executed": false,
+  "large_test_evaluation_count": 0,
+  "decision": "preserve_locked_test",
+  "reason": "Gate confirmation failed"
+}

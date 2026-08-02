@@ -1,0 +1,57 @@
+{
+  "schema": "mind_r8_6_gate_v1",
+  "features": [
+    "margin",
+    "query_characters",
+    "candidate_count"
+  ],
+  "dev": {
+    "student_ndcg10": 0.5288690002072813,
+    "first_ndcg10": 0.6457900173682742,
+    "policies": [
+      {
+        "budget": 0.1,
+        "threshold": 0.6924725318156807,
+        "ndcg10": 0.5480314309616293,
+        "hit10": 0.91595,
+        "mrr": 0.485150570925033,
+        "first_call_rate": 0.1,
+        "latency_ms": 9.829759833267888
+      },
+      {
+        "budget": 0.25,
+        "threshold": 0.6810430416673953,
+        "ndcg10": 0.5744287178140979,
+        "hit10": 0.93405,
+        "mrr": 0.5041817435013817,
+        "first_call_rate": 0.25,
+        "latency_ms": 21.252553180900865
+      },
+      {
+        "budget": 0.5,
+        "threshold": 0.6571714999714426,
+        "ndcg10": 0.6141531596083306,
+        "hit10": 0.9639,
+        "mrr": 0.5289218924395608,
+        "first_call_rate": 0.5,
+        "latency_ms": 40.45525435256306
+      },
+      {
+        "budget": 0.75,
+        "threshold": 0.5041345860602523,
+        "ndcg10": 0.6466246875585621,
+        "hit10": 0.99125,
+        "mrr": 0.5493866539424628,
+        "first_call_rate": 0.75,
+        "latency_ms": 58.22283704282483
+      }
+    ]
+  },
+  "selected": null,
+  "confirm": null,
+  "acceptance": {
+    "gate_confirm_passed": false,
+    "first_call_rate_reduced_at_least_45pct": false,
+    "large_test_accessed": false
+  }
+}
