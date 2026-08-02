@@ -1,0 +1,16 @@
+{
+  "schema": "mind_r11_0_independent_guard_v1",
+  "status": "preregistered_locked",
+  "labels_materialized": false,
+  "evaluation_count": 0,
+  "allowed_evaluation_count": 1,
+  "query_count": 20000,
+  "query_id_sha256": "ea3ebf0c3d78e947fe53ea016eccb660e874ffe4c2328e26f4675255ee62524c",
+  "seed": 20260803,
+  "excluded_splits": [
+    "mind_r8_0_large",
+    "mind_r8_14_confirm",
+    "mind_r10_0_dev_confirm"
+  ],
+  "policy": "select on dev only; confirm one-time fixed evaluation; no large-test access"
+}

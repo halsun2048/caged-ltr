@@ -1,0 +1,15 @@
+{
+  "schema": "mind_r11_0_split_manifest_v1",
+  "counts": {
+    "confirm": 10000,
+    "dev": 10000
+  },
+  "query_id_sha256": "ea3ebf0c3d78e947fe53ea016eccb660e874ffe4c2328e26f4675255ee62524c",
+  "seed": 20260803,
+  "excluded": [
+    "/home/hal-sun/下载/项目/搜广推/data/processed/mind_r8_0/large_split_ids.parquet",
+    "/home/hal-sun/下载/项目/搜广推/data/processed/mind_r8_14/fresh_confirm_ids.parquet",
+    "/home/hal-sun/下载/项目/搜广推/data/processed/mind_r10_0/query_ids.parquet"
+  ],
+  "labels_read": false
+}
