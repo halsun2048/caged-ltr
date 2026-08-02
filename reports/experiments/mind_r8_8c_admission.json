@@ -1,0 +1,7 @@
+{
+  "schema": "mind_r8_8c_admission_v1",
+  "admitted": false,
+  "fresh_confirm_evaluation_count": 1,
+  "large_test_evaluation_count_before_decision": 0,
+  "action": "preserve_locked_large_test"
+}

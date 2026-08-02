@@ -1,9 +1,9 @@
 {
   "schema": "mind_r8_8a_fresh_confirm_guard_v1",
-  "status": "preregistered_unaccessed",
+  "status": "consumed_closed",
   "allowed_evaluation_count": 1,
-  "evaluation_count": 0,
-  "labels_materialized": false,
+  "evaluation_count": 1,
+  "labels_materialized": true,
   "policy": {
     "model": "extra_trees_leaf10",
     "features": [
@@ -40,5 +40,7 @@
       "tail_ndcg10_gap_vs_first_at_most": 0.003,
       "all_hash_and_boundary_checks": true
     }
-  }
+  },
+  "result": "reports/experiments/mind_r8_8b_fresh_confirm.json",
+  "admitted": false
 }
