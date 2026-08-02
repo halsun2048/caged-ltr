@@ -1,0 +1,43 @@
+{
+  "schema": "mind_r13_cross_domain_v1",
+  "datasets": {
+    "MIND_independent_confirm": {
+      "gate_ndcg10": 0.6625624996284124,
+      "first_ndcg10": 0.6455307770618973,
+      "first_call_rate": 0.55,
+      "selected_budget": 0.55,
+      "protocol": "R12 frozen hard-Tail gate"
+    },
+    "NFCorpus_independent_dev_validation": {
+      "gate_ndcg10": 0.5317810913786092,
+      "first_ndcg10": 0.5357319716282066,
+      "first_call_rate": 0.2773109243697479,
+      "gate_minus_first": -0.003950880249597444,
+      "full_dev_models": {
+        "bm25": 0.5401608038704284,
+        "tfidf": 0.38472755888142296,
+        "mind_minilm": 0.41692763067906696,
+        "distilled_minilm": 0.502476858514648,
+        "first": 0.5663891621062633,
+        "frozen_gate": 0.5668027285743679
+      },
+      "protocol": "previously frozen R6 three-way gate; no re-selection"
+    }
+  },
+  "conclusion": {
+    "direction_transfers": true,
+    "near_first_cross_domain": true,
+    "same_gate_parameters_transferred": false,
+    "interpretation": "The quality-cost routing principle transfers, but dataset-specific thresholds remain necessary."
+  },
+  "boundaries": {
+    "nfcorpus_test_reopened": false,
+    "mind_large_test_reopened": false,
+    "existing_independent_dev_reports_only": true
+  },
+  "source_sha256": {
+    "reports/experiments/mind_r12_gate_search.json": "eb4bb8b2fab2fcc4ea5424727d1f51287b674daf4cc090a05018bfa5d34e7f1e",
+    "reports/experiments/nfcorpus_r6_gate_selection.json": "3e6edc78e91b20ec352503acf3b05fc4e9d03adab5f94d95af8a459d3f154764",
+    "reports/experiments/nfcorpus_r6_formal_dev.json": "52b95235f8563b31e0da10a886ee5cfb7eb039ab5b5c777eb72b8715a68f99ec"
+  }
+}

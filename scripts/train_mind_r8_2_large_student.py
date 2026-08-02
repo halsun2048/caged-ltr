@@ -169,6 +169,8 @@ def main() -> None:
     )
     parser.add_argument("--inbatch-weight", type=float, default=0.25)
     parser.add_argument("--temperature", type=float, default=0.05)
+    parser.add_argument("--torso-weight", type=float, default=1.0)
+    parser.add_argument("--tail-weight", type=float, default=1.0)
     parser.add_argument("--precision", choices=("bf16", "fp16", "fp32"), default="bf16")
     parser.add_argument("--patience", type=int, default=2)
     parser.add_argument("--checkpoint-every", type=int, default=100)
@@ -202,6 +204,13 @@ def main() -> None:
         dev = dev[dev.query_id.isin(keep)].reset_index(drop=True)
     if set(train.query_id) & set(dev.query_id):
         raise RuntimeError("train/dev query overlap")
+    frequency = train["positive_item_frequency"].astype(float)
+    frequency_q33, frequency_q67 = (float(value) for value in frequency.quantile([1 / 3, 2 / 3]))
+    train["frequency_bucket"] = np.where(
+        frequency <= frequency_q33,
+        "tail",
+        np.where(frequency <= frequency_q67, "torso", "head"),
+    )
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     model = BiEncoder(args.model).to(device)
     optimizer = torch.optim.AdamW(
@@ -272,7 +281,21 @@ def main() -> None:
                 delta = (query_vector * positive_vector).sum(1) - (
                     query_vector * negative_vector
                 ).sum(1)
-                loss = nn.functional.softplus(args.margin - delta).mean()
+                pairwise_loss = nn.functional.softplus(args.margin - delta)
+                sample_weight = torch.as_tensor(
+                    np.where(
+                        batch["frequency_bucket"].to_numpy() == "tail",
+                        args.tail_weight,
+                        np.where(
+                            batch["frequency_bucket"].to_numpy() == "torso",
+                            args.torso_weight,
+                            1.0,
+                        ),
+                    ),
+                    device=device,
+                    dtype=pairwise_loss.dtype,
+                )
+                loss = (pairwise_loss * sample_weight).sum() / sample_weight.sum()
                 if args.objective == "pairwise_inbatch":
                     logits = query_vector @ positive_vector.T / args.temperature
                     labels = torch.arange(len(logits), device=device)
@@ -375,6 +398,14 @@ def main() -> None:
         "train_pairs": len(train),
         "negative_type": args.negative_type,
         "objective": args.objective,
+        "frequency_reweighting": {
+            "head_weight": 1.0,
+            "torso_weight": args.torso_weight,
+            "tail_weight": args.tail_weight,
+            "train_only_q33": frequency_q33,
+            "train_only_q67": frequency_q67,
+            "bucket_counts": train["frequency_bucket"].value_counts().to_dict(),
+        },
         "inbatch_weight": args.inbatch_weight if args.objective == "pairwise_inbatch" else 0.0,
         "dev_queries": int(dev.query_id.nunique()),
         "epochs_completed": epoch,
