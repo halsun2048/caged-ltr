@@ -8,7 +8,7 @@ PYTHONPATH=src uvicorn scripts.run_r16_api:app --host 127.0.0.1 --port 8000
 PYTHONPATH=src streamlit run app/streamlit_app.py
 ```
 
-API 提供 `/health`、`/search`、`/route`、`/ab/search`、`/understand`、`/explain`、`/metrics` 和 `/metrics/prometheus`。默认 cached backend 保证无 GPU 时仍能演示完整链路；设置 `R16_BACKEND=real` 并提供 `R16_MODEL_PATH`、`R16_STUDENT_CHECKPOINT`、`R16_FIRST_RESULTS` 后可加载真实 MiniLM 与冻结 FIRST replay。
+API 提供 `/health`、`/search`、`/route`、`/ab/search`、`/understand`、`/explain`、`/metrics` 和 `/metrics/prometheus`。FIRST 调用包含超时、一次重试、连续失败熔断和 Student 自动降级；这些事件会进入 metrics。默认 cached backend 保证无 GPU 时仍能演示完整链路；设置 `R16_BACKEND=real` 并提供 `R16_MODEL_PATH`、`R16_STUDENT_CHECKPOINT`、`R16_FIRST_RESULTS` 后可加载真实 MiniLM 与冻结 FIRST replay。
 
 ## Docker
 

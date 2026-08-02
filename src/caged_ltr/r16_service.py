@@ -9,6 +9,7 @@ released; a real Student/FIRST adapter can be plugged into the same interface.
 import hashlib
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -129,6 +130,10 @@ class SearchService:
         student: RerankBackend | None = None,
         first: RerankBackend | None = None,
         first_budget: float = 0.4,
+        first_timeout_ms: float = 2000.0,
+        max_retries: int = 1,
+        circuit_failure_threshold: int = 3,
+        circuit_cooldown_seconds: float = 10.0,
     ) -> None:
         self.student = student or CachedBackend()
         self.first = first or CachedBackend()
@@ -137,6 +142,14 @@ class SearchService:
         self.first_calls = 0
         self.total_ms = 0.0
         self.ab_counts = {"control_first": 0, "treatment_gate": 0}
+        self.first_timeout_ms = first_timeout_ms
+        self.max_retries = max_retries
+        self.circuit_failure_threshold = circuit_failure_threshold
+        self.circuit_cooldown_seconds = circuit_cooldown_seconds
+        self.first_failures = 0
+        self.degradations = 0
+        self._circuit_open_until = 0.0
+        self._first_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="r16-first")
 
     def route(self, query: str, candidates: list[Candidate]) -> dict[str, object]:
         digest = hashlib.sha256(query.encode()).digest()
@@ -158,8 +171,11 @@ class SearchService:
         )
         selected = decision["backend"]
         if selected == "first":
-            result = self.first.rerank(query, candidates)
-            self.first_calls += 1
+            result, selected, failure = self._first_with_resilience(query, candidates)
+            if failure:
+                decision = {**decision, "fallback": "student", "failure": failure}
+            else:
+                self.first_calls += 1
         elif selected == "student":
             result = self.student.rerank(query, candidates)
         else:
@@ -175,6 +191,32 @@ class SearchService:
             "latency_ms": elapsed,
         }
 
+    def _first_with_resilience(
+        self, query: str, candidates: list[Candidate]
+    ) -> tuple[list[RankedCandidate], str, str | None]:
+        if time.monotonic() < self._circuit_open_until:
+            self.degradations += 1
+            return self.student.rerank(query, candidates), "student", "circuit-open"
+        failure = "provider-error"
+        for attempt in range(self.max_retries + 1):
+            future = self._first_executor.submit(self.first.rerank, query, candidates)
+            try:
+                result = future.result(timeout=self.first_timeout_ms / 1000)
+                self.first_failures = 0
+                return result, "first", None
+            except TimeoutError:
+                future.cancel()
+                failure = "timeout"
+            except Exception as error:
+                failure = type(error).__name__
+            self.first_failures += 1
+            if attempt < self.max_retries:
+                continue
+        if self.first_failures >= self.circuit_failure_threshold:
+            self._circuit_open_until = time.monotonic() + self.circuit_cooldown_seconds
+        self.degradations += 1
+        return self.student.rerank(query, candidates), "student", failure
+
     def metrics(self) -> dict[str, object]:
         return {
             "requests": self.requests,
@@ -182,6 +224,9 @@ class SearchService:
             "first_call_rate": self.first_calls / max(self.requests, 1),
             "mean_latency_ms": self.total_ms / max(self.requests, 1),
             "ab_counts": self.ab_counts,
+            "first_failures": self.first_failures,
+            "degradations": self.degradations,
+            "circuit_open": time.monotonic() < self._circuit_open_until,
         }
 
     def ab_search(self, query: str, candidates: list[Candidate]) -> dict[str, object]:
@@ -235,6 +280,8 @@ def create_app(service: SearchService | None = None):
                     f"caged_ltr_first_calls_total {metrics['first_calls']}",
                     f"caged_ltr_first_call_rate {metrics['first_call_rate']}",
                     f"caged_ltr_mean_latency_ms {metrics['mean_latency_ms']}",
+                    f"caged_ltr_first_failures_total {metrics['first_failures']}",
+                    f"caged_ltr_degradations_total {metrics['degradations']}",
                 ]
             )
             + "\n"
