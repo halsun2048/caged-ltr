@@ -1,0 +1,163 @@
+{
+  "schema": "mind_r15_4_pregate_v1",
+  "protocol_sha256": "d398b6fb15fc76a54994865169b60ec3f42de5fb24f78599cac76811676f4e56",
+  "queries": 10000,
+  "features": [
+    "query_characters",
+    "query_words",
+    "candidate_count",
+    "passage_characters_mean",
+    "passage_characters_std",
+    "passage_characters_min",
+    "passage_characters_max",
+    "candidate_frequency_mean",
+    "candidate_frequency_std",
+    "candidate_frequency_min",
+    "candidate_frequency_max",
+    "candidate_frequency_zero_share",
+    "top1_lexical_overlap",
+    "max_lexical_overlap",
+    "mean_lexical_overlap"
+  ],
+  "route_agreement": 0.7068,
+  "quality": {
+    "full_first": {
+      "ndcg10": 0.6453364058889977,
+      "first_call_rate": 1.0,
+      "buckets": {
+        "head": {
+          "ndcg10": 0.6544783692927307,
+          "queries": 3333,
+          "first_call_rate": 1.0
+        },
+        "tail": {
+          "ndcg10": 0.6335241662473631,
+          "queries": 3334,
+          "first_call_rate": 1.0
+        },
+        "torso": {
+          "ndcg10": 0.6480102261531943,
+          "queries": 3333,
+          "first_call_rate": 1.0
+        }
+      }
+    },
+    "post_student_gate": {
+      "ndcg10": 0.6691333797794374,
+      "first_call_rate": 0.5999,
+      "buckets": {
+        "head": {
+          "ndcg10": 0.7189562025390517,
+          "queries": 3333,
+          "first_call_rate": 0.1494149414941494
+        },
+        "tail": {
+          "ndcg10": 0.6335241662473631,
+          "queries": 3334,
+          "first_call_rate": 1.0
+        },
+        "torso": {
+          "ndcg10": 0.6549304543843403,
+          "queries": 3333,
+          "first_call_rate": 0.6501650165016502
+        }
+      }
+    },
+    "pregate": {
+      "ndcg10": 0.6239276508362875,
+      "first_call_rate": 0.5999,
+      "buckets": {
+        "head": {
+          "ndcg10": 0.6915138851135533,
+          "queries": 3333,
+          "first_call_rate": 0.29912991299129915
+        },
+        "tail": {
+          "ndcg10": 0.5978783362263825,
+          "queries": 3334,
+          "first_call_rate": 0.864127174565087
+        },
+        "torso": {
+          "ndcg10": 0.5823985467448675,
+          "queries": 3333,
+          "first_call_rate": 0.6363636363636364
+        }
+      }
+    },
+    "pregate_minus_post": -0.045205728943149816,
+    "paired_bootstrap_95ci": [
+      -0.048674180499539366,
+      -0.04177088950701195
+    ],
+    "tail_pregate_minus_post": -0.03564583002098063,
+    "tail_bootstrap_95ci": [
+      -0.040775652965954125,
+      -0.030603951529002686
+    ]
+  },
+  "latency": {
+    "full_first": {
+      "mean_ms": 68.8662015124457,
+      "p50_ms": 73.71870707720518,
+      "p95_ms": 81.93009152309969,
+      "p99_ms": 82.69743119832128
+    },
+    "post_student_gate": {
+      "mean_ms": 48.09451276263541,
+      "p50_ms": 74.18447705671976,
+      "p95_ms": 86.39158221880759,
+      "p99_ms": 87.18380537337477
+    },
+    "pregate": {
+      "mean_ms": 48.44768824591823,
+      "p50_ms": 75.16119338106364,
+      "p95_ms": 83.65611755289137,
+      "p99_ms": 84.4656749907881
+    },
+    "pregate_overhead": {
+      "mean_ms": 1.7780503254150972,
+      "p50_ms": 1.7757901223376393,
+      "p95_ms": 1.9130556378513575,
+      "p99_ms": 2.0029296935535967
+    },
+    "mean_reduction_vs_first": 0.2964954189151463
+  },
+  "feature_importance": {
+    "query_characters": 0.0017901984602340195,
+    "query_words": 0.001657454953807077,
+    "candidate_count": 0.2668506095513723,
+    "passage_characters_mean": 0.018416434515746535,
+    "passage_characters_std": 0.008962455562646127,
+    "passage_characters_min": 0.023645985955270305,
+    "passage_characters_max": 0.017305780638195545,
+    "candidate_frequency_mean": 0.21356551148700148,
+    "candidate_frequency_std": 0.16831623836493542,
+    "candidate_frequency_min": 0.10833468578236509,
+    "candidate_frequency_max": 0.1488713661614492,
+    "candidate_frequency_zero_share": 0.011279654046043166,
+    "top1_lexical_overlap": 0.0015441347552577836,
+    "max_lexical_overlap": 0.005651164183363434,
+    "mean_lexical_overlap": 0.0038083255823125398
+  },
+  "acceptance": {
+    "route_agreement": false,
+    "quality_gap": false,
+    "tail_gap": false,
+    "first_call_rate": true,
+    "pregate_p99": false,
+    "total_p99": false,
+    "mean_latency_reduction": false,
+    "all_passed": false
+  },
+  "deployment_audit": {
+    "oracle_frequency_bucket_removed": true,
+    "student_features_removed": true,
+    "first_features_removed": true
+  },
+  "boundaries": {
+    "r12_dev_accessed": true,
+    "r12_confirm_accessed": false,
+    "large_test_accessed": false,
+    "nfcorpus_test_accessed": false
+  }
+}
