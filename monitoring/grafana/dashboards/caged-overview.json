@@ -1,0 +1,17 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "panels": [
+    {"title":"Requests","type":"timeseries","gridPos":{"h":8,"w":12,"x":0,"y":0},"targets":[{"expr":"rate(caged_ltr_requests_total[1m])","legendFormat":"requests/s"}]},
+    {"title":"FIRST failures","type":"timeseries","gridPos":{"h":8,"w":12,"x":12,"y":0},"targets":[{"expr":"rate(caged_ltr_first_failures_total[1m])","legendFormat":"failures/s"}]},
+    {"title":"FIRST call rate","type":"timeseries","gridPos":{"h":8,"w":12,"x":0,"y":8},"targets":[{"expr":"caged_ltr_first_call_rate","legendFormat":"FIRST ratio"}]},
+    {"title":"Mean latency","type":"timeseries","gridPos":{"h":8,"w":12,"x":12,"y":8},"targets":[{"expr":"caged_ltr_mean_latency_ms","legendFormat":"mean ms"}]}
+  ],
+  "schemaVersion": 39,
+  "tags": ["caged-ltr"],
+  "templating": {"list": []},
+  "time": {"from":"now-30m","to":"now"},
+  "title":"CAGED-LTR Overview",
+  "uid":"caged-overview",
+  "version":1
+}

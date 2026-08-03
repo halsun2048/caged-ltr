@@ -1,0 +1,26 @@
+{
+  "schema": "caged_ltr_runtime_smoke_v1",
+  "status": "complete",
+  "verified_on": "2026-08-03",
+  "api_base_url": "http://127.0.0.1:8001",
+  "streamlit_url": "http://127.0.0.1:8502",
+  "prometheus_url": "http://127.0.0.1:9090",
+  "grafana_url": "http://127.0.0.1:3000",
+  "api_smoke": {
+    "health_ok": true,
+    "ranked_all_candidates": true,
+    "route_exposed": true,
+    "stable_ab_assignment": true,
+    "metrics_incremented": true
+  },
+  "ready_checks": {
+    "fastapi": true,
+    "streamlit": true,
+    "prometheus": true,
+    "grafana": true
+  },
+  "containers": [
+    "postgres", "redis", "qdrant", "caged-api", "caged-mcp", "caged-ui", "prometheus", "grafana"
+  ],
+  "note": "Docker Compose full stack verified on CPU host; API uses cached demo backend unless explicitly configured for real assets."
+}

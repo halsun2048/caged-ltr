@@ -1,13 +1,14 @@
 {
   "schema": "caged_ltr_r48_r53_acceptance_v1",
-  "status": "complete_with_host_limit",
+  "status": "complete_cpu_host_verified",
   "r48": {
     "compose_and_healthchecks": true,
     "postgres_adapter": true,
     "redis_adapter": true,
     "qdrant_adapter": true,
-    "containers_started_on_current_host": false,
-    "blocker": "current user cannot access /var/run/docker.sock"
+    "containers_started_on_current_host": true,
+    "verified_services": ["postgres", "redis", "qdrant", "caged-api", "caged-mcp", "caged-ui", "prometheus", "grafana"],
+    "verified_ports": {"api": 8001, "mcp": 8766, "streamlit": 8502, "prometheus": 9090, "grafana": 3000}
   },
   "r49": {
     "checkpoint_present": true,
@@ -35,6 +36,7 @@
     "full_compose": true,
     "prometheus": true,
     "grafana": true,
-    "reproduction_and_demo_steps": "docs/r48_r53_closeout.md"
+    "reproduction_and_demo_steps": "docs/r48_r53_closeout.md",
+    "full_stack_start_script": "scripts/run_full_stack.sh"
   }
 }

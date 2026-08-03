@@ -12,6 +12,9 @@ scripts/run_cpu_demo.sh cpu
 - `replay`：缓存 Student + 冻结 FIRST 结果，适合展示路由和降级语义。
 - `cpu`：真实 MiniLM checkpoint 在 CPU 推理，FIRST 使用冻结 replay。
 
+完整 Compose 默认使用 CPU 真实 MiniLM（`R16_BACKEND=real`、`R16_DEVICE=cpu`、
+`CAGED_DENSE_PROVIDER=minilm_cpu`）。若只做快速接口演示，可显式设置 `R16_BACKEND=cached`。
+
 默认本地资产已经固定为 `artifacts/models/all-MiniLM-L6-v2`、
 `artifacts/r16_runtime/mind_r13_reweight_mild.pt` 和
 `runs/mind_r10_0/dev_first/results.jsonl`。
@@ -39,11 +42,22 @@ PYTHONPATH=src python3 scripts/check_r40_services.py
 PYTHONPATH=src python3 scripts/smoke_demo_http.py
 ```
 
-服务端口：API 8000、MCP 8765、Streamlit 8501、Prometheus 9090、Grafana 3000。
+默认服务端口：API 8001、MCP 8766、Streamlit 8502、Prometheus 9090、Grafana 3000。
+如果端口被占用，`scripts/run_full_stack.sh` 会自动选择空闲端口并在最后打印实际访问地址。
+当前 CPU 主机实测端口为 API 8001、MCP 8766、Streamlit 8502、Prometheus 9090、Grafana 3000。
 PostgreSQL、Redis、Qdrant 均有健康检查和持久化卷。
 
 当前共享主机没有 Docker socket 权限，所以 Compose 完整启动需要在用户拥有 Docker 权限的
 CPU 主机执行；代码、配置和无 Docker 的三模式运行不受影响。
+
+完整启动命令：
+
+```bash
+sg docker -c './scripts/run_full_stack.sh'
+```
+
+脚本会分阶段显示核心依赖、API、MCP、Streamlit、Prometheus 和 Grafana 的进度，并对
+`/health`、Streamlit、Prometheus、Grafana 做就绪检查。
 
 ## 演示流程
 
