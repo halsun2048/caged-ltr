@@ -9,7 +9,7 @@
     "R43_feedback": {"status": "passed", "store": "SQLite", "concurrent_writes": "serialized with RLock/WAL"},
     "R44_ab": {"status": "passed", "assignment": "stable hash", "arms": ["control_first", "treatment_gate"]},
     "R45_security": {"status": "implemented", "features": ["optional bearer API key", "request id", "health/metrics allowlist"]},
-    "R46_pressure": {"status": "passed", "report": "reports/experiments/r46_api_benchmark.json"},
+    "R46_pressure": {"status": "passed", "report": "reports/experiments/r46_api_benchmark.json", "gpu_report": "reports/experiments/r46_minilm_gpu.json", "gpu_device": "NVIDIA GeForce RTX 4090"},
     "R47_showcase": {"status": "ready", "streamlit": true, "mcp": true, "docker_template": true}
   },
   "test_policy": {"untouched_test_accesses": 0},

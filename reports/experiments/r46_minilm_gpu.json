@@ -1,0 +1,12 @@
+{
+  "schema": "caged_ltr_r46_minilm_benchmark_v1",
+  "device": "cuda",
+  "requests": 100,
+  "candidates": 100,
+  "p50_ms": 5.965016083791852,
+  "p95_ms": 6.851820042356849,
+  "p99_ms": 9.188288822770119,
+  "mean_ms": 11.34722434449941,
+  "throughput_qps": 88.12727849914698,
+  "peak_memory_mb": 108.2138671875
+}
