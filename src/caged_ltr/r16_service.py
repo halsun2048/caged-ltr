@@ -447,18 +447,17 @@ def create_app(service: SearchService | None = None):
 
     @app.post("/retrieve")
     def retrieve(payload: SearchInput = Body(...)) -> dict[str, object]:  # pragma: no cover
-        from .retrieval import HybridRetriever, TokenOverlapVectorProvider
+        from .retrieval import HybridRetriever, build_vector_provider
 
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
         limit = min(len(candidates), 20)
-        ranked = HybridRetriever(TokenOverlapVectorProvider()).retrieve_rrf(
-            payload.query, candidates, limit
-        )
+        provider = build_vector_provider()
+        ranked = HybridRetriever(provider).retrieve_rrf(payload.query, candidates, limit)
         return {
             "query": payload.query,
             "candidates": [item.__dict__ for item in ranked],
             "retriever": "rrf-lexical-dense-hook",
-            "dense_provider": "token-overlap-smoke",
+            "dense_provider": type(provider).__name__,
         }
 
     @app.post("/search")

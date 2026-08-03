@@ -2,16 +2,25 @@ services:
   caged-api:
     build:
       context: .
-      dockerfile: Dockerfile.demo
+      dockerfile: Dockerfile.cpu
     command: ["uvicorn", "scripts.run_r16_api:app", "--host", "0.0.0.0", "--port", "8000"]
     environment:
-      R16_BACKEND: cached
+      R16_BACKEND: ${R16_BACKEND:-cached}
+      R16_DEVICE: ${R16_DEVICE:-cpu}
+      R16_MODEL_PATH: ${R16_MODEL_PATH:-/app/artifacts/models/all-MiniLM-L6-v2}
+      R16_STUDENT_CHECKPOINT: ${R16_STUDENT_CHECKPOINT:-/app/artifacts/r16_runtime/mind_r13_reweight_mild.pt}
+      R16_FIRST_RESULTS: ${R16_FIRST_RESULTS:-/app/runs/mind_r10_0/dev_first/results.jsonl}
+      CAGED_DENSE_PROVIDER: ${CAGED_DENSE_PROVIDER:-token_overlap}
       CAGED_EVENT_DB: /app/runs/caged_events.sqlite3
       POSTGRES_DSN: postgresql://caged:change-me-in-local-env@postgres:5432/caged_ltr
       REDIS_URL: redis://redis:6379/0
       QDRANT_URL: http://qdrant:6333
     ports: ["8000:8000"]
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./runs:/app/runs
     depends_on:
+      postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
       qdrant: {condition: service_healthy}
   caged-mcp:
@@ -60,6 +69,20 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      - ./monitoring/prometheus.demo.yml:/etc/prometheus/prometheus.yml:ro
+    ports: ["9090:9090"]
+    depends_on: [caged-api]
+  grafana:
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-caged-demo}
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
 
 volumes:
   caged-postgres:

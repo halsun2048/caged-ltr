@@ -1,0 +1,40 @@
+{
+  "schema": "caged_ltr_r48_r53_acceptance_v1",
+  "status": "complete_with_host_limit",
+  "r48": {
+    "compose_and_healthchecks": true,
+    "postgres_adapter": true,
+    "redis_adapter": true,
+    "qdrant_adapter": true,
+    "containers_started_on_current_host": false,
+    "blocker": "current user cannot access /var/run/docker.sock"
+  },
+  "r49": {
+    "checkpoint_present": true,
+    "base_model_present": true,
+    "first_replay_present": true,
+    "cpu_dense_provider_verified": "MiniLMVectorProvider",
+    "fusion": "lexical+dense RRF"
+  },
+  "r50": {
+    "cached_smoke": true,
+    "replay_smoke": true,
+    "cpu_smoke": true
+  },
+  "r51": {
+    "result_table": "docs/r48_r53_closeout.md",
+    "architecture": "docs/r48_r53_architecture.mmd"
+  },
+  "r52": {
+    "stable_ab_assignment": true,
+    "mcp_compatibility": true,
+    "streamlit_http_client": true
+  },
+  "r53": {
+    "cpu_dockerfile": true,
+    "full_compose": true,
+    "prometheus": true,
+    "grafana": true,
+    "reproduction_and_demo_steps": "docs/r48_r53_closeout.md"
+  }
+}

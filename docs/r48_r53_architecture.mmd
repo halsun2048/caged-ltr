@@ -1,0 +1,17 @@
+flowchart LR
+    UI[Streamlit / MCP client] --> API[FastAPI]
+    API --> RET[Hybrid retrieval]
+    RET --> LEX[Lexical]
+    RET --> VEC[MiniLM CPU / Qdrant]
+    LEX --> RRF[RRF fusion]
+    VEC --> RRF
+    RRF --> STU[MiniLM student]
+    STU --> GATE[Gain-aware gate]
+    GATE -->|easy| OUT[Ranked results]
+    GATE -->|hard| FIRST[FIRST replay/provider]
+    FIRST --> OUT
+    API --> PG[(PostgreSQL events)]
+    API --> REDIS[(Redis state/cache)]
+    VEC --> QD[(Qdrant vectors)]
+    API --> PROM[Prometheus]
+    PROM --> GRAF[Grafana]

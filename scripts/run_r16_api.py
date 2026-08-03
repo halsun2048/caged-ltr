@@ -17,18 +17,28 @@ def build_service() -> SearchService:
     router = None
     if route_mode == "post_student_gate":
         router = PostStudentGateRouter(os.environ["R16_GATE_MANIFEST"])
-    if mode != "real":
+    if mode == "cached":
         return SearchService(
             first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4")),
             route_mode=route_mode,
             router=router,
         )
+    if mode == "replay":
+        return SearchService(
+            first=ReplayFirstBackend(os.environ["R16_FIRST_RESULTS"]),
+            first_budget=float(os.getenv("R16_FIRST_BUDGET", "0.4")),
+            route_mode=route_mode,
+            router=router,
+        )
+    if mode not in {"cpu", "real"}:
+        raise ValueError("R16_BACKEND must be cached, replay, cpu, or real")
     student = MiniLMBackend(
         os.environ["R16_MODEL_PATH"],
         os.environ["R16_STUDENT_CHECKPOINT"],
-        os.getenv("R16_DEVICE", "cuda"),
+        "cpu" if mode == "cpu" else os.getenv("R16_DEVICE", "cuda"),
     )
-    first = ReplayFirstBackend(os.environ["R16_FIRST_RESULTS"])
+    first_results = os.getenv("R16_FIRST_RESULTS")
+    first = ReplayFirstBackend(first_results) if first_results else None
     return SearchService(
         student=student,
         first=first,

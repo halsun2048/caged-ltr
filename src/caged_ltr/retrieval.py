@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 
 from .r16_service import Candidate, lexical_score
@@ -146,3 +147,30 @@ class QdrantProvider:  # pragma: no cover
         )
         by_id = {str(point.payload.get("item_id")): float(point.score) for point in result.points}
         return [by_id.get(item.item_id, 0.0) for item in candidates]
+
+
+def build_vector_provider():  # pragma: no cover - deployment configuration
+    """Build the configured dense provider, with an explicit smoke fallback."""
+    mode = os.getenv("CAGED_DENSE_PROVIDER", "token_overlap")
+    if mode == "token_overlap":
+        return TokenOverlapVectorProvider()
+    if mode == "minilm_cpu":
+        return MiniLMVectorProvider(
+            os.environ["R16_MODEL_PATH"], os.environ["R16_STUDENT_CHECKPOINT"], "cpu"
+        )
+    if mode == "http":
+        return HttpEmbeddingProvider(
+            os.environ["CAGED_EMBEDDING_ENDPOINT"],
+            os.getenv("CAGED_EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+            os.getenv("CAGED_EMBEDDING_API_KEY"),
+        )
+    if mode == "qdrant":
+        embedder = HttpEmbeddingProvider(
+            os.environ["CAGED_EMBEDDING_ENDPOINT"],
+            os.getenv("CAGED_EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
+            os.getenv("CAGED_EMBEDDING_API_KEY"),
+        )
+        return QdrantProvider(
+            os.environ["QDRANT_URL"], os.getenv("QDRANT_COLLECTION", "caged-items"), embedder
+        )
+    raise ValueError(f"unsupported CAGED_DENSE_PROVIDER: {mode}")
