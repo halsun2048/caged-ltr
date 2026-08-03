@@ -1,0 +1,85 @@
+{
+  "schema": "caged_ltr_thesis_statistics_v1",
+  "source_reports": [
+    "/home/hal-sun/下载/项目/搜广推/reports/experiments/mind_r7_9_multiseed.json",
+    "/home/hal-sun/下载/项目/搜广推/reports/experiments/mind_r8_11_tail_floor.json"
+  ],
+  "seed_count": 3,
+  "bootstrap": {
+    "iterations": 10000,
+    "seed": 20240727,
+    "unit": "frozen seed means"
+  },
+  "seed_summary": {
+    "ndcg10": {
+      "seed_values": [
+        0.3874072900426088,
+        0.384760622455074,
+        0.3877871755610217
+      ],
+      "mean": 0.3866516960195681,
+      "std_sample": 0.0016486957486211767,
+      "bootstrap_ci95_seed_level": [
+        0.384760622455074,
+        0.38778717556102177
+      ]
+    },
+    "hit10": {
+      "seed_values": [
+        0.7460520699957319,
+        0.7464788732394366,
+        0.7473324797268459
+      ],
+      "mean": 0.7466211409873381,
+      "std_sample": 0.0006519527237097615,
+      "bootstrap_ci95_seed_level": [
+        0.7460520699957319,
+        0.7473324797268459
+      ]
+    },
+    "mrr": {
+      "seed_values": [
+        0.35329553167692856,
+        0.34855269618698925,
+        0.3530603195118036
+      ],
+      "mean": 0.3516361824585738,
+      "std_sample": 0.002672965933367561,
+      "bootstrap_ci95_seed_level": [
+        0.3485526961869893,
+        0.35329553167692856
+      ]
+    }
+  },
+  "bucket_delta_summary": {
+    "head": {
+      "mean_delta": 0.08378919793426857,
+      "std_sample": 0.001940759936913258,
+      "min": 0.08156614888112804,
+      "max": 0.08514585265731776
+    },
+    "torso": {
+      "mean_delta": 0.06620960963053676,
+      "std_sample": 0.001583904255150854,
+      "min": 0.06484718259261159,
+      "max": 0.0679475147384849
+    },
+    "tail": {
+      "mean_delta": 0.10516906132567512,
+      "std_sample": 0.012559640231519925,
+      "min": 0.09359171328276018,
+      "max": 0.11852201468921959
+    }
+  },
+  "tail_floor_gate": {
+    "ndcg10": 0.650085553837935,
+    "hit10": 0.9816,
+    "mrr": 0.5853088188297341,
+    "first_call_rate": 0.4,
+    "latency_ms": 30.17938306269236,
+    "overall_gap_vs_first": -0.002825020091341557,
+    "tail_gap_vs_first": -0.0025351588334264763
+  },
+  "untouched_test_reaccessed": false,
+  "interpretation": "CI is seed-level because frozen aggregate JSON does not contain per-query vectors; do not call it a query-level paired bootstrap."
+}

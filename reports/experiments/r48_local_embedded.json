@@ -1,0 +1,18 @@
+{
+  "schema": "caged_ltr_r48_local_embedded_v1",
+  "postgres_compatible_sqlite": {
+    "search_events": 1,
+    "feedback_events": 1,
+    "first_calls": 0
+  },
+  "redis_compatible_memory": {
+    "value": "ok",
+    "counter": 1
+  },
+  "qdrant_local": {
+    "status": "unavailable",
+    "reason": "qdrant-client not installed"
+  },
+  "production_services_started": false,
+  "limitation": "SQLite/MemoryState/Qdrant local are CPU fallbacks, not PostgreSQL/Redis/Qdrant daemons."
+}
