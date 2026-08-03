@@ -34,7 +34,7 @@ p99 9.19ms、峰值显存约 108MB。CPU 性能需要在目标主机单独测量
 
 ```bash
 cp configs/cpu.env.example .env
-docker compose --env-file .env -f docker-compose.full.yml up -d --build
+docker compose -p caged-ltr --env-file .env -f docker-compose.full.yml up -d --build
 PYTHONPATH=src python3 scripts/check_r40_services.py
 PYTHONPATH=src python3 scripts/smoke_demo_http.py
 ```

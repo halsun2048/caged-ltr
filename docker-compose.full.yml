@@ -1,3 +1,5 @@
+name: caged-ltr
+
 services:
   caged-api:
     build:
