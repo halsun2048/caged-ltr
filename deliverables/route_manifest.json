@@ -1,0 +1,11 @@
+{
+  "schema": "caged_ltr_two_route_manifest_v1",
+  "frozen_at_commit": "967da16941980263a004a92043eb9521b626bb58",
+  "test_policy": {"untouched_test_reaccessed": false},
+  "routes": {
+    "llm_app": {"entry": "deliverables/llm_app/README.md", "focus": ["FastAPI", "Streamlit", "MCP", "MiniLM CPU", "feedback", "A/B", "monitoring"]},
+    "thesis": {"entry": "deliverables/thesis/README.md", "focus": ["frozen evidence", "bootstrap", "Head/Torso/Tail", "quality-cost tradeoff"]}
+  },
+  "shared_evidence": ["artifacts", "reports/experiments", "docs", "backups/gpu-server-20260803"],
+  "gpu_training_status": "frozen; no further training required"
+}
