@@ -61,7 +61,9 @@ def metric_card(report: dict) -> None:
 st.set_page_config(page_title="CAGED-LTR R17", page_icon="🔎", layout="wide")
 st.sidebar.title("CAGED-LTR R17")
 st.sidebar.caption("成本感知的大模型搜索重排")
-page = st.sidebar.radio("展示页面", ["项目总览", "智能搜索", "A/B 实验", "性能与成本", "部署说明"])
+page = st.sidebar.radio(
+    "展示页面", ["项目总览", "智能搜索", "A/B 实验", "MCP与反馈", "性能与成本", "部署说明"]
+)
 budget = st.sidebar.slider("FIRST 调用预算", 0.0, 1.0, 0.4, 0.05)
 api_url = st.sidebar.text_input("FastAPI URL", os.getenv("R18_API_URL", "http://127.0.0.1:8000"))
 try:
@@ -146,6 +148,23 @@ elif page == "智能搜索":
             }
         )
 
+        if result.get("search_event_id"):
+            feedback = st.radio("结果反馈", ["不反馈", "like", "dislike"], horizontal=True)
+            if feedback != "不反馈" and st.button("提交反馈"):
+                request = Request(
+                    f"{api_url.rstrip('/')}/feedback",
+                    data=json.dumps(
+                        {
+                            "search_event_id": result["search_event_id"],
+                            "item_id": result["results"][0]["item_id"],
+                            "feedback": feedback,
+                        }
+                    ).encode(),
+                    headers={"content-type": "application/json"},
+                )
+                with urlopen(request, timeout=5):
+                    st.success("反馈已记录")
+
 elif page == "A/B 实验":
     st.title("在线 A/B 实验面板")
     st.subheader("单请求稳定分流演示")
@@ -212,6 +231,31 @@ elif page == "性能与成本":
             "peak_gpu_memory_mib": benchmark["peak_gpu_memory_mib"],
             "student": benchmark["student"],
             "first": benchmark["first_recorded_model_inference"],
+        }
+    )
+
+elif page == "MCP与反馈":
+    st.title("MCP 工具与反馈闭环")
+    st.write("MCP Server 通过 HTTP 调用同一个 FastAPI，不重复加载 Student/FIRST 模型。")
+    st.code(
+        "PYTHONPATH=src python scripts/run_mcp_server.py --http --port 8765\n"
+        "# 或作为 Agent 的 stdio server：\n"
+        "PYTHONPATH=src python scripts/run_mcp_server.py",
+        language="bash",
+    )
+    st.json(
+        {
+            "tools": [
+                "search",
+                "understand_query",
+                "explain_results",
+                "run_ab_search",
+                "get_runtime_metrics",
+                "list_demo_queries",
+            ],
+            "event_store": api_get(api_url, "/events/summary")
+            if health
+            else {"status": "API offline"},
         }
     )
 

@@ -34,6 +34,16 @@ Docker 模式：
 docker compose -f docker-compose.demo.yml up --build
 ```
 
+MCP 与完整应用栈说明见 [`docs/mcp.md`](docs/mcp.md) 和
+[`docs/r31_r38_closeout.md`](docs/r31_r38_closeout.md)。本地可直接启动 MCP bridge：
+
+```bash
+PYTHONPATH=src python scripts/run_mcp_server.py --http --port 8765
+```
+
+完整 PostgreSQL/Redis/Qdrant 编排模板为 `docker-compose.full.yml`；这些外部服务
+不是当前 cached 演示的硬依赖。
+
 架构：
 
 ```text

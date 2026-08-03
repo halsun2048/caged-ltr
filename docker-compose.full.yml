@@ -1,0 +1,48 @@
+services:
+  caged-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    command: ["uvicorn", "scripts.run_r16_api:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      R16_BACKEND: cached
+      CAGED_EVENT_DB: /app/runs/caged_events.sqlite3
+      REDIS_URL: redis://redis:6379/0
+      QDRANT_URL: http://qdrant:6333
+    ports: ["8000:8000"]
+    depends_on: [redis, qdrant]
+  caged-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    command: ["python", "scripts/run_mcp_server.py", "--http", "--host", "0.0.0.0", "--port", "8765"]
+    environment:
+      CAGED_API_URL: http://caged-api:8000
+    ports: ["8765:8765"]
+    depends_on: [caged-api]
+  caged-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    environment:
+      PYTHONPATH: /app/src
+      R18_API_URL: http://caged-api:8000
+    ports: ["8501:8501"]
+    depends_on: [caged-api]
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: caged_ltr
+      POSTGRES_USER: caged
+      POSTGRES_PASSWORD: change-me-in-local-env
+    volumes: [caged-postgres:/var/lib/postgresql/data]
+  redis:
+    image: redis:7-alpine
+  qdrant:
+    image: qdrant/qdrant:v1.15.1
+    volumes: [caged-qdrant:/qdrant/storage]
+
+volumes:
+  caged-postgres:
+  caged-qdrant:

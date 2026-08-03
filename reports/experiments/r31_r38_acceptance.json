@@ -1,0 +1,11 @@
+{
+  "schema": "caged_ltr_r31_r38_acceptance_v1",
+  "R31": {"status": "complete", "mcp_initialize": true, "tools_list": true, "tools_call": true, "stdio_http_bridge": true},
+  "R32": {"status": "complete_local", "sqlite_events": true, "feedback_endpoint": true, "postgresql_production": "optional_not_run"},
+  "R33": {"status": "complete_local", "memory_state": true, "redis_adapter": "optional_not_run"},
+  "R34": {"status": "complete_local", "lexical_fallback": true, "qdrant_adapter": "optional_not_run"},
+  "R35": {"status": "complete_local", "task_runner": true, "real_provider": "configuration_path_existing"},
+  "R36": {"status": "complete", "streamlit_mcp_feedback_page": true},
+  "R37": {"status": "complete_template", "full_compose_yaml": true, "container_build": "blocked_by_local_docker_socket"},
+  "R38": {"status": "complete", "tests": 108, "coverage_percent": 85.02, "mcp_search_feedback_e2e": true}
+}

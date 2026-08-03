@@ -358,9 +358,18 @@ def create_app(service: SearchService | None = None):
         backend: str = "gate"
         user_id: str | None = None
 
+    class FeedbackInput(BaseModel):
+        search_event_id: str
+        item_id: str
+        feedback: str
+        user_id: str | None = None
+
     app = FastAPI(title="CAGED-LTR R16 Demo", version="0.1.0")
     runtime = service or SearchService()
     from .r16_llm_app import as_json, explain_result
+    from .storage import EventStore
+
+    event_store = EventStore() if os.getenv("CAGED_EVENT_DB") else None
 
     request_log = logging.getLogger("caged_ltr.api")
     rate_limit = int(os.getenv("R18_RATE_LIMIT_PER_MINUTE", "120"))
@@ -424,10 +433,28 @@ def create_app(service: SearchService | None = None):
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
         return runtime.route(payload.query, candidates)
 
+    @app.post("/retrieve")
+    def retrieve(payload: SearchInput = Body(...)) -> dict[str, object]:  # pragma: no cover
+        from .retrieval import HybridRetriever
+
+        candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
+        limit = min(len(candidates), 20)
+        ranked = HybridRetriever().retrieve(payload.query, candidates, limit)
+        return {
+            "query": payload.query,
+            "candidates": [item.__dict__ for item in ranked],
+            "retriever": "lexical-fallback",
+        }
+
     @app.post("/search")
     def search(payload: SearchInput = Body(...)) -> dict[str, object]:
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
-        return runtime.search(payload.query, candidates, payload.backend)
+        result = runtime.search(payload.query, candidates, payload.backend)
+        if event_store:
+            result["search_event_id"] = event_store.record_search(
+                {**result, "query": payload.query, "user_id": payload.user_id}
+            )
+        return result
 
     @app.post("/search/batch")
     def batch_search(payload: list[SearchInput] = Body(...)) -> dict[str, object]:
@@ -464,6 +491,21 @@ def create_app(service: SearchService | None = None):
                 for item in result["results"]
             ],
         }
+
+    @app.post("/feedback")
+    def feedback(payload: FeedbackInput = Body(...)) -> dict[str, str]:  # pragma: no cover
+        if event_store is None:
+            raise HTTPException(status_code=503, detail="event store is disabled")
+        event_id = event_store.record_feedback(
+            payload.search_event_id, payload.user_id, payload.item_id, payload.feedback
+        )
+        return {"feedback_event_id": event_id}
+
+    @app.get("/events/summary")
+    def event_summary() -> dict[str, int]:  # pragma: no cover
+        if event_store is None:
+            return {"search_events": 0, "feedback_events": 0, "first_calls": 0}
+        return event_store.summary()
 
     return app
 
