@@ -69,3 +69,23 @@ sg docker -c './scripts/run_full_stack.sh'
 6. 打开 Prometheus/Grafana，展示 QPS、延迟、FIRST 调用和降级指标。
 
 架构图源码见 `docs/r48_r53_architecture.mmd`。
+
+## 最终验收与发布
+
+在 Docker 服务已启动且端口采用默认值（API 8001、MCP 8766）时运行：
+
+```bash
+API_URL=http://127.0.0.1:8001 \
+MCP_URL=http://127.0.0.1:8766 \
+PROM_URL=http://127.0.0.1:9090 \
+GRAFANA_URL=http://127.0.0.1:3000 \
+scripts/verify_infra_observability.sh
+```
+
+该验收会实际调用 MCP JSON-RPC、API 事件存储、Redis、Qdrant、Prometheus
+和 Grafana，并输出 `reports/experiments/r54_infrastructure_acceptance.json`。
+已锁定的 untouched test 不在此流程中访问。
+
+完成验收后，在本机执行 `scripts/finalize_release.sh`，提交代码并创建
+`v1.0.0-cpu-closeout` tag。模型和 checkpoint 只记录在
+`reports/data/local_asset_manifest.json`，不进入 Git。
