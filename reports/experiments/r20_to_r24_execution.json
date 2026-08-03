@@ -1,0 +1,40 @@
+{
+  "schema": "caged_ltr_r20_to_r24_execution_v1",
+  "R20": {
+    "status": "no_go",
+    "selected": null,
+    "diagnostic_best": "tail_floor_0.90",
+    "diagnostic_best_ndcg10": 0.6225840776005551,
+    "first_ndcg10": 0.6453364058889977,
+    "first_call_rate": 0.4,
+    "reason": "No OOF candidate met both overall and Tail gap <= 0.01 at <=45% FIRST calls.",
+    "confirm_evaluated": false,
+    "large_test_accessed": false
+  },
+  "R21": {
+    "status": "dev_oof_diagnostics_complete",
+    "paired_bootstrap_complete": true,
+    "gain_calibration_complete": true,
+    "confirm_drift": "skipped_after_R20_no_go"
+  },
+  "R22": {
+    "status": "skipped_after_R20_no_go",
+    "new_gpu_benchmark_executed": false,
+    "existing_reference": "reports/experiments/mind_r13_service_latency.json",
+    "reason": "A failed quality admission does not justify new production-scale GPU benchmarking; current server also lacks the frozen MiniLM runtime model path."
+  },
+  "R23": {
+    "status": "skipped_after_R20_no_go",
+    "new_dataset_accessed": false,
+    "existing_reference": "reports/experiments/mind_r14_cross_domain_audit.json",
+    "reason": "The unified Gate did not pass in-domain OOF admission."
+  },
+  "R24": {
+    "status": "engineering_closeout_complete",
+    "streamlit_http_only": true,
+    "stable_ab_demo": true,
+    "cost_panel": true,
+    "docker_api_health_dependency": true,
+    "gpu_mode_env_adapter": true
+  }
+}

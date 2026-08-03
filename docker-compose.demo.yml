@@ -21,5 +21,9 @@ services:
     command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
     environment:
       PYTHONPATH: /app/src
+      R18_API_URL: http://caged-api:8000
+    depends_on:
+      caged-api:
+        condition: service_healthy
     ports:
       - "8501:8501"

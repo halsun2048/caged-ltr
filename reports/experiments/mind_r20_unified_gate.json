@@ -1,0 +1,320 @@
+{
+  "schema": "mind_r20_unified_gate_v1",
+  "protocol": {
+    "selection": "5-fold OOF dev only",
+    "budget": 0.4,
+    "features": [
+      "query_characters",
+      "candidate_count",
+      "margin",
+      "top1_score",
+      "top3_gap",
+      "top5_gap",
+      "score_mean",
+      "score_std",
+      "top1_lexical_overlap",
+      "max_lexical_overlap",
+      "mean_lexical_overlap",
+      "top1_passage_characters",
+      "mean_passage_characters"
+    ],
+    "feature_builder_version": "r19.0-exact-v1",
+    "confirm_access": "not accessed because no OOF candidate passed admission",
+    "initial_attempt_audit": "an earlier implementation loaded confirm before admission but did not score or select on it; corrected before this final report",
+    "large_test_accessed": false
+  },
+  "candidates": {
+    "logistic": {
+      "runtime_features": [
+        "query_characters",
+        "candidate_count",
+        "margin",
+        "top1_score",
+        "top3_gap",
+        "top5_gap",
+        "score_mean",
+        "score_std",
+        "top1_lexical_overlap",
+        "max_lexical_overlap",
+        "mean_lexical_overlap",
+        "top1_passage_characters",
+        "mean_passage_characters"
+      ],
+      "requires_frequency_bucket": false,
+      "oof": {
+        "queries": 10000,
+        "ndcg10": 0.6041512324132946,
+        "hit10": 0.9551,
+        "mrr": 0.5266045973204642,
+        "first_call_rate": 0.4
+      },
+      "by_bucket": {
+        "head": {
+          "queries": 3333,
+          "ndcg10": 0.703043680866745,
+          "hit10": 0.9966996699669967,
+          "mrr": 0.6321497022329605,
+          "first_call_rate": 0.2556255625562556
+        },
+        "tail": {
+          "queries": 3334,
+          "ndcg10": 0.5227739962017499,
+          "hit10": 0.8956208758248351,
+          "mrr": 0.44272759873460554,
+          "first_call_rate": 0.47030593881223753
+        },
+        "torso": {
+          "queries": 3333,
+          "ndcg10": 0.5866604357838137,
+          "hit10": 0.972997299729973,
+          "mrr": 0.5049616566099638,
+          "first_call_rate": 0.474047404740474
+        }
+      },
+      "admission": {
+        "overall_gap_at_most_0p01": false,
+        "tail_gap_at_most_0p01": false,
+        "call_rate_at_most_0p45": true,
+        "all_passed": false
+      }
+    },
+    "gain_extra_trees": {
+      "runtime_features": [
+        "query_characters",
+        "candidate_count",
+        "margin",
+        "top1_score",
+        "top3_gap",
+        "top5_gap",
+        "score_mean",
+        "score_std",
+        "top1_lexical_overlap",
+        "max_lexical_overlap",
+        "mean_lexical_overlap",
+        "top1_passage_characters",
+        "mean_passage_characters"
+      ],
+      "requires_frequency_bucket": false,
+      "oof": {
+        "queries": 10000,
+        "ndcg10": 0.6038857787078021,
+        "hit10": 0.9562,
+        "mrr": 0.525921873879904,
+        "first_call_rate": 0.4
+      },
+      "by_bucket": {
+        "head": {
+          "queries": 3333,
+          "ndcg10": 0.6986744883610838,
+          "hit10": 0.9957995799579958,
+          "mrr": 0.6268628748489234,
+          "first_call_rate": 0.26612661266126614
+        },
+        "tail": {
+          "queries": 3334,
+          "ndcg10": 0.5302175723028377,
+          "hit10": 0.904619076184763,
+          "mrr": 0.4488482623542222,
+          "first_call_rate": 0.47810437912417514
+        },
+        "torso": {
+          "queries": 3333,
+          "ndcg10": 0.5827873781316735,
+          "hit10": 0.9681968196819682,
+          "mrr": 0.5020776088324639,
+          "first_call_rate": 0.45574557455745573
+        }
+      },
+      "admission": {
+        "overall_gap_at_most_0p01": false,
+        "tail_gap_at_most_0p01": false,
+        "call_rate_at_most_0p45": true,
+        "all_passed": false
+      }
+    },
+    "tail_floor_0.50": {
+      "runtime_features": [
+        "query_characters",
+        "candidate_count",
+        "margin",
+        "top1_score",
+        "top3_gap",
+        "top5_gap",
+        "score_mean",
+        "score_std",
+        "top1_lexical_overlap",
+        "max_lexical_overlap",
+        "mean_lexical_overlap",
+        "top1_passage_characters",
+        "mean_passage_characters",
+        "frequency_bucket"
+      ],
+      "requires_frequency_bucket": true,
+      "base_model": "gain_extra_trees",
+      "tail_floor": 0.5,
+      "oof": {
+        "queries": 10000,
+        "ndcg10": 0.6055463897049934,
+        "hit10": 0.9582,
+        "mrr": 0.5275469238402637,
+        "first_call_rate": 0.4
+      },
+      "by_bucket": {
+        "head": {
+          "queries": 3333,
+          "ndcg10": 0.6993569538449154,
+          "hit10": 0.9960996099609961,
+          "mrr": 0.6284605346149,
+          "first_call_rate": 0.255025502550255
+        },
+        "tail": {
+          "queries": 3334,
+          "ndcg10": 0.5360046234922227,
+          "hit10": 0.9103179364127174,
+          "mrr": 0.453547472393293,
+          "first_call_rate": 0.5
+        },
+        "torso": {
+          "queries": 3333,
+          "ndcg10": 0.5812984563941679,
+          "hit10": 0.9681968196819682,
+          "mrr": 0.5006549665682375,
+          "first_call_rate": 0.44494449444944495
+        }
+      },
+      "admission": {
+        "overall_gap_at_most_0p01": false,
+        "tail_gap_at_most_0p01": false,
+        "call_rate_at_most_0p45": true,
+        "all_passed": false
+      }
+    },
+    "tail_floor_0.75": {
+      "runtime_features": [
+        "query_characters",
+        "candidate_count",
+        "margin",
+        "top1_score",
+        "top3_gap",
+        "top5_gap",
+        "score_mean",
+        "score_std",
+        "top1_lexical_overlap",
+        "max_lexical_overlap",
+        "mean_lexical_overlap",
+        "top1_passage_characters",
+        "mean_passage_characters",
+        "frequency_bucket"
+      ],
+      "requires_frequency_bucket": true,
+      "base_model": "gain_extra_trees",
+      "tail_floor": 0.75,
+      "oof": {
+        "queries": 10000,
+        "ndcg10": 0.6167419794645346,
+        "hit10": 0.9707,
+        "mrr": 0.5376611890264019,
+        "first_call_rate": 0.4
+      },
+      "by_bucket": {
+        "head": {
+          "queries": 3333,
+          "ndcg10": 0.7004216025607923,
+          "hit10": 0.9966996699669967,
+          "mrr": 0.6350683166052205,
+          "first_call_rate": 0.1545154515451545
+        },
+        "tail": {
+          "queries": 3334,
+          "ndcg10": 0.5958925223976026,
+          "hit10": 0.9589082183563288,
+          "mrr": 0.49854085102421264,
+          "first_call_rate": 0.7498500299940012
+        },
+        "torso": {
+          "queries": 3333,
+          "ndcg10": 0.5539180688978751,
+          "hit10": 0.9564956495649565,
+          "mrr": 0.47938613672490077,
+          "first_call_rate": 0.29552955295529554
+        }
+      },
+      "admission": {
+        "overall_gap_at_most_0p01": false,
+        "tail_gap_at_most_0p01": false,
+        "call_rate_at_most_0p45": true,
+        "all_passed": false
+      }
+    },
+    "tail_floor_0.90": {
+      "runtime_features": [
+        "query_characters",
+        "candidate_count",
+        "margin",
+        "top1_score",
+        "top3_gap",
+        "top5_gap",
+        "score_mean",
+        "score_std",
+        "top1_lexical_overlap",
+        "max_lexical_overlap",
+        "mean_lexical_overlap",
+        "top1_passage_characters",
+        "mean_passage_characters",
+        "frequency_bucket"
+      ],
+      "requires_frequency_bucket": true,
+      "base_model": "gain_extra_trees",
+      "tail_floor": 0.9,
+      "oof": {
+        "queries": 10000,
+        "ndcg10": 0.6225840776005551,
+        "hit10": 0.9775,
+        "mrr": 0.5447213453307957,
+        "first_call_rate": 0.4
+      },
+      "by_bucket": {
+        "head": {
+          "queries": 3333,
+          "ndcg10": 0.6996809508141414,
+          "hit10": 0.9978997899789979,
+          "mrr": 0.6367203832437855,
+          "first_call_rate": 0.10261026102610261
+        },
+        "tail": {
+          "queries": 3334,
+          "ndcg10": 0.628696318859824,
+          "hit10": 0.9853029394121176,
+          "mrr": 0.527395031316747,
+          "first_call_rate": 0.9001199760047991
+        },
+        "torso": {
+          "queries": 3333,
+          "ndcg10": 0.5393731292719365,
+          "hit10": 0.9492949294929492,
+          "mrr": 0.47005381984590044,
+          "first_call_rate": 0.19711971197119713
+        }
+      },
+      "admission": {
+        "overall_gap_at_most_0p01": false,
+        "tail_gap_at_most_0p01": true,
+        "call_rate_at_most_0p45": true,
+        "all_passed": false
+      }
+    }
+  },
+  "selected": null,
+  "diagnostic_best": "tail_floor_0.90",
+  "dev_first": {
+    "queries": 10000,
+    "ndcg10": 0.6453364058889977,
+    "hit10": 0.9911,
+    "mrr": 0.5476999066211566,
+    "first_call_rate": 1.0
+  },
+  "confirm": null,
+  "confirm_student": null,
+  "confirm_first": null,
+  "acceptance": null
+}

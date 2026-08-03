@@ -9,7 +9,6 @@ from urllib.request import Request, urlopen
 import streamlit as st
 
 from caged_ltr.r16_llm_app import as_json, explain_result
-from caged_ltr.r16_service import Candidate, SearchService
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,25 +18,20 @@ def load_json(path: str) -> dict:
     return json.loads(Path(path).read_text())
 
 
-@st.cache_resource
-def get_service(budget: float) -> SearchService:
-    return SearchService(first_budget=budget)
-
-
-def candidate_input(raw: str) -> list[Candidate]:
+def candidate_input(raw: str) -> list[dict[str, str]]:
     result = []
     for line in raw.splitlines():
         if line.strip():
             parts = line.split("\t", 1)
-            result.append(Candidate(parts[0], parts[1] if len(parts) > 1 else parts[0]))
+            result.append({"item_id": parts[0], "text": parts[1] if len(parts) > 1 else parts[0]})
     return result
 
 
-def api_search(base_url: str, query: str, candidates: list[Candidate], backend: str) -> dict:
+def api_search(base_url: str, query: str, candidates: list[dict[str, str]], backend: str) -> dict:
     payload = {
         "query": query,
         "backend": backend,
-        "candidates": [item.__dict__ for item in candidates],
+        "candidates": candidates,
     }
     request = Request(
         f"{base_url.rstrip('/')}/search",
@@ -64,8 +58,7 @@ st.sidebar.title("CAGED-LTR R17")
 st.sidebar.caption("成本感知的大模型搜索重排")
 page = st.sidebar.radio("展示页面", ["项目总览", "智能搜索", "A/B 实验", "性能与成本", "部署说明"])
 budget = st.sidebar.slider("FIRST 调用预算", 0.0, 1.0, 0.4, 0.05)
-api_url = st.sidebar.text_input("FastAPI URL（可选）", os.getenv("R18_API_URL", ""))
-service = get_service(budget)
+api_url = st.sidebar.text_input("FastAPI URL", os.getenv("R18_API_URL", "http://127.0.0.1:8000"))
 benchmark = load_json(str(ROOT / "reports/experiments/r16_gpu_service_benchmark.json"))
 ab_report = load_json(str(ROOT / "reports/experiments/mind_r15_offline_ab.json"))
 
@@ -95,7 +88,7 @@ if page == "项目总览":
             "相对全量 FIRST 提升", f"{ab_report['ab']['randomized_replay']['difference']:+.4f}"
         )
         st.metric("FIRST 调用减少", f"{ab_report['ab']['first_call_reduction']:.1%}")
-    st.info("当前页面默认使用 deterministic cached backend；连接真实服务时可切换到 GPU API。")
+    st.info("前端始终通过 FastAPI 调用后端；后端可在 cached 或 GPU real 模式间切换。")
 
 elif page == "智能搜索":
     st.title("智能搜索与路由解释")
@@ -107,15 +100,12 @@ elif page == "智能搜索":
     backend = st.selectbox("策略", ["gate", "student", "first"])
     if st.button("开始检索", type="primary"):
         candidates = candidate_input(raw)
-        if api_url.strip():
-            try:
-                result = api_search(api_url, query, candidates, backend)
-                st.success("实时 FastAPI 模式")
-            except Exception as error:
-                st.warning(f"API 不可用，已回退离线模式: {type(error).__name__}")
-                result = service.search(query, candidates, backend)
-        else:
-            result = service.search(query, candidates, backend)
+        try:
+            result = api_search(api_url, query, candidates, backend)
+            st.success("FastAPI 服务响应正常")
+        except Exception as error:
+            st.error(f"API 不可用: {type(error).__name__}；请先启动 caged-api")
+            st.stop()
         understanding = as_json(query)
         st.subheader("Query 理解")
         st.json(understanding)
@@ -143,28 +133,25 @@ elif page == "A/B 实验":
     ab_query = st.text_input("A/B Query", "best restaurants downtown")
     if st.button("执行 A/B 请求"):
         ab_candidates = [
-            Candidate("A", "best restaurants downtown"),
-            Candidate("B", "home cooking guide"),
+            {"item_id": "A", "text": "best restaurants downtown"},
+            {"item_id": "B", "text": "home cooking guide"},
         ]
-        if api_url.strip():
-            payload = {
-                "query": ab_query,
-                "user_id": user_id,
-                "backend": "gate",
-                "candidates": [item.__dict__ for item in ab_candidates],
-            }
-            try:
-                request = Request(
-                    f"{api_url.rstrip('/')}/ab/search",
-                    data=json.dumps(payload).encode(),
-                    headers={"content-type": "application/json"},
-                )
-                with urlopen(request, timeout=10) as response:
-                    live_ab = json.loads(response.read())
-            except Exception as error:
-                live_ab = {"error": type(error).__name__}
-        else:
-            live_ab = service.ab_search(ab_query, ab_candidates, user_id)
+        payload = {
+            "query": ab_query,
+            "user_id": user_id,
+            "backend": "gate",
+            "candidates": ab_candidates,
+        }
+        try:
+            request = Request(
+                f"{api_url.rstrip('/')}/ab/search",
+                data=json.dumps(payload).encode(),
+                headers={"content-type": "application/json"},
+            )
+            with urlopen(request, timeout=10) as response:
+                live_ab = json.loads(response.read())
+        except Exception as error:
+            live_ab = {"error": type(error).__name__}
         st.json(live_ab)
     ab = ab_report["ab"]
     left, right = st.columns(2)
