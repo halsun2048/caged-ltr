@@ -1,9 +1,56 @@
 # CAGED-LTR
 
-面向长尾搜索广告的置信度感知语义—协同增强与多目标排序蒸馏实验工程。
+一个面向搜索重排的成本感知 LLM 级联系统：MiniLM Student 处理常规请求，
+Gate 将困难或长尾请求路由给 FIRST，并通过超时、重试、熔断和降级控制线上风险。
 
-当前阶段聚焦可复现基础设施和 R0 公共管线。研究路线与验收条件见
-[`docs/清单/00_完整复现与新实验清单.md`](docs/清单/00_完整复现与新实验清单.md)。
+## 项目状态
+
+- **研究结果**：冻结 MIND large-test 上 Tail-floor Gate 以 40% FIRST 调用率取得
+  `0.65006` NDCG@10；这是离线策略结果。
+- **部署审计**：R19/R20 统一请求时特征后，可部署 Gate 明显超过 Student，
+  但未达到距 FIRST `≤0.01` 的准入标准，因此没有继续访问 confirm/large-test。
+- **工程能力**：FastAPI、Streamlit、稳定 A/B 分流、Prometheus、限流、熔断、
+  Docker Compose，以及 cached/GPU real 双运行模式。
+- **证据边界**：A/B 是离线随机回放；FIRST 演示默认为 replay/cached；项目没有
+  真实 CTR、CVR 或广告曝光日志。
+
+完整收尾结论见 [`docs/r20_r24_closeout.md`](docs/r20_r24_closeout.md)。
+
+## 快速演示
+
+```bash
+./scripts/run_demo_local.sh
+```
+
+打开 `http://127.0.0.1:8501`。停止服务：
+
+```bash
+./scripts/stop_demo_local.sh
+```
+
+Docker 模式：
+
+```bash
+docker compose -f docker-compose.demo.yml up --build
+```
+
+架构：
+
+```text
+Streamlit → FastAPI → Student → Post-Student Gate ─┬→ Student 结果
+                                                   └→ FIRST → 失败时降级 Student
+```
+
+## 核心指标
+
+| 证据 | Student | Gate | FIRST | FIRST 调用率 |
+|---|---:|---:|---:|---:|
+| R8.9 frozen large-test | 0.52660 | **0.65006** | 0.64719 | 40% |
+| R19 fixed confirm | 0.52801 | 0.60518 | 0.64553 | 39.49% |
+| R20 dev OOF | 0.53235 | 0.62258¹ | 0.64534 | 40% |
+
+¹ R20 数值来自需要频次元数据的诊断性 Tail-floor 0.90；它没有通过总体准入，
+也没有进入 confirm。不同阶段结果不能合并为同一个线上结论。
 
 ## 环境
 

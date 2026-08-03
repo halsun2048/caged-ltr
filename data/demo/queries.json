@@ -1,0 +1,12 @@
+[
+  {"label": "餐厅推荐", "query": "best restaurants near downtown"},
+  {"label": "预算旅行", "query": "cheap hotels near the city center"},
+  {"label": "产品比较", "query": "compare noise cancelling headphones"},
+  {"label": "技术检索", "query": "transformer ranking model latency optimization"},
+  {"label": "新闻检索", "query": "latest artificial intelligence research"},
+  {"label": "中文推荐", "query": "推荐适合学生的轻薄笔记本"},
+  {"label": "中文比较", "query": "比较机械键盘和薄膜键盘的区别"},
+  {"label": "长尾健康信息", "query": "dietary fiber effects on metabolic health"},
+  {"label": "本地服务", "query": "affordable laptop repair nearby"},
+  {"label": "模糊需求", "query": "something useful for remote work"}
+]

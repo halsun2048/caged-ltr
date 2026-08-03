@@ -1,0 +1,46 @@
+{
+  "schema": "caged_ltr_r25_r30_final_acceptance_v1",
+  "R25": {
+    "status": "complete",
+    "pages": ["overview", "search", "ab", "performance_cost", "deployment"],
+    "fixed_demo_queries": 10,
+    "api_health_visible": true,
+    "runtime_mode_visible": true
+  },
+  "R26": {
+    "status": "complete",
+    "claims_separated": ["R8.9 offline policy", "R19/R20 deployability audit", "R15 offline AB"]
+  },
+  "R27": {
+    "status": "complete",
+    "readme_updated": true,
+    "local_start_stop_scripts": true,
+    "docker_entrypoint": true
+  },
+  "R28": {
+    "status": "complete",
+    "pitch_30_seconds": true,
+    "walkthrough_3_minutes": true,
+    "interview_10_minutes": true
+  },
+  "R29": {
+    "status": "complete_with_environment_limit",
+    "documents": ["FINAL_STATUS.md", "MODEL_CARD.md", "DATA_CARD.md", "LIMITATIONS.md", "SECURITY.md"],
+    "http_e2e": {
+      "health": true,
+      "search": true,
+      "stable_ab": true,
+      "metrics": true,
+      "streamlit_http_200": true
+    },
+    "dockerfile_build": "not_verified_local_docker_socket_permission_denied",
+    "compose_yaml_parsed": true,
+    "tests": {"passed": 104, "coverage_percent": 85.41},
+    "ruff": "passed",
+    "shell_syntax": "passed"
+  },
+  "R30": {
+    "status": "not_started_by_design",
+    "reason": "No new independent data, behavior logs, pre-request gain features, or real provider cost evidence."
+  }
+}

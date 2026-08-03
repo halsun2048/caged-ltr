@@ -42,6 +42,11 @@ def api_search(base_url: str, query: str, candidates: list[dict[str, str]], back
         return json.loads(response.read())
 
 
+def api_get(base_url: str, path: str) -> dict:
+    with urlopen(f"{base_url.rstrip('/')}{path}", timeout=3) as response:
+        return json.loads(response.read())
+
+
 def metric_card(report: dict) -> None:
     student, first = report["student"], report["first_recorded_model_inference"]
     gate = report["hard_tail_gate_replay"]
@@ -59,8 +64,20 @@ st.sidebar.caption("成本感知的大模型搜索重排")
 page = st.sidebar.radio("展示页面", ["项目总览", "智能搜索", "A/B 实验", "性能与成本", "部署说明"])
 budget = st.sidebar.slider("FIRST 调用预算", 0.0, 1.0, 0.4, 0.05)
 api_url = st.sidebar.text_input("FastAPI URL", os.getenv("R18_API_URL", "http://127.0.0.1:8000"))
+try:
+    health = api_get(api_url, "/health")
+    runtime_metrics = api_get(api_url, "/metrics")
+    st.sidebar.success(f"API 在线 · {health['route_mode']}")
+    st.sidebar.caption(
+        f"Student={health['student']} · FIRST={health['first']} · "
+        f"请求={runtime_metrics['requests']}"
+    )
+except Exception:
+    health = None
+    st.sidebar.error("API 离线，请先运行 scripts/run_demo_local.sh")
 benchmark = load_json(str(ROOT / "reports/experiments/r16_gpu_service_benchmark.json"))
 ab_report = load_json(str(ROOT / "reports/experiments/mind_r15_offline_ab.json"))
+demo_queries = load_json(str(ROOT / "data/demo/queries.json"))
 
 if page == "项目总览":
     st.title("🔎 CAGED-LTR：成本感知大模型搜索重排")
@@ -92,7 +109,10 @@ if page == "项目总览":
 
 elif page == "智能搜索":
     st.title("智能搜索与路由解释")
-    query = st.text_input("搜索需求", "best restaurants near downtown")
+    selected_demo = st.selectbox(
+        "固定演示 Query", demo_queries, format_func=lambda item: item["label"]
+    )
+    query = st.text_input("搜索需求", selected_demo["query"])
     raw = st.text_area(
         "候选文档（每行 item_id<TAB>文本）",
         "A\tBest restaurants near downtown\nB\tA guide to home cooking\nC\tDowntown travel and dining",
