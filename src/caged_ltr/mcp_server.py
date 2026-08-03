@@ -175,6 +175,23 @@ def serve_stdio(bridge: McpBridge) -> None:
 
 def serve_http(bridge: McpBridge, host: str, port: int) -> None:  # pragma: no cover
     class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = json.dumps(
+                {
+                    "status": "ok",
+                    "service": "caged-ltr-mcp",
+                    "protocol": PROTOCOL_VERSION,
+                    "transport": "http-jsonrpc",
+                    "message": "Send MCP JSON-RPC requests with POST to this endpoint.",
+                },
+                ensure_ascii=False,
+            ).encode()
+            self.send_response(200)
+            self.send_header("content-type", "application/json; charset=utf-8")
+            self.send_header("content-length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
         def do_POST(self):
             length = int(self.headers.get("content-length", "0"))
             response = bridge.handle(json.loads(self.rfile.read(length)))
