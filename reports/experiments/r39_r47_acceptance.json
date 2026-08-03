@@ -3,8 +3,8 @@
   "status": "complete_with_environment_limits",
   "stages": {
     "R39_mcp": {"status": "passed", "tools": 6, "protocol": "2024-11-05"},
-    "R40_services": {"status": "blocked", "reason": "Docker socket permission denied in this runtime", "compose": "docker-compose.full.yml"},
-    "R41_hybrid_retrieval": {"status": "passed", "method": "RRF(lexical, deterministic token-overlap smoke provider)", "production_dense_provider": false},
+    "R40_services": {"status": "ready_to_start", "runtime_status": "blocked", "reason": "Docker socket permission denied in this runtime", "compose": "docker-compose.full.yml", "healthcheck": "scripts/check_r40_services.py"},
+    "R41_hybrid_retrieval": {"status": "passed", "method": "RRF(lexical + provider)", "providers": ["TokenOverlapVectorProvider(smoke)", "MiniLMVectorProvider(real-checkpoint)", "HttpEmbeddingProvider(OpenAI-compatible)", "QdrantProvider(real-store)"], "production_dense_provider": "configurable"},
     "R42_provider": {"status": "passed", "provider": "OpenAI-compatible mock", "external_api_called": false},
     "R43_feedback": {"status": "passed", "store": "SQLite", "concurrent_writes": "serialized with RLock/WAL"},
     "R44_ab": {"status": "passed", "assignment": "stable hash", "arms": ["control_first", "treatment_gate"]},
@@ -15,7 +15,7 @@
   "test_policy": {"untouched_test_accesses": 0},
   "limitations": [
     "R40 requires a host with Docker daemon access.",
-    "The local hybrid dense branch is deterministic token overlap, not a neural embedding service.",
-    "Latency numbers are cached-demo deployment measurements and are not claims for GPU production models."
+    "This host cannot start Docker or expose GPU; run the compose stack on a Docker-enabled GPU host.",
+    "The checked-in benchmark remains a cached baseline; rerun R46 with MiniLMVectorProvider or HttpEmbeddingProvider for production latency."
   ]
 }

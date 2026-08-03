@@ -272,12 +272,15 @@ def normalize_branch_scores(scores: np.ndarray, method: str) -> np.ndarray:
     if method == "zscore":
         centered = values - values.mean(axis=1, keepdims=True)
         scale = values.std(axis=1, keepdims=True)
-        return np.divide(
+        normalized = np.divide(
             centered,
             scale,
             out=np.zeros_like(centered),
             where=scale > 1e-12,
         )
+        # Remove accumulated floating-point drift so row means are exactly stable
+        # for reproducibility checks and downstream calibration.
+        return normalized - normalized.mean(axis=1, keepdims=True)
     if method == "rank":
         order = np.argsort(-values, axis=1, kind="stable")
         ranks = np.argsort(order, axis=1, kind="stable")

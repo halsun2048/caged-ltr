@@ -7,10 +7,13 @@ services:
     environment:
       R16_BACKEND: cached
       CAGED_EVENT_DB: /app/runs/caged_events.sqlite3
+      POSTGRES_DSN: postgresql://caged:change-me-in-local-env@postgres:5432/caged_ltr
       REDIS_URL: redis://redis:6379/0
       QDRANT_URL: http://qdrant:6333
     ports: ["8000:8000"]
-    depends_on: [redis, qdrant]
+    depends_on:
+      redis: {condition: service_healthy}
+      qdrant: {condition: service_healthy}
   caged-mcp:
     build:
       context: .
@@ -37,11 +40,26 @@ services:
       POSTGRES_USER: caged
       POSTGRES_PASSWORD: change-me-in-local-env
     volumes: [caged-postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caged -d caged_ltr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   redis:
     image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   qdrant:
     image: qdrant/qdrant:v1.15.1
     volumes: [caged-qdrant:/qdrant/storage]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:6333/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   caged-postgres:

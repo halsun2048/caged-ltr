@@ -367,9 +367,9 @@ def create_app(service: SearchService | None = None):
     app = FastAPI(title="CAGED-LTR R16 Demo", version="0.1.0")
     runtime = service or SearchService()
     from .r16_llm_app import as_json, explain_result
-    from .storage import EventStore
+    from .storage import build_event_store
 
-    event_store = EventStore() if os.getenv("CAGED_EVENT_DB") else None
+    event_store = build_event_store()
 
     request_log = logging.getLogger("caged_ltr.api")
     rate_limit = int(os.getenv("R18_RATE_LIMIT_PER_MINUTE", "120"))

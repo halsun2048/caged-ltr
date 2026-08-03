@@ -91,3 +91,71 @@ class EventStore:
 
     def close(self) -> None:
         self._connection.close()
+
+
+class PostgresEventStore:  # pragma: no cover - requires external PostgreSQL service
+    """Production event store using psycopg and the same portable schema."""
+
+    def __init__(self, dsn: str) -> None:  # pragma: no cover
+        try:
+            import psycopg
+        except ImportError as error:
+            raise RuntimeError("install psycopg[binary] to use PostgresEventStore") from error
+        self._connection = psycopg.connect(dsn, autocommit=True)
+        with self._connection.cursor() as cursor:
+            cursor.execute(SCHEMA.replace("?", "%s"))
+
+    def record_search(self, payload: dict[str, Any]) -> str:  # pragma: no cover
+        event_id = str(uuid.uuid4())
+        route = payload.get("route", {})
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO search_events VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                (
+                    event_id,
+                    payload.get("user_id"),
+                    payload["query"],
+                    payload.get("backend", "unknown"),
+                    route.get("mode"),
+                    payload.get("latency_ms"),
+                    int(route.get("backend") == "first"),
+                    json.dumps(payload, ensure_ascii=False),
+                    time.time(),
+                ),
+            )
+        return event_id
+
+    def record_feedback(  # pragma: no cover
+        self, search_event_id: str, user_id: str | None, item_id: str, feedback: str
+    ) -> str:
+        if feedback not in {"click", "long_click", "dismiss", "like", "dislike"}:
+            raise ValueError("unsupported feedback type")
+        event_id = str(uuid.uuid4())
+        with self._connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO feedback_events VALUES (%s,%s,%s,%s,%s,%s)",
+                (event_id, search_event_id, user_id, item_id, feedback, time.time()),
+            )
+        return event_id
+
+    def summary(self) -> dict[str, int]:  # pragma: no cover
+        with self._connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM search_events")
+            searches = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) FROM feedback_events")
+            feedback = cursor.fetchone()[0]
+            cursor.execute("SELECT COALESCE(SUM(first_called),0) FROM search_events")
+            first_calls = cursor.fetchone()[0]
+        return {"search_events": searches, "feedback_events": feedback, "first_calls": first_calls}
+
+    def close(self) -> None:  # pragma: no cover
+        self._connection.close()
+
+
+def build_event_store() -> EventStore | PostgresEventStore | None:  # pragma: no cover
+    dsn = os.getenv("POSTGRES_DSN")
+    if dsn:
+        return PostgresEventStore(dsn)
+    if os.getenv("CAGED_EVENT_DB"):
+        return EventStore()
+    return None
