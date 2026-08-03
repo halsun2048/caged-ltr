@@ -34,6 +34,41 @@ class HybridRetriever:
         )
         return [item.candidate for item in ranked[:limit]]
 
+    def retrieve_rrf(
+        self, query: str, candidates: list[Candidate], limit: int = 20, k: int = 60
+    ) -> list[Candidate]:
+        """Fuse lexical and optional dense rankings with reciprocal rank fusion."""
+        lexical = sorted(
+            candidates, key=lambda item: (-lexical_score(query, item.text), item.item_id)
+        )
+        dense = lexical
+        if self.vector_provider is not None:
+            scores = self.vector_provider.score(query, candidates)
+            dense = [
+                item
+                for _, item in sorted(
+                    zip(scores, candidates, strict=True),
+                    key=lambda pair: (-pair[0], pair[1].item_id),
+                )
+            ]
+        lexical_rank = {item.item_id: index for index, item in enumerate(lexical, 1)}
+        dense_rank = {item.item_id: index for index, item in enumerate(dense, 1)}
+        fused = sorted(
+            candidates,
+            key=lambda item: (
+                -(1 / (k + lexical_rank[item.item_id]) + 1 / (k + dense_rank[item.item_id])),
+                item.item_id,
+            ),
+        )
+        return fused[:limit]
+
+
+class TokenOverlapVectorProvider:
+    """Deterministic local dense-like hook for smoke tests; not a neural embedding."""
+
+    def score(self, query: str, candidates: list[Candidate]) -> list[float]:
+        return [lexical_score(query, item.text) for item in candidates]
+
 
 class QdrantProvider:  # pragma: no cover
     """Optional adapter; imported only when the qdrant-client extra is installed."""

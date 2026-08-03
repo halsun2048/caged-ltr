@@ -1,8 +1,9 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 from caged_ltr.mcp_server import McpBridge
 from caged_ltr.r16_service import Candidate
-from caged_ltr.retrieval import HybridRetriever
+from caged_ltr.retrieval import HybridRetriever, TokenOverlapVectorProvider
 from caged_ltr.runtime_state import MemoryState
 from caged_ltr.storage import EventStore
 from caged_ltr.tasks import TaskRunner
@@ -40,6 +41,28 @@ def test_event_store_and_feedback(tmp_path):
     )
     store.record_feedback(event, "u", "item", "click")
     assert store.summary() == {"search_events": 1, "feedback_events": 1, "first_calls": 0}
+    try:
+        store.record_feedback(event, "u", "item", "unknown")
+    except ValueError as error:
+        assert "unsupported" in str(error)
+    else:  # pragma: no cover - defensive assertion
+        raise AssertionError("invalid feedback should fail")
+    store.close()
+
+
+def test_event_store_serializes_concurrent_searches(tmp_path):
+    store = EventStore(tmp_path / "concurrent.sqlite3")
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        events = list(
+            pool.map(
+                lambda i: store.record_search(
+                    {"query": f"q-{i}", "backend": "student", "route": {"backend": "student"}}
+                ),
+                range(32),
+            )
+        )
+    assert len(set(events)) == 32
+    assert store.summary()["search_events"] == 32
     store.close()
 
 
@@ -55,6 +78,11 @@ def test_memory_state_retrieval_and_task_runner():
     assert state.get("expired") is None
     candidates = [Candidate("a", "best restaurants"), Candidate("b", "home cooking")]
     assert HybridRetriever().retrieve("best restaurants", candidates)[0].item_id == "a"
+    provider = TokenOverlapVectorProvider()
+    assert provider.score("best restaurants", candidates)[0] > 0
+    assert HybridRetriever(provider).retrieve("best restaurants", candidates)[0].item_id == "a"
+    fused = HybridRetriever(provider).retrieve_rrf("best restaurants", candidates)
+    assert fused[0].item_id == "a"
     runner = TaskRunner()
     assert runner.submit(lambda: 1).startswith("local-")
     runner.shutdown()

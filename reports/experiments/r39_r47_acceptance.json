@@ -1,0 +1,21 @@
+{
+  "schema": "caged_ltr_r39_r47_acceptance_v1",
+  "status": "complete_with_environment_limits",
+  "stages": {
+    "R39_mcp": {"status": "passed", "tools": 6, "protocol": "2024-11-05"},
+    "R40_services": {"status": "blocked", "reason": "Docker socket permission denied in this runtime", "compose": "docker-compose.full.yml"},
+    "R41_hybrid_retrieval": {"status": "passed", "method": "RRF(lexical, deterministic token-overlap smoke provider)", "production_dense_provider": false},
+    "R42_provider": {"status": "passed", "provider": "OpenAI-compatible mock", "external_api_called": false},
+    "R43_feedback": {"status": "passed", "store": "SQLite", "concurrent_writes": "serialized with RLock/WAL"},
+    "R44_ab": {"status": "passed", "assignment": "stable hash", "arms": ["control_first", "treatment_gate"]},
+    "R45_security": {"status": "implemented", "features": ["optional bearer API key", "request id", "health/metrics allowlist"]},
+    "R46_pressure": {"status": "passed", "report": "reports/experiments/r46_api_benchmark.json"},
+    "R47_showcase": {"status": "ready", "streamlit": true, "mcp": true, "docker_template": true}
+  },
+  "test_policy": {"untouched_test_accesses": 0},
+  "limitations": [
+    "R40 requires a host with Docker daemon access.",
+    "The local hybrid dense branch is deterministic token overlap, not a neural embedding service.",
+    "Latency numbers are cached-demo deployment measurements and are not claims for GPU production models."
+  ]
+}

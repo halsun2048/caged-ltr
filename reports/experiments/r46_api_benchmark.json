@@ -1,0 +1,13 @@
+{
+  "schema": "caged_ltr_r46_api_benchmark_v1",
+  "base_url": "http://127.0.0.1:8000",
+  "requests": 20,
+  "concurrency": 4,
+  "candidates": 20,
+  "p50_ms": 7.591750996652991,
+  "p95_ms": 103.33447399898432,
+  "p99_ms": 109.61918500834145,
+  "mean_ms": 26.50043405010365,
+  "throughput_qps": 146.15453748891943,
+  "mode": "deployment-dependent; do not compare cached and real as equivalent"
+}

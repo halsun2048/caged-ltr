@@ -373,10 +373,19 @@ def create_app(service: SearchService | None = None):
 
     request_log = logging.getLogger("caged_ltr.api")
     rate_limit = int(os.getenv("R18_RATE_LIMIT_PER_MINUTE", "120"))
+    api_key = os.getenv("CAGED_API_KEY")  # pragma: no cover - integration auth path
     rate_state: dict[str, tuple[float, int]] = {}
 
     @app.middleware("http")
     async def request_guard(request, call_next):
+        if (
+            api_key
+            and request.url.path not in {"/health", "/metrics", "/metrics/prometheus"}
+            and request.headers.get("authorization") != f"Bearer {api_key}"
+        ):
+            from fastapi.responses import JSONResponse
+
+            return JSONResponse({"detail": "authentication required"}, status_code=401)
         client = request.client.host if request.client else "unknown"
         now = time.monotonic()
         start, count = rate_state.get(client, (now, 0))
@@ -389,6 +398,9 @@ def create_app(service: SearchService | None = None):
 
             return JSONResponse({"detail": "rate limit exceeded"}, status_code=429)
         response = await call_next(request)
+        response.headers["x-request-id"] = hashlib.sha256(
+            f"{time.time_ns()}:{client}".encode()
+        ).hexdigest()[:16]
         request_log.info(
             "request method=%s path=%s status=%s client=%s",
             request.method,
@@ -435,15 +447,18 @@ def create_app(service: SearchService | None = None):
 
     @app.post("/retrieve")
     def retrieve(payload: SearchInput = Body(...)) -> dict[str, object]:  # pragma: no cover
-        from .retrieval import HybridRetriever
+        from .retrieval import HybridRetriever, TokenOverlapVectorProvider
 
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
         limit = min(len(candidates), 20)
-        ranked = HybridRetriever().retrieve(payload.query, candidates, limit)
+        ranked = HybridRetriever(TokenOverlapVectorProvider()).retrieve_rrf(
+            payload.query, candidates, limit
+        )
         return {
             "query": payload.query,
             "candidates": [item.__dict__ for item in ranked],
-            "retriever": "lexical-fallback",
+            "retriever": "rrf-lexical-dense-hook",
+            "dense_provider": "token-overlap-smoke",
         }
 
     @app.post("/search")
@@ -469,7 +484,12 @@ def create_app(service: SearchService | None = None):
     @app.post("/ab/search")
     def ab_search(payload: SearchInput = Body(...)) -> dict[str, object]:
         candidates = [Candidate(item.item_id, item.text) for item in payload.candidates]
-        return runtime.ab_search(payload.query, candidates, payload.user_id)
+        result = runtime.ab_search(payload.query, candidates, payload.user_id)
+        if event_store:
+            result["search_event_id"] = event_store.record_search(
+                {**result, "query": payload.query, "user_id": payload.user_id}
+            )
+        return result
 
     @app.post("/understand")
     def understand(payload: SearchInput = Body(...)) -> dict[str, object]:

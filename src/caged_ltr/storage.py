@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -33,28 +34,34 @@ class EventStore:
         configured = path or os.getenv("CAGED_EVENT_DB", "runs/caged_events.sqlite3")
         self.path = Path(configured)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._connection = sqlite3.connect(self.path, check_same_thread=False)
+        self._connection = sqlite3.connect(
+            self.path, check_same_thread=False, timeout=30.0
+        )
+        self._connection.execute("PRAGMA journal_mode=WAL")  # pragma: no cover - sqlite setup
+        self._connection.execute("PRAGMA busy_timeout=30000")  # pragma: no cover - sqlite setup
         self._connection.executescript(SCHEMA)
         self._connection.commit()
+        self._lock = threading.RLock()
 
     def record_search(self, payload: dict[str, Any]) -> str:
         event_id = str(uuid.uuid4())
         route = payload.get("route", {})
-        self._connection.execute(
-            "INSERT INTO search_events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (
-                event_id,
-                payload.get("user_id"),
-                payload["query"],
-                payload.get("backend", "unknown"),
-                route.get("mode"),
-                payload.get("latency_ms"),
-                int(route.get("backend") == "first"),
-                json.dumps(payload, ensure_ascii=False),
-                time.time(),
-            ),
-        )
-        self._connection.commit()
+        with self._lock:
+            self._connection.execute(
+                "INSERT INTO search_events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    event_id,
+                    payload.get("user_id"),
+                    payload["query"],
+                    payload.get("backend", "unknown"),
+                    route.get("mode"),
+                    payload.get("latency_ms"),
+                    int(route.get("backend") == "first"),
+                    json.dumps(payload, ensure_ascii=False),
+                    time.time(),
+                ),
+            )
+            self._connection.commit()
         return event_id
 
     def record_feedback(
@@ -63,19 +70,23 @@ class EventStore:
         if feedback not in {"click", "long_click", "dismiss", "like", "dislike"}:
             raise ValueError("unsupported feedback type")
         event_id = str(uuid.uuid4())
-        self._connection.execute(
-            "INSERT INTO feedback_events VALUES (?, ?, ?, ?, ?, ?)",
-            (event_id, search_event_id, user_id, item_id, feedback, time.time()),
-        )
-        self._connection.commit()
+        with self._lock:
+            self._connection.execute(
+                "INSERT INTO feedback_events VALUES (?, ?, ?, ?, ?, ?)",
+                (event_id, search_event_id, user_id, item_id, feedback, time.time()),
+            )
+            self._connection.commit()
         return event_id
 
     def summary(self) -> dict[str, int]:
-        searches = self._connection.execute("SELECT COUNT(*) FROM search_events").fetchone()[0]
-        feedback = self._connection.execute("SELECT COUNT(*) FROM feedback_events").fetchone()[0]
-        first_calls = self._connection.execute(
-            "SELECT COALESCE(SUM(first_called), 0) FROM search_events"
-        ).fetchone()[0]
+        with self._lock:
+            searches = self._connection.execute("SELECT COUNT(*) FROM search_events").fetchone()[0]
+            feedback = self._connection.execute(
+                "SELECT COUNT(*) FROM feedback_events"
+            ).fetchone()[0]
+            first_calls = self._connection.execute(
+                "SELECT COALESCE(SUM(first_called), 0) FROM search_events"
+            ).fetchone()[0]
         return {"search_events": searches, "feedback_events": feedback, "first_calls": first_calls}
 
     def close(self) -> None:
